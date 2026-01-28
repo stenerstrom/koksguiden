@@ -409,16 +409,6 @@ const synonyms = {
   'korv': ['korv'],
 };
 
-// Volymenheter för receptskaparen
-const volumeUnits = {
-  'g': { label: 'gram', mlPer: null },
-  'dl': { label: 'dl', mlPer: 100 },
-  'msk': { label: 'msk', mlPer: 15 },
-  'tsk': { label: 'tsk', mlPer: 5 },
-  'krm': { label: 'krm', mlPer: 1 },
-  'st': { label: 'st', mlPer: null },
-};
-
 // Livsmedelsdatabas (förkortad för läsbarhet - i verkligheten är denna mycket längre)
 const foodDatabase = [
   { code: 'lvsdb-1', product_name: 'Mjölk standard fett 3%', brands: 'Mejeri', nutriments: { 'energy-kcal_100g': 60.0, proteins_100g: 3.4, carbohydrates_100g: 4.7, fat_100g: 3.0, fiber_100g: 0.0 }},
@@ -501,7 +491,6 @@ export default function App() {
   // Kaloriräknare state
   const [foodSearch, setFoodSearch] = useState('');
   const [foodResults, setFoodResults] = useState([]);
-  const [isSearching, setIsSearching] = useState(false);
   const [selectedFood, setSelectedFood] = useState(null);
   const [mealList, setMealList] = useState([]);
   const [portionSize, setPortionSize] = useState(100);
@@ -517,40 +506,13 @@ export default function App() {
     ingredients: [],
     steps: []
   });
-  const [savedRecipes, setSavedRecipes] = useState(() => {
+  const [savedRecipes] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('koksguiden-recipes');
       return saved ? JSON.parse(saved) : [];
     }
     return [];
   });
-  const [newIngredient, setNewIngredient] = useState('');
-  const [newStep, setNewStep] = useState('');
-  
-  // State för ingredienssökning
-  const [ingredientSearch, setIngredientSearch] = useState('');
-  const [ingredientResults, setIngredientResults] = useState([]);
-  const [selectedIngredientFood, setSelectedIngredientFood] = useState(null);
-  const [ingredientAmount, setIngredientAmount] = useState(100);
-  const [ingredientUnit, setIngredientUnit] = useState('g');
-  const [expandedRecipeId, setExpandedRecipeId] = useState(null);
-  const [editingRecipeId, setEditingRecipeId] = useState(null);
-  const [scaledPortions, setScaledPortions] = useState({});
-  const [searchHistory, setSearchHistory] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('koksguiden-search-history');
-      return saved ? JSON.parse(saved) : [];
-    }
-    return [];
-  });
-  const [favorites, setFavorites] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('koksguiden-favorites');
-      return saved ? JSON.parse(saved) : [];
-    }
-    return [];
-  });
-
   // Spara recept till localStorage
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -565,20 +527,6 @@ export default function App() {
     }
   }, [recentConversions]);
 
-  // Spara sökhistorik
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('koksguiden-search-history', JSON.stringify(searchHistory));
-    }
-  }, [searchHistory]);
-
-  // Spara favoriter
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('koksguiden-favorites', JSON.stringify(favorites));
-    }
-  }, [favorites]);
-
   // Funktion för att lägga till senaste konvertering
   const addRecentConversion = (conversion) => {
     setRecentConversions(prev => {
@@ -589,40 +537,6 @@ export default function App() {
     });
   };
 
-  // Lägg till i sökhistorik
-  const addToSearchHistory = (term) => {
-    if (term.length < 2) return;
-    setSearchHistory(prev => {
-      const filtered = prev.filter(t => t.toLowerCase() !== term.toLowerCase());
-      return [term, ...filtered].slice(0, 10);
-    });
-  };
-
-  // Hantera favoriter
-  const toggleFavorite = (food) => {
-    setFavorites(prev => {
-      const exists = prev.find(f => f.code === food.code);
-      if (exists) {
-        return prev.filter(f => f.code !== food.code);
-      }
-      return [...prev, food];
-    });
-  };
-
-  const isFavorite = (code) => favorites.some(f => f.code === code);
-
-  // Portionsskalning
-  const getScaledPortions = (recipeId, originalPortions) => {
-    return scaledPortions[recipeId] || parseInt(originalPortions) || 4;
-  };
-
-  const scaleIngredient = (amount, originalPortions, newPortions) => {
-    const scale = newPortions / (parseInt(originalPortions) || 4);
-    const scaled = amount * scale;
-    if (scaled < 10) return Math.round(scaled * 10) / 10;
-    return Math.round(scaled);
-  };
-
   // Sök livsmedel
   const handleFoodSearch = useCallback((term) => {
     setFoodSearch(term);
@@ -631,7 +545,6 @@ export default function App() {
       return;
     }
 
-    setIsSearching(true);
     const searchTermLower = term.toLowerCase();
     
     // Hitta synonymer
@@ -662,7 +575,6 @@ export default function App() {
     });
 
     setFoodResults(results.slice(0, 50));
-    setIsSearching(false);
   }, [selectedCategory]);
 
   // Beräkna omvandling
@@ -679,45 +591,6 @@ export default function App() {
     if (result >= 100) return result.toFixed(1);
     if (result >= 10) return result.toFixed(2);
     return result.toFixed(3);
-  };
-
-  // Viktenheter
-  const getWeightUnits = () => {
-    const base = ['kg', 'hg', 'g'];
-    return showForeign ? [...base, 'lb', 'oz'] : base;
-  };
-
-  // Volymenheter
-  const getVolumeUnits = () => {
-    const base = ['l', 'dl', 'cl', 'ml', 'msk', 'tsk', 'krm'];
-    return showForeign ? [...base, 'cup', 'tbsp', 'tsp', 'fl oz', 'pint', 'quart'] : base;
-  };
-
-  // Gram per dl för ingredienser
-  const getGramsPerDl = (foodName) => {
-    const name = foodName.toLowerCase();
-    if (name.includes('mjöl') || name.includes('flour')) return 60;
-    if (name.includes('socker') || name.includes('sugar')) return 90;
-    if (name.includes('smör') || name.includes('margarin')) return 95;
-    if (name.includes('olja') || name.includes('oil')) return 90;
-    if (name.includes('mjölk') || name.includes('grädde') || name.includes('fil')) return 100;
-    if (name.includes('ris')) return 90;
-    if (name.includes('havre')) return 40;
-    if (name.includes('honung') || name.includes('sirap')) return 140;
-    if (name.includes('kakao')) return 40;
-    if (name.includes('salt')) return 130;
-    return 100;
-  };
-
-  // Konvertera till gram
-  const convertToGrams = (amount, unit, foodName) => {
-    if (unit === 'g') return amount;
-    if (unit === 'st') return amount * 50;
-    
-    const mlPer = volumeUnits[unit]?.mlPer || 100;
-    const totalMl = amount * mlPer;
-    const gramsPerDl = getGramsPerDl(foodName);
-    return Math.round(totalMl * gramsPerDl / 100);
   };
 
   // Beräkna totaler för måltid
@@ -1422,13 +1295,10 @@ export default function App() {
               <div className="food-results">
                 <h3>{foodResults.length} resultat</h3>
                 {foodResults.map(food => (
-                  <div 
-                    key={food.code} 
+                  <div
+                    key={food.code}
                     className="food-result-item"
-                    onClick={() => {
-                      setSelectedFood(food);
-                      addToSearchHistory(foodSearch);
-                    }}
+                    onClick={() => setSelectedFood(food)}
                   >
                     <div className="food-info">
                       <span className="food-name">{food.product_name}</span>
