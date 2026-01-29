@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.js": "/koksguiden/static/js/main.21bf86c7.js",
+    "main.js": "/koksguiden/static/js/main.ab78f711.js",
     "index.html": "/koksguiden/index.html",
-    "main.21bf86c7.js.map": "/koksguiden/static/js/main.21bf86c7.js.map"
+    "main.ab78f711.js.map": "/koksguiden/static/js/main.ab78f711.js.map"
   },
   "entrypoints": [
-    "static/js/main.21bf86c7.js"
+    "static/js/main.ab78f711.js"
   ]
 }
