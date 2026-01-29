@@ -1716,7 +1716,7 @@ export default function App() {
       
       <div className="menu-card" role="button" tabIndex="0" onClick={() => setActiveView('calories')} onKeyDown={(e) => e.key === 'Enter' && setActiveView('calories')}>
         <h2>Kalorier & Näring</h2>
-        <p>Sök bland 2500+ livsmedel</p>
+        <p>Sök bland livsmedel</p>
         <span className="menu-arrow">→</span>
       </div>
       
@@ -2508,47 +2508,352 @@ export default function App() {
 
   // Skapa recept-vy (förenklad)
   const renderCreate = () => {
+    // Sök ingredienser i databasen
+    const searchIngredients = (term) => {
+      if (term.length < 2) {
+        setIngredientResults([]);
+        return;
+      }
+      const results = foodDatabase.filter(food =>
+        food.product_name.toLowerCase().includes(term.toLowerCase())
+      ).slice(0, 10);
+      setIngredientResults(results);
+    };
+
+    // Lägg till ingrediens i receptet
+    const addIngredientToRecipe = (food) => {
+      const newIng = {
+        id: Date.now(),
+        food: food,
+        amount: ingredientAmount,
+        unit: ingredientUnit
+      };
+      setNewRecipe({
+        ...newRecipe,
+        ingredients: [...newRecipe.ingredients, newIng]
+      });
+      setIngredientSearch('');
+      setIngredientResults([]);
+      setSelectedIngredientFood(null);
+      setIngredientAmount(100);
+    };
+
+    // Ta bort ingrediens
+    const removeIngredient = (id) => {
+      setNewRecipe({
+        ...newRecipe,
+        ingredients: newRecipe.ingredients.filter(ing => ing.id !== id)
+      });
+    };
+
+    // Lägg till steg
+    const addStep = () => {
+      if (newStep.trim()) {
+        setNewRecipe({
+          ...newRecipe,
+          steps: [...newRecipe.steps, newStep.trim()]
+        });
+        setNewStep('');
+      }
+    };
+
+    // Ta bort steg
+    const removeStep = (index) => {
+      setNewRecipe({
+        ...newRecipe,
+        steps: newRecipe.steps.filter((_, i) => i !== index)
+      });
+    };
+
+    // Beräkna näringsvärden för hela receptet
+    const calculateRecipeNutrition = () => {
+      return newRecipe.ingredients.reduce((totals, ing) => {
+        const grams = convertToGrams(ing.amount, ing.unit, ing.food.product_name);
+        const factor = grams / 100;
+        return {
+          kcal: totals.kcal + (ing.food.nutriments['energy-kcal_100g'] || 0) * factor,
+          protein: totals.protein + (ing.food.nutriments.proteins_100g || 0) * factor,
+          carbs: totals.carbs + (ing.food.nutriments.carbohydrates_100g || 0) * factor,
+          fat: totals.fat + (ing.food.nutriments.fat_100g || 0) * factor
+        };
+      }, { kcal: 0, protein: 0, carbs: 0, fat: 0 });
+    };
+
+    // Spara recept
+    const saveRecipe = () => {
+      if (!newRecipe.name.trim()) {
+        alert('Ange ett receptnamn');
+        return;
+      }
+      if (newRecipe.ingredients.length === 0) {
+        alert('Lägg till minst en ingrediens');
+        return;
+      }
+
+      const recipe = {
+        id: editingRecipeId || Date.now(),
+        ...newRecipe,
+        nutrition: calculateRecipeNutrition(),
+        createdAt: editingRecipeId ? savedRecipes.find(r => r.id === editingRecipeId)?.createdAt : new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+
+      if (editingRecipeId) {
+        setSavedRecipes(savedRecipes.map(r => r.id === editingRecipeId ? recipe : r));
+        setEditingRecipeId(null);
+      } else {
+        setSavedRecipes([recipe, ...savedRecipes]);
+      }
+
+      // Återställ formuläret
+      setNewRecipe({ name: '', portions: '4', ingredients: [], steps: [] });
+    };
+
+    // Redigera recept
+    const editRecipe = (recipe) => {
+      setNewRecipe({
+        name: recipe.name,
+        portions: recipe.portions,
+        ingredients: recipe.ingredients || [],
+        steps: recipe.steps || []
+      });
+      setEditingRecipeId(recipe.id);
+    };
+
+    // Ta bort recept
+    const deleteRecipe = (id) => {
+      if (confirm('Vill du verkligen ta bort detta recept?')) {
+        setSavedRecipes(savedRecipes.filter(r => r.id !== id));
+        if (editingRecipeId === id) {
+          setEditingRecipeId(null);
+          setNewRecipe({ name: '', portions: '4', ingredients: [], steps: [] });
+        }
+      }
+    };
+
+    const nutrition = calculateRecipeNutrition();
+    const perPortion = {
+      kcal: Math.round(nutrition.kcal / (parseInt(newRecipe.portions) || 1)),
+      protein: (nutrition.protein / (parseInt(newRecipe.portions) || 1)).toFixed(1),
+      carbs: (nutrition.carbs / (parseInt(newRecipe.portions) || 1)).toFixed(1),
+      fat: (nutrition.fat / (parseInt(newRecipe.portions) || 1)).toFixed(1)
+    };
+
     return (
       <div className="create-view">
         <button className="back-btn" aria-label="Gå tillbaka" onClick={() => setActiveView('home')}>
           ← Tillbaka
         </button>
-        <h1>Skapa recept</h1>
-        
+        <h1>{editingRecipeId ? 'Redigera recept' : 'Skapa recept'}</h1>
+
         <div className="create-form">
-          <div className="form-group">
-            <label>Receptnamn</label>
-            <input
-              type="text"
-              value={newRecipe.name}
-              onChange={(e) => setNewRecipe({...newRecipe, name: e.target.value})}
-              placeholder="T.ex. Köttbullar"
-            />
-          </div>
-          
-          <div className="form-group">
-            <label>Portioner</label>
-            <input
-              type="number"
-              value={newRecipe.portions}
-              onChange={(e) => setNewRecipe({...newRecipe, portions: e.target.value})}
-              min="1"
-            />
+          <div className="form-row">
+            <div className="form-group flex-2">
+              <label>Receptnamn</label>
+              <input
+                type="text"
+                value={newRecipe.name}
+                onChange={(e) => setNewRecipe({...newRecipe, name: e.target.value})}
+                placeholder="T.ex. Köttbullar"
+              />
+            </div>
+            <div className="form-group flex-1">
+              <label>Portioner</label>
+              <input
+                type="number"
+                value={newRecipe.portions}
+                onChange={(e) => setNewRecipe({...newRecipe, portions: e.target.value})}
+                min="1"
+              />
+            </div>
           </div>
 
-          <p className="coming-soon">
-            Fullständig receptskapare med ingredienssökning och kaloriberäkning kommer snart!
-          </p>
+          {/* Ingredienssökning */}
+          <div className="form-group">
+            <label>Lägg till ingrediens</label>
+            <div className="ingredient-search-row">
+              <input
+                type="text"
+                value={ingredientSearch}
+                onChange={(e) => {
+                  setIngredientSearch(e.target.value);
+                  searchIngredients(e.target.value);
+                }}
+                placeholder="Sök ingrediens..."
+                className="ingredient-search-input"
+              />
+            </div>
+
+            {ingredientResults.length > 0 && (
+              <div className="ingredient-search-results">
+                {ingredientResults.map(food => (
+                  <div
+                    key={food.code}
+                    className="ingredient-result-item"
+                    onClick={() => {
+                      setSelectedIngredientFood(food);
+                      setIngredientResults([]);
+                      setIngredientSearch(food.product_name);
+                    }}
+                  >
+                    <span className="ingredient-name">{food.product_name}</span>
+                    <span className="ingredient-kcal">{food.nutriments['energy-kcal_100g']} kcal/100g</span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {selectedIngredientFood && (
+              <div className="ingredient-amount-row">
+                <input
+                  type="number"
+                  value={ingredientAmount}
+                  onChange={(e) => setIngredientAmount(parseInt(e.target.value) || 0)}
+                  min="1"
+                  className="amount-input"
+                />
+                <select
+                  value={ingredientUnit}
+                  onChange={(e) => setIngredientUnit(e.target.value)}
+                  className="unit-select"
+                >
+                  <option value="g">g</option>
+                  <option value="dl">dl</option>
+                  <option value="msk">msk</option>
+                  <option value="tsk">tsk</option>
+                  <option value="st">st</option>
+                </select>
+                <button
+                  className="add-ingredient-btn"
+                  onClick={() => addIngredientToRecipe(selectedIngredientFood)}
+                >
+                  + Lägg till
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Lista över tillagda ingredienser */}
+          {newRecipe.ingredients.length > 0 && (
+            <div className="recipe-ingredients-list">
+              <label>Ingredienser ({newRecipe.ingredients.length})</label>
+              {newRecipe.ingredients.map(ing => (
+                <div key={ing.id} className="recipe-ingredient-item">
+                  <span className="ing-amount">{ing.amount} {ing.unit}</span>
+                  <span className="ing-name">{ing.food.product_name}</span>
+                  <button
+                    className="remove-btn"
+                    onClick={() => removeIngredient(ing.id)}
+                  >×</button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Tillagningssteg */}
+          <div className="form-group">
+            <label>Tillagningssteg</label>
+            <div className="step-input-row">
+              <input
+                type="text"
+                value={newStep}
+                onChange={(e) => setNewStep(e.target.value)}
+                placeholder="Beskriv ett steg..."
+                onKeyDown={(e) => e.key === 'Enter' && addStep()}
+              />
+              <button className="add-step-btn" onClick={addStep}>+</button>
+            </div>
+
+            {newRecipe.steps.length > 0 && (
+              <ol className="steps-list">
+                {newRecipe.steps.map((step, index) => (
+                  <li key={index}>
+                    <span>{step}</span>
+                    <button className="remove-btn" onClick={() => removeStep(index)}>×</button>
+                  </li>
+                ))}
+              </ol>
+            )}
+          </div>
+
+          {/* Näringsvärden */}
+          {newRecipe.ingredients.length > 0 && (
+            <div className="recipe-nutrition-summary">
+              <label>Näringsvärden per portion</label>
+              <div className="nutrition-mini-grid">
+                <div><strong>{perPortion.kcal}</strong> kcal</div>
+                <div><strong>{perPortion.protein}</strong>g protein</div>
+                <div><strong>{perPortion.carbs}</strong>g kolhydrater</div>
+                <div><strong>{perPortion.fat}</strong>g fett</div>
+              </div>
+            </div>
+          )}
+
+          {/* Knappar */}
+          <div className="form-actions">
+            <button className="save-recipe-btn" onClick={saveRecipe}>
+              {editingRecipeId ? '💾 Uppdatera recept' : '💾 Spara recept'}
+            </button>
+            {editingRecipeId && (
+              <button
+                className="cancel-edit-btn"
+                onClick={() => {
+                  setEditingRecipeId(null);
+                  setNewRecipe({ name: '', portions: '4', ingredients: [], steps: [] });
+                }}
+              >
+                Avbryt
+              </button>
+            )}
+          </div>
         </div>
 
+        {/* Sparade recept */}
         {savedRecipes.length > 0 && (
           <div className="saved-recipes">
             <h2>Sparade recept ({savedRecipes.length})</h2>
             <div className="recipe-list">
               {savedRecipes.map(recipe => (
-                <div key={recipe.id} className="saved-recipe-card">
-                  <h3>{recipe.name}</h3>
-                  <p>{recipe.portions} portioner • {recipe.ingredients?.length || 0} ingredienser</p>
+                <div key={recipe.id} className={`saved-recipe-card ${expandedRecipeId === recipe.id ? 'expanded' : ''}`}>
+                  <div
+                    className="recipe-header"
+                    onClick={() => setExpandedRecipeId(expandedRecipeId === recipe.id ? null : recipe.id)}
+                  >
+                    <div>
+                      <h3>{recipe.name}</h3>
+                      <p>{recipe.portions} port. • {recipe.ingredients?.length || 0} ingr. • {Math.round(recipe.nutrition?.kcal / recipe.portions || 0)} kcal/port.</p>
+                    </div>
+                    <span className="expand-arrow">{expandedRecipeId === recipe.id ? '▼' : '▶'}</span>
+                  </div>
+
+                  {expandedRecipeId === recipe.id && (
+                    <div className="recipe-details">
+                      <div className="recipe-ingredients">
+                        <strong>Ingredienser:</strong>
+                        <ul>
+                          {recipe.ingredients?.map(ing => (
+                            <li key={ing.id}>{ing.amount} {ing.unit} {ing.food.product_name}</li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      {recipe.steps?.length > 0 && (
+                        <div className="recipe-steps">
+                          <strong>Tillagning:</strong>
+                          <ol>
+                            {recipe.steps.map((step, i) => (
+                              <li key={i}>{step}</li>
+                            ))}
+                          </ol>
+                        </div>
+                      )}
+
+                      <div className="recipe-actions">
+                        <button onClick={() => editRecipe(recipe)}>✏️ Redigera</button>
+                        <button onClick={() => deleteRecipe(recipe.id)}>🗑️ Ta bort</button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -3696,6 +4001,14 @@ export default function App() {
           border: 1px solid #E8E0D8;
         }
 
+        .form-row {
+          display: flex;
+          gap: 1rem;
+        }
+
+        .form-row .flex-2 { flex: 2; }
+        .form-row .flex-1 { flex: 1; }
+
         .form-group {
           margin-bottom: 1rem;
         }
@@ -3710,7 +4023,7 @@ export default function App() {
           text-transform: uppercase;
         }
 
-        .form-group input {
+        .form-group input, .form-group select {
           width: 100%;
           padding: 0.75rem;
           border: 2px solid #E8E0D8;
@@ -3718,16 +4031,183 @@ export default function App() {
           font-family: inherit;
         }
 
-        .form-group input:focus {
+        .form-group input:focus, .form-group select:focus {
           outline: none;
           border-color: #D35F2D;
         }
 
-        .coming-soon {
-          color: #5C4A3D;
-          font-style: italic;
-          text-align: center;
+        .ingredient-search-row {
+          position: relative;
+        }
+
+        .ingredient-search-results {
+          position: absolute;
+          top: 100%;
+          left: 0;
+          right: 0;
+          background: white;
+          border: 2px solid #D35F2D;
+          border-top: none;
+          max-height: 200px;
+          overflow-y: auto;
+          z-index: 10;
+        }
+
+        .ingredient-result-item {
+          padding: 0.75rem;
+          cursor: pointer;
+          display: flex;
+          justify-content: space-between;
+          border-bottom: 1px solid #E8E0D8;
+        }
+
+        .ingredient-result-item:hover {
+          background: #FFF5EE;
+        }
+
+        .ingredient-name { font-weight: 500; }
+        .ingredient-kcal { font-size: 0.85rem; color: #5C4A3D; }
+
+        .ingredient-amount-row {
+          display: flex;
+          gap: 0.5rem;
+          margin-top: 0.5rem;
+        }
+
+        .amount-input {
+          width: 80px !important;
+          flex: none !important;
+        }
+
+        .unit-select {
+          width: 80px !important;
+          flex: none !important;
+        }
+
+        .add-ingredient-btn {
+          flex: 1;
+          background: #D35F2D;
+          color: white;
+          border: none;
+          padding: 0.75rem;
+          cursor: pointer;
+          font-weight: 600;
+        }
+
+        .recipe-ingredients-list {
+          background: #F5EFE8;
           padding: 1rem;
+          margin-bottom: 1rem;
+          border-radius: 4px;
+        }
+
+        .recipe-ingredient-item {
+          display: flex;
+          align-items: center;
+          padding: 0.5rem 0;
+          border-bottom: 1px solid #E8E0D8;
+        }
+
+        .recipe-ingredient-item:last-child {
+          border-bottom: none;
+        }
+
+        .ing-amount {
+          min-width: 80px;
+          font-weight: 600;
+          color: #D35F2D;
+        }
+
+        .ing-name {
+          flex: 1;
+        }
+
+        .remove-btn {
+          background: none;
+          border: none;
+          color: #D35F2D;
+          font-size: 1.25rem;
+          cursor: pointer;
+          padding: 0 0.5rem;
+        }
+
+        .step-input-row {
+          display: flex;
+          gap: 0.5rem;
+        }
+
+        .step-input-row input {
+          flex: 1;
+        }
+
+        .add-step-btn {
+          width: 44px;
+          background: #D35F2D;
+          color: white;
+          border: none;
+          font-size: 1.5rem;
+          cursor: pointer;
+        }
+
+        .steps-list {
+          margin-top: 0.75rem;
+          padding-left: 1.25rem;
+        }
+
+        .steps-list li {
+          padding: 0.5rem 0;
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+        }
+
+        .steps-list li span {
+          flex: 1;
+        }
+
+        .recipe-nutrition-summary {
+          background: #FFF5EE;
+          padding: 1rem;
+          margin: 1rem 0;
+          border-left: 4px solid #D35F2D;
+        }
+
+        .nutrition-mini-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 0.5rem;
+          margin-top: 0.5rem;
+          text-align: center;
+          font-size: 0.9rem;
+        }
+
+        .nutrition-mini-grid strong {
+          color: #D35F2D;
+        }
+
+        .form-actions {
+          display: flex;
+          gap: 0.5rem;
+          margin-top: 1rem;
+        }
+
+        .save-recipe-btn {
+          flex: 1;
+          padding: 1rem;
+          background: #5C4A3D;
+          color: white;
+          border: none;
+          font-size: 1rem;
+          font-weight: 600;
+          cursor: pointer;
+        }
+
+        .cancel-edit-btn {
+          padding: 1rem;
+          background: #E8E0D8;
+          color: #5C4A3D;
+          border: none;
+          cursor: pointer;
         }
 
         .saved-recipes {
@@ -3744,9 +4224,20 @@ export default function App() {
 
         .saved-recipe-card {
           background: white;
-          padding: 1rem;
           margin-bottom: 0.75rem;
           border: 1px solid #E8E0D8;
+        }
+
+        .recipe-header {
+          padding: 1rem;
+          cursor: pointer;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .recipe-header:hover {
+          background: #FFF5EE;
         }
 
         .saved-recipe-card h3 {
@@ -3757,8 +4248,45 @@ export default function App() {
         }
 
         .saved-recipe-card p {
-          font-size: 0.875rem;
+          font-size: 0.85rem;
           color: #5C4A3D;
+        }
+
+        .expand-arrow {
+          color: #D35F2D;
+        }
+
+        .recipe-details {
+          padding: 0 1rem 1rem;
+          border-top: 1px solid #E8E0D8;
+        }
+
+        .recipe-ingredients ul, .recipe-steps ol {
+          margin: 0.5rem 0 1rem 1.25rem;
+        }
+
+        .recipe-ingredients li, .recipe-steps li {
+          padding: 0.25rem 0;
+          font-size: 0.9rem;
+        }
+
+        .recipe-actions {
+          display: flex;
+          gap: 0.5rem;
+          margin-top: 1rem;
+        }
+
+        .recipe-actions button {
+          flex: 1;
+          padding: 0.75rem;
+          border: 1px solid #E8E0D8;
+          background: white;
+          cursor: pointer;
+          font-size: 0.9rem;
+        }
+
+        .recipe-actions button:hover {
+          background: #FFF5EE;
         }
 
         .search-results-count {
