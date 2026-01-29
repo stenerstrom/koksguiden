@@ -1167,7 +1167,7 @@ const foodDatabase = [
   { code: 'cf-0709', product_name: 'Kotlettrad (fläsk)', category: 'Kött - Fläsk', brands: 'Fläskkött', nutriments: { 'energy-kcal_100g': 185, proteins_100g: 19, carbohydrates_100g: 0, fat_100g: 12, fiber_100g: 0 }},
   { code: 'cf-0710', product_name: 'Nackfläsk', category: 'Kött - Fläsk', brands: 'Fläskkött', nutriments: { 'energy-kcal_100g': 290, proteins_100g: 15, carbohydrates_100g: 0, fat_100g: 25, fiber_100g: 0 }},
   { code: 'cf-0711', product_name: 'Späckskiva', category: 'Kött - Fläsk', brands: 'Fläskkött', nutriments: { 'energy-kcal_100g': 350, proteins_100g: 12, carbohydrates_100g: 0, fat_100g: 34, fiber_100g: 0 }},
-  { code: 'cf-0712', product_name: 'Fläskkind', category: 'Kött - Fläsk', brands: 'Fläskkött', nutriments: { 'energy-kcal_100g': 350, proteins_100g: 14, carbohydrates_100g: 0, fat_100g: 32, fiber_100g: 0 }},
+  { code: 'cf-0712', product_name: 'Fläsksvål', category: 'Kött - Fläsk', brands: 'Fläskkött', nutriments: { 'energy-kcal_100g': 340, proteins_100g: 28, carbohydrates_100g: 0, fat_100g: 25, fiber_100g: 0 }},
   { code: 'cf-0713', product_name: 'Kyckling hjärta', category: 'Fågel', brands: 'Kyckling', nutriments: { 'energy-kcal_100g': 153, proteins_100g: 16, carbohydrates_100g: 0.1, fat_100g: 10, fiber_100g: 0 }},
   { code: 'cf-0714', product_name: 'Kycklingskrot', category: 'Fågel', brands: 'Kyckling', nutriments: { 'energy-kcal_100g': 190, proteins_100g: 18, carbohydrates_100g: 0, fat_100g: 13, fiber_100g: 0 }},
   { code: 'cf-0715', product_name: 'Kapun', category: 'Fågel', brands: 'Fågel', nutriments: { 'energy-kcal_100g': 229, proteins_100g: 20, carbohydrates_100g: 0, fat_100g: 17, fiber_100g: 0 }},
@@ -2298,7 +2298,7 @@ export default function App() {
           ← Tillbaka
         </button>
         <h1>Kalorier & Näring</h1>
-        <p className="api-credit">Data från Livsmedelsverkets livsmedelsdatabas</p>
+        <p className="api-credit">Kuraterad databas med 974 svenska råvaror</p>
         
         <div className="search-box">
           <input
@@ -2317,19 +2317,21 @@ export default function App() {
           )}
         </div>
 
-        <div className="category-filter">
-          {foodCategories.map(cat => (
-            <button
-              key={cat.id}
-              className={`category-chip ${selectedCategory === cat.id ? 'active' : ''}`}
-              onClick={() => {
-                setSelectedCategory(cat.id);
-                if (foodSearch) handleFoodSearch(foodSearch);
-              }}
-            >
-              {cat.label}
-            </button>
-          ))}
+        <div className="category-filter-wrapper">
+          <div className="category-filter">
+            {foodCategories.map(cat => (
+              <button
+                key={cat.id}
+                className={`category-chip ${selectedCategory === cat.id ? 'active' : ''}`}
+                onClick={() => {
+                  setSelectedCategory(cat.id);
+                  if (foodSearch) handleFoodSearch(foodSearch);
+                }}
+              >
+                {cat.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         {selectedFood ? (
@@ -2578,7 +2580,7 @@ export default function App() {
       </main>
 
       <footer className="app-footer">
-        <span className="footer-credit">Data från Livsmedelsverket (2025)</span>
+        <span className="footer-credit">Köksguiden © 2025</span>
       </footer>
 
       <style>{`
@@ -3490,11 +3492,19 @@ export default function App() {
           margin-bottom: 1rem;
         }
 
+        .category-filter-wrapper {
+          max-height: 120px;
+          overflow-y: auto;
+          margin-bottom: 1rem;
+          padding: 0.5rem;
+          background: #F5EFE8;
+          border-radius: 4px;
+        }
+
         .category-filter {
           display: flex;
           flex-wrap: wrap;
           gap: 0.5rem;
-          margin-bottom: 1rem;
         }
 
         .category-chip {
