@@ -1676,8 +1676,9 @@ export default function App() {
   // Konvertera till gram
   const convertToGrams = (amount, unit, foodName) => {
     if (unit === 'g') return amount;
+    if (unit === 'kg') return amount * 1000;
     if (unit === 'st') return amount * 50;
-    
+
     const mlPer = volumeUnits[unit]?.mlPer || 100;
     const totalMl = amount * mlPer;
     const gramsPerDl = getGramsPerDl(foodName);
@@ -2622,7 +2623,7 @@ export default function App() {
 
     // Ta bort recept
     const deleteRecipe = (id) => {
-      if (confirm('Vill du verkligen ta bort detta recept?')) {
+      if (window.confirm('Vill du verkligen ta bort detta recept?')) {
         setSavedRecipes(savedRecipes.filter(r => r.id !== id));
         if (editingRecipeId === id) {
           setEditingRecipeId(null);
@@ -2704,31 +2705,50 @@ export default function App() {
             )}
 
             {selectedIngredientFood && (
-              <div className="ingredient-amount-row">
-                <input
-                  type="number"
-                  value={ingredientAmount}
-                  onChange={(e) => setIngredientAmount(parseInt(e.target.value) || 0)}
-                  min="1"
-                  className="amount-input"
-                />
-                <select
-                  value={ingredientUnit}
-                  onChange={(e) => setIngredientUnit(e.target.value)}
-                  className="unit-select"
-                >
-                  <option value="g">g</option>
-                  <option value="dl">dl</option>
-                  <option value="msk">msk</option>
-                  <option value="tsk">tsk</option>
-                  <option value="st">st</option>
-                </select>
-                <button
-                  className="add-ingredient-btn"
-                  onClick={() => addIngredientToRecipe(selectedIngredientFood)}
-                >
-                  + Lägg till
-                </button>
+              <div className="ingredient-amount-section">
+                <div className="ingredient-amount-row">
+                  <input
+                    type="number"
+                    value={ingredientAmount}
+                    onChange={(e) => setIngredientAmount(parseInt(e.target.value) || 0)}
+                    min="1"
+                    className="amount-input"
+                  />
+                  <select
+                    value={ingredientUnit}
+                    onChange={(e) => setIngredientUnit(e.target.value)}
+                    className="unit-select"
+                  >
+                    <option value="g">g</option>
+                    <option value="kg">kg</option>
+                    <option value="dl">dl</option>
+                    <option value="msk">msk</option>
+                    <option value="tsk">tsk</option>
+                    <option value="krm">krm</option>
+                    <option value="st">st</option>
+                  </select>
+                  <button
+                    className="add-ingredient-btn"
+                    onClick={() => addIngredientToRecipe(selectedIngredientFood)}
+                  >
+                    + Lägg till
+                  </button>
+                </div>
+                {ingredientUnit !== 'g' && ingredientUnit !== 'st' && ingredientUnit !== 'kg' && (
+                  <div className="measure-hint">
+                    ≈ {convertToGrams(ingredientAmount, ingredientUnit, selectedIngredientFood.product_name)}g • {Math.round((selectedIngredientFood.nutriments['energy-kcal_100g'] || 0) * convertToGrams(ingredientAmount, ingredientUnit, selectedIngredientFood.product_name) / 100)} kcal
+                  </div>
+                )}
+                {ingredientUnit === 'kg' && (
+                  <div className="measure-hint">
+                    = {ingredientAmount * 1000}g • {Math.round((selectedIngredientFood.nutriments['energy-kcal_100g'] || 0) * ingredientAmount * 10)} kcal
+                  </div>
+                )}
+                {ingredientUnit === 'g' && (
+                  <div className="measure-hint">
+                    {Math.round((selectedIngredientFood.nutriments['energy-kcal_100g'] || 0) * ingredientAmount / 100)} kcal
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -2813,49 +2833,134 @@ export default function App() {
           <div className="saved-recipes">
             <h2>Sparade recept ({savedRecipes.length})</h2>
             <div className="recipe-list">
-              {savedRecipes.map(recipe => (
-                <div key={recipe.id} className={`saved-recipe-card ${expandedRecipeId === recipe.id ? 'expanded' : ''}`}>
-                  <div
-                    className="recipe-header"
-                    onClick={() => setExpandedRecipeId(expandedRecipeId === recipe.id ? null : recipe.id)}
-                  >
-                    <div>
-                      <h3>{recipe.name}</h3>
-                      <p>{recipe.portions} port. • {recipe.ingredients?.length || 0} ingr. • {Math.round(recipe.nutrition?.kcal / recipe.portions || 0)} kcal/port.</p>
-                    </div>
-                    <span className="expand-arrow">{expandedRecipeId === recipe.id ? '▼' : '▶'}</span>
-                  </div>
+              {savedRecipes.map(recipe => {
+                const currentPortions = getScaledPortions(recipe.id, recipe.portions);
+                const scale = currentPortions / (parseInt(recipe.portions) || 1);
+                const scaledNutrition = {
+                  kcal: Math.round((recipe.nutrition?.kcal || 0) * scale / currentPortions),
+                  protein: ((recipe.nutrition?.protein || 0) * scale / currentPortions).toFixed(1),
+                  carbs: ((recipe.nutrition?.carbs || 0) * scale / currentPortions).toFixed(1),
+                  fat: ((recipe.nutrition?.fat || 0) * scale / currentPortions).toFixed(1)
+                };
 
-                  {expandedRecipeId === recipe.id && (
-                    <div className="recipe-details">
-                      <div className="recipe-ingredients">
-                        <strong>Ingredienser:</strong>
-                        <ul>
-                          {recipe.ingredients?.map(ing => (
-                            <li key={ing.id}>{ing.amount} {ing.unit} {ing.food.product_name}</li>
-                          ))}
-                        </ul>
+                // Exportera recept som text
+                const exportRecipeAsText = () => {
+                  const text = `${recipe.name}\n${'='.repeat(recipe.name.length)}\n\n` +
+                    `Portioner: ${currentPortions}\n\n` +
+                    `INGREDIENSER:\n` +
+                    recipe.ingredients?.map(ing => {
+                      const scaledAmount = scaleIngredient(ing.amount, recipe.portions, currentPortions);
+                      return `• ${scaledAmount} ${ing.unit} ${ing.food.product_name}`;
+                    }).join('\n') + '\n\n' +
+                    (recipe.steps?.length > 0 ?
+                      `TILLAGNING:\n` + recipe.steps.map((step, i) => `${i + 1}. ${step}`).join('\n') + '\n\n' : '') +
+                    `Näring per portion: ${scaledNutrition.kcal} kcal, ${scaledNutrition.protein}g protein, ` +
+                    `${scaledNutrition.carbs}g kolhydrater, ${scaledNutrition.fat}g fett\n\n` +
+                    `— Skapat med Köksguiden`;
+
+                  navigator.clipboard.writeText(text).then(() => {
+                    alert('Receptet kopierat till urklipp!');
+                  });
+                };
+
+                return (
+                  <div key={recipe.id} className={`saved-recipe-card ${expandedRecipeId === recipe.id ? 'expanded' : ''}`}>
+                    <div
+                      className="recipe-header"
+                      onClick={() => setExpandedRecipeId(expandedRecipeId === recipe.id ? null : recipe.id)}
+                    >
+                      <div>
+                        <h3>{recipe.name}</h3>
+                        <p>{currentPortions} port. • {recipe.ingredients?.length || 0} ingr. • {scaledNutrition.kcal} kcal/port.</p>
                       </div>
+                      <span className="expand-arrow">{expandedRecipeId === recipe.id ? '▼' : '▶'}</span>
+                    </div>
 
-                      {recipe.steps?.length > 0 && (
-                        <div className="recipe-steps">
-                          <strong>Tillagning:</strong>
-                          <ol>
-                            {recipe.steps.map((step, i) => (
-                              <li key={i}>{step}</li>
-                            ))}
-                          </ol>
+                    {expandedRecipeId === recipe.id && (
+                      <div className="recipe-details">
+                        {/* Portionsskalning */}
+                        <div className="portion-scaler">
+                          <label>Portioner:</label>
+                          <div className="scaler-controls">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (currentPortions > 1) {
+                                  setScaledPortions({...scaledPortions, [recipe.id]: currentPortions - 1});
+                                }
+                              }}
+                            >−</button>
+                            <span className="portion-count">{currentPortions}</span>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setScaledPortions({...scaledPortions, [recipe.id]: currentPortions + 1});
+                              }}
+                            >+</button>
+                            {currentPortions !== parseInt(recipe.portions) && (
+                              <button
+                                className="reset-btn"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  const newScaled = {...scaledPortions};
+                                  delete newScaled[recipe.id];
+                                  setScaledPortions(newScaled);
+                                }}
+                              >↺ Original ({recipe.portions})</button>
+                            )}
+                          </div>
                         </div>
-                      )}
 
-                      <div className="recipe-actions">
-                        <button onClick={() => editRecipe(recipe)}>✏️ Redigera</button>
-                        <button onClick={() => deleteRecipe(recipe.id)}>🗑️ Ta bort</button>
+                        <div className="recipe-ingredients">
+                          <strong>Ingredienser:</strong>
+                          <ul>
+                            {recipe.ingredients?.map(ing => {
+                              const scaledAmount = scaleIngredient(ing.amount, recipe.portions, currentPortions);
+                              const gramsEquiv = convertToGrams(scaledAmount, ing.unit, ing.food.product_name);
+                              return (
+                                <li key={ing.id}>
+                                  <span className="scaled-amount">{scaledAmount} {ing.unit}</span> {ing.food.product_name}
+                                  {ing.unit !== 'g' && ing.unit !== 'st' && (
+                                    <span className="gram-equiv"> (≈{gramsEquiv}g)</span>
+                                  )}
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        </div>
+
+                        {recipe.steps?.length > 0 && (
+                          <div className="recipe-steps">
+                            <strong>Tillagning:</strong>
+                            <ol>
+                              {recipe.steps.map((step, i) => (
+                                <li key={i}>{step}</li>
+                              ))}
+                            </ol>
+                          </div>
+                        )}
+
+                        {/* Näringsvärden skalade */}
+                        <div className="recipe-nutrition-scaled">
+                          <strong>Näring per portion:</strong>
+                          <div className="nutrition-mini-grid">
+                            <div><strong>{scaledNutrition.kcal}</strong> kcal</div>
+                            <div><strong>{scaledNutrition.protein}</strong>g protein</div>
+                            <div><strong>{scaledNutrition.carbs}</strong>g kolh.</div>
+                            <div><strong>{scaledNutrition.fat}</strong>g fett</div>
+                          </div>
+                        </div>
+
+                        <div className="recipe-actions">
+                          <button onClick={() => editRecipe(recipe)}>✏️ Redigera</button>
+                          <button onClick={exportRecipeAsText}>📋 Kopiera</button>
+                          <button onClick={() => deleteRecipe(recipe.id)}>🗑️ Ta bort</button>
+                        </div>
                       </div>
-                    </div>
-                  )}
-                </div>
-              ))}
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}
@@ -4287,6 +4392,95 @@ export default function App() {
 
         .recipe-actions button:hover {
           background: #FFF5EE;
+        }
+
+        /* Portionsskalning */
+        .portion-scaler {
+          background: #F5EFE8;
+          padding: 0.75rem 1rem;
+          margin-bottom: 1rem;
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          border-radius: 4px;
+        }
+
+        .portion-scaler label {
+          font-weight: 600;
+          font-size: 0.85rem;
+        }
+
+        .scaler-controls {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .scaler-controls button {
+          width: 32px;
+          height: 32px;
+          border: 1px solid #D35F2D;
+          background: white;
+          color: #D35F2D;
+          font-size: 1.25rem;
+          cursor: pointer;
+          border-radius: 4px;
+        }
+
+        .scaler-controls button:hover {
+          background: #FFF5EE;
+        }
+
+        .portion-count {
+          font-size: 1.25rem;
+          font-weight: 700;
+          min-width: 2rem;
+          text-align: center;
+          color: #D35F2D;
+        }
+
+        .reset-btn {
+          width: auto !important;
+          padding: 0 0.75rem !important;
+          font-size: 0.8rem !important;
+          margin-left: 0.5rem;
+        }
+
+        .scaled-amount {
+          font-weight: 600;
+          color: #D35F2D;
+        }
+
+        .gram-equiv {
+          font-size: 0.8rem;
+          color: #8B7355;
+          margin-left: 0.25rem;
+        }
+
+        .recipe-nutrition-scaled {
+          background: #FFF5EE;
+          padding: 0.75rem 1rem;
+          margin: 1rem 0;
+          border-left: 3px solid #D35F2D;
+        }
+
+        .recipe-nutrition-scaled strong:first-child {
+          display: block;
+          margin-bottom: 0.5rem;
+          font-size: 0.85rem;
+        }
+
+        .ingredient-amount-section {
+          margin-top: 0.5rem;
+        }
+
+        .measure-hint {
+          font-size: 0.85rem;
+          color: #5C4A3D;
+          margin-top: 0.5rem;
+          padding: 0.5rem;
+          background: #F5EFE8;
+          border-radius: 4px;
         }
 
         .search-results-count {
