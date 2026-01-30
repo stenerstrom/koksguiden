@@ -3774,7 +3774,6 @@ export default function App() {
                           {ing.optional && <span className="optional-tag">(valfritt)</span>}
                         </span>
                         {conversion && <span className="ingredient-conversion">{conversion}</span>}
-                        {nutritionInfo && <span className="nutrition-indicator">ℹ️</span>}
                       </div>
                       {selectedRecipeIngredient?.name === ing.name && nutritionInfo && (
                         <div className="ingredient-nutrition-popup">
@@ -6802,13 +6801,6 @@ export default function App() {
           color: #5C4A3D;
           background: #F5EFE8;
           padding: 0.2rem 0.5rem;
-        }
-
-        .nutrition-indicator {
-          font-size: 0.75rem;
-          color: #3D5A3D;
-          background: #E8F5E8;
-          padding: 0.15rem 0.4rem;
         }
 
         .optional-tag {
