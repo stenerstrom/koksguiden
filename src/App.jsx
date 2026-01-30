@@ -63,116 +63,116 @@ const categoryScience = {
 // Komplett data för innertemperaturer baserat på research
 const temperatureData = {
   'Nötkött': [
-    { name: 'Biff', rare: 55, medium: 60, wellDone: 70, restTime: '5-8 min', tips: 'Låt köttet vila efter stekning. Temperaturen stiger 2-4°C.' },
-    { name: 'Entrecôte', rare: 55, medium: 60, wellDone: 70, restTime: '8-10 min', tips: 'Salta och peppra runt om. Ugnstemperatur 125-175°C. Låt vila 30 min.' },
-    { name: 'Flankstek', rare: 56, medium: 58, wellDone: 60, restTime: '5-8 min', tips: 'Skär tunt snett mot fibrerna efter tillagning.' },
-    { name: 'Fransyska', rare: null, medium: 60, wellDone: 70, restTime: '10-15 min', tips: 'Passar för långkok eller stekning. Kan göras som tjälknöl.' },
-    { name: 'Högrev', rare: 55, medium: 60, wellDone: 70, restTime: '15-20 min', tips: 'Utmärkt för långkok och brässering. Kräver tid för mörhet.' },
-    { name: 'Innanlår', rare: 55, medium: 60, wellDone: 70, restTime: '10-15 min', tips: 'Mager styckdel, perfekt för stekning eller sous vide.' },
-    { name: 'Märgben', rare: null, medium: null, wellDone: 80, restTime: '-', tips: 'Rostas i ugn tills märgen är mjuk.' },
-    { name: 'Nötbog', rare: null, medium: 70, wellDone: 80, restTime: '15-20 min', tips: 'Långkok eller brässering rekommenderas.' },
-    { name: 'Nötbringa', rare: null, medium: 85, wellDone: 90, restTime: '15-20 min', tips: 'Kräver lång tillagning vid låg temperatur.' },
-    { name: 'Nötytterfilé', rare: 55, medium: 60, wellDone: 70, restTime: '5-8 min', tips: 'Mör och mager detalj, stek snabbt.' },
-    { name: 'Oxfilé', rare: 53, medium: 58, wellDone: 70, restTime: '8-10 min', tips: 'Premium styckdel. Stek kort tid på hög värme.' },
-    { name: 'Oxsvans', rare: null, medium: null, wellDone: 85, restTime: '10 min', tips: 'Brässeras i 3-4 timmar för perfekt mörhet.' },
-    { name: 'Oxtunga', rare: null, medium: null, wellDone: 85, restTime: '10 min', tips: 'Koka länge tills mör. Skala efter kokning.' },
-    { name: 'Rostbiff', rare: 55, medium: 60, wellDone: 70, restTime: '20-30 min', tips: 'Ugnstemperatur 125°C för perfekt resultat.' },
-    { name: 'Ryggbiff', rare: 55, medium: 60, wellDone: 70, restTime: '5-8 min', tips: 'Klassisk grilldetalj. Stek på hög värme.' },
-    { name: 'Tjockt kött', rare: 55, medium: 60, wellDone: 70, restTime: '10-15 min', tips: 'Mör styckdel, passar för stekning.' },
-    { name: 'Ytterlår', rare: 55, medium: 60, wellDone: 70, restTime: '10-15 min', tips: 'Passar för stekning eller långkok.' },
+    { name: 'Biff', rare: 55, medium: 60, wellDone: 70, restTime: '5-8 min', saltning: 'Minst 40 min före', tips: 'Låt köttet vila efter stekning. Temperaturen stiger 2-4°C.' },
+    { name: 'Entrecôte', rare: 55, medium: 60, wellDone: 70, restTime: '8-10 min', saltning: 'Dagen före', tips: 'Ugnstemperatur 125-175°C. Låt vila 30 min.' },
+    { name: 'Flankstek', rare: 56, medium: 58, wellDone: 60, restTime: '5-8 min', saltning: 'Dagen före', tips: 'Skär tunt snett mot fibrerna efter tillagning.' },
+    { name: 'Fransyska', rare: null, medium: 60, wellDone: 70, restTime: '10-15 min', saltning: '1-2 dagar före', tips: 'Passar för långkok eller stekning. Kan göras som tjälknöl.' },
+    { name: 'Högrev', rare: 55, medium: 60, wellDone: 70, restTime: '15-20 min', saltning: '1-2 dagar före', tips: 'Utmärkt för långkok och brässering. Kräver tid för mörhet.' },
+    { name: 'Innanlår', rare: 55, medium: 60, wellDone: 70, restTime: '10-15 min', saltning: 'Dagen före', tips: 'Mager styckdel, perfekt för stekning eller sous vide.' },
+    { name: 'Märgben', rare: null, medium: null, wellDone: 80, restTime: '-', saltning: 'Vid tillagning', tips: 'Rostas i ugn tills märgen är mjuk.' },
+    { name: 'Nötbog', rare: null, medium: 70, wellDone: 80, restTime: '15-20 min', saltning: '1-2 dagar före', tips: 'Långkok eller brässering rekommenderas.' },
+    { name: 'Nötbringa', rare: null, medium: 85, wellDone: 90, restTime: '15-20 min', saltning: '1-2 dagar före', tips: 'Kräver lång tillagning vid låg temperatur.' },
+    { name: 'Nötytterfilé', rare: 55, medium: 60, wellDone: 70, restTime: '5-8 min', saltning: 'Dagen före', tips: 'Mör och mager detalj, stek snabbt.' },
+    { name: 'Oxfilé', rare: 53, medium: 58, wellDone: 70, restTime: '8-10 min', saltning: 'Dagen före', tips: 'Premium styckdel. Stek kort tid på hög värme.' },
+    { name: 'Oxsvans', rare: null, medium: null, wellDone: 85, restTime: '10 min', saltning: '1-2 dagar före', tips: 'Brässeras i 3-4 timmar för perfekt mörhet.' },
+    { name: 'Oxtunga', rare: null, medium: null, wellDone: 85, restTime: '10 min', saltning: '1-2 dagar före', tips: 'Koka länge tills mör. Skala efter kokning.' },
+    { name: 'Rostbiff', rare: 55, medium: 60, wellDone: 70, restTime: '20-30 min', saltning: '1-2 dagar före', tips: 'Ugnstemperatur 125°C för perfekt resultat.' },
+    { name: 'Ryggbiff', rare: 55, medium: 60, wellDone: 70, restTime: '5-8 min', saltning: 'Dagen före', tips: 'Klassisk grilldetalj. Stek på hög värme.' },
+    { name: 'Tjockt kött', rare: 55, medium: 60, wellDone: 70, restTime: '10-15 min', saltning: 'Dagen före', tips: 'Mör styckdel, passar för stekning.' },
+    { name: 'Ytterlår', rare: 55, medium: 60, wellDone: 70, restTime: '10-15 min', saltning: 'Dagen före', tips: 'Passar för stekning eller långkok.' },
   ],
   'Kalv': [
-    { name: 'Kalventrecôte', rare: 55, medium: 60, wellDone: 70, restTime: '5-8 min', tips: 'Mild smak, passar med delikata såser.' },
-    { name: 'Kalvfilé', rare: 55, medium: 60, wellDone: 70, restTime: '5-8 min', tips: 'Mycket mör, stek varsamt.' },
-    { name: 'Kalvfransyska', rare: null, medium: 60, wellDone: 70, restTime: '10-15 min', tips: 'Passar för brässering.' },
-    { name: 'Kalvkotlett', rare: 55, medium: 60, wellDone: 70, restTime: '5 min', tips: 'Stek på medelvärme för saftig kotlett.' },
-    { name: 'Kalvlever', rare: null, medium: 58, wellDone: 65, restTime: '2-3 min', tips: 'Ska vara rosa inuti. Blir seg om den översteks.' },
-    { name: 'Kalvnjure', rare: null, medium: null, wellDone: 70, restTime: '3 min', tips: 'Blötlägg före tillagning för mildare smak.' },
-    { name: 'Kalvbräss', rare: null, medium: null, wellDone: 72, restTime: '3-5 min', tips: 'Delikatess. Blanchera först, stek sedan i smör.' },
+    { name: 'Kalventrecôte', rare: 55, medium: 60, wellDone: 70, restTime: '5-8 min', saltning: 'Dagen före', tips: 'Mild smak, passar med delikata såser.' },
+    { name: 'Kalvfilé', rare: 55, medium: 60, wellDone: 70, restTime: '5-8 min', saltning: 'Dagen före', tips: 'Mycket mör, stek varsamt.' },
+    { name: 'Kalvfransyska', rare: null, medium: 60, wellDone: 70, restTime: '10-15 min', saltning: '1-2 dagar före', tips: 'Passar för brässering.' },
+    { name: 'Kalvkotlett', rare: 55, medium: 60, wellDone: 70, restTime: '5 min', saltning: 'Minst 1 timme före', tips: 'Stek på medelvärme för saftig kotlett.' },
+    { name: 'Kalvlever', rare: null, medium: 58, wellDone: 65, restTime: '2-3 min', saltning: 'Vid tillagning', tips: 'Ska vara rosa inuti. Blir seg om den översteks.' },
+    { name: 'Kalvnjure', rare: null, medium: null, wellDone: 70, restTime: '3 min', saltning: 'Vid tillagning', tips: 'Blötlägg före tillagning för mildare smak.' },
+    { name: 'Kalvbräss', rare: null, medium: null, wellDone: 72, restTime: '3-5 min', saltning: 'Vid tillagning', tips: 'Delikatess. Blanchera först, stek sedan i smör.' },
   ],
   'Lamm': [
-    { name: 'Lammfilé', rare: 55, medium: 60, wellDone: 70, restTime: '5-8 min', tips: 'Mör detalj med fin smak. Stek snabbt.' },
-    { name: 'Lammkotlett', rare: 55, medium: 60, wellDone: 70, restTime: '5 min', tips: 'Grilla eller stek på hög värme.' },
-    { name: 'Lammlever', rare: null, medium: 58, wellDone: 65, restTime: '2-3 min', tips: 'Mildare än nötlever. Stek kort tid.' },
-    { name: 'Lammsadel', rare: 55, medium: 60, wellDone: 70, restTime: '10-15 min', tips: 'Elegant styckdel för festmåltider.' },
-    { name: 'Lammstek', rare: 55, medium: 62, wellDone: 70, restTime: '15-20 min', tips: 'Vila minst 15 min före skärning.' },
-    { name: 'Lammbog', rare: null, medium: null, wellDone: 80, restTime: '15-20 min', tips: 'Perfekt för långkok och brässering.' },
-    { name: 'Lammlägg', rare: null, medium: null, wellDone: 85, restTime: '10 min', tips: 'Brässera i 2-3 timmar för mör konsistens.' },
-    { name: 'Lammrack', rare: 55, medium: 60, wellDone: 70, restTime: '8-10 min', tips: 'Bryn först, avsluta i ugn.' },
-    { name: 'Lammhjärta', rare: null, medium: 60, wellDone: 68, restTime: '3 min', tips: 'Stek snabbt på hög värme.' },
-    { name: 'Lammnjure', rare: null, medium: null, wellDone: 70, restTime: '3 min', tips: 'Blötlägg före tillagning.' },
+    { name: 'Lammfilé', rare: 55, medium: 60, wellDone: 70, restTime: '5-8 min', saltning: 'Dagen före', tips: 'Mör detalj med fin smak. Stek snabbt.' },
+    { name: 'Lammkotlett', rare: 55, medium: 60, wellDone: 70, restTime: '5 min', saltning: 'Minst 1 timme före', tips: 'Grilla eller stek på hög värme.' },
+    { name: 'Lammlever', rare: null, medium: 58, wellDone: 65, restTime: '2-3 min', saltning: 'Vid tillagning', tips: 'Mildare än nötlever. Stek kort tid.' },
+    { name: 'Lammsadel', rare: 55, medium: 60, wellDone: 70, restTime: '10-15 min', saltning: 'Dagen före', tips: 'Elegant styckdel för festmåltider.' },
+    { name: 'Lammstek', rare: 55, medium: 62, wellDone: 70, restTime: '15-20 min', saltning: '1-2 dagar före', tips: 'Vila minst 15 min före skärning.' },
+    { name: 'Lammbog', rare: null, medium: null, wellDone: 80, restTime: '15-20 min', saltning: '1-2 dagar före', tips: 'Perfekt för långkok och brässering.' },
+    { name: 'Lammlägg', rare: null, medium: null, wellDone: 85, restTime: '10 min', saltning: '1-2 dagar före', tips: 'Brässera i 2-3 timmar för mör konsistens.' },
+    { name: 'Lammrack', rare: 55, medium: 60, wellDone: 70, restTime: '8-10 min', saltning: 'Dagen före', tips: 'Bryn först, avsluta i ugn.' },
+    { name: 'Lammhjärta', rare: null, medium: 60, wellDone: 68, restTime: '3 min', saltning: 'Vid tillagning', tips: 'Stek snabbt på hög värme.' },
+    { name: 'Lammnjure', rare: null, medium: null, wellDone: 70, restTime: '3 min', saltning: 'Vid tillagning', tips: 'Blötlägg före tillagning.' },
   ],
   'Fläsk': [
-    { name: 'Bacon', rare: null, medium: null, wellDone: 70, restTime: '-', tips: 'Stek tills önskad krispighet.' },
-    { name: 'Fläskfilé', rare: null, medium: 63, wellDone: 70, restTime: '5-8 min', tips: 'Säker vid 63°C. Vila 5 min.' },
-    { name: 'Fläskkotlett', rare: null, medium: 63, wellDone: 70, restTime: '5 min', tips: 'Stek på medelvärme för saftigt resultat.' },
-    { name: 'Fläskkarré', rare: null, medium: 63, wellDone: 70, restTime: '10-15 min', tips: 'Perfekt för ugnsstekning.' },
-    { name: 'Fläskbog', rare: null, medium: null, wellDone: 85, restTime: '15-20 min', tips: 'Perfekt för pulled pork. Långsam tillagning.' },
-    { name: 'Fläsklägg', rare: null, medium: null, wellDone: 80, restTime: '10 min', tips: 'Kokas eller brässeras.' },
-    { name: 'Pancetta', rare: null, medium: null, wellDone: 70, restTime: '-', tips: 'Italienskt bacon. Steks krispigt.' },
-    { name: 'Guanciale', rare: null, medium: null, wellDone: 70, restTime: '-', tips: 'Grisskinn. Bas för carbonara och amatriciana.' },
-    { name: 'Revbensspjäll', rare: null, medium: null, wellDone: 90, restTime: '10 min', tips: 'Låg och långsam tillagning för mörhet.' },
-    { name: 'Sidfläsk', rare: null, medium: null, wellDone: 75, restTime: '-', tips: 'Stek tills sprött på utsidan.' },
-    { name: 'Skinkstek', rare: null, medium: 65, wellDone: 72, restTime: '15-20 min', tips: 'Ugnstemperatur 125°C. Vila minst 15 min.' },
-    { name: 'Fläskkind', rare: null, medium: null, wellDone: 85, restTime: '10 min', tips: 'Brässeras i flera timmar för silkeslen konsistens.' },
+    { name: 'Bacon', rare: null, medium: null, wellDone: 70, restTime: '-', saltning: 'Redan saltat', tips: 'Stek tills önskad krispighet.' },
+    { name: 'Fläskfilé', rare: null, medium: 63, wellDone: 70, restTime: '5-8 min', saltning: 'Dagen före', tips: 'Säker vid 63°C. Vila 5 min.' },
+    { name: 'Fläskkotlett', rare: null, medium: 63, wellDone: 70, restTime: '5 min', saltning: 'Minst 1 timme före', tips: 'Stek på medelvärme för saftigt resultat.' },
+    { name: 'Fläskkarré', rare: null, medium: 63, wellDone: 70, restTime: '10-15 min', saltning: 'Dagen före', tips: 'Perfekt för ugnsstekning.' },
+    { name: 'Fläskbog', rare: null, medium: null, wellDone: 85, restTime: '15-20 min', saltning: '1-2 dagar före', tips: 'Perfekt för pulled pork. Långsam tillagning.' },
+    { name: 'Fläsklägg', rare: null, medium: null, wellDone: 80, restTime: '10 min', saltning: '1-2 dagar före', tips: 'Kokas eller brässeras.' },
+    { name: 'Pancetta', rare: null, medium: null, wellDone: 70, restTime: '-', saltning: 'Redan saltat', tips: 'Italienskt bacon. Steks krispigt.' },
+    { name: 'Guanciale', rare: null, medium: null, wellDone: 70, restTime: '-', saltning: 'Redan saltat', tips: 'Grisskinn. Bas för carbonara och amatriciana.' },
+    { name: 'Revbensspjäll', rare: null, medium: null, wellDone: 90, restTime: '10 min', saltning: 'Dagen före', tips: 'Låg och långsam tillagning för mörhet.' },
+    { name: 'Sidfläsk', rare: null, medium: null, wellDone: 75, restTime: '-', saltning: 'Minst 1 timme före', tips: 'Stek tills sprött på utsidan.' },
+    { name: 'Skinkstek', rare: null, medium: 65, wellDone: 72, restTime: '15-20 min', saltning: '1-2 dagar före', tips: 'Ugnstemperatur 125°C. Vila minst 15 min.' },
+    { name: 'Fläskkind', rare: null, medium: null, wellDone: 85, restTime: '10 min', saltning: '1-2 dagar före', tips: 'Brässeras i flera timmar för silkeslen konsistens.' },
   ],
   'Fågel': [
-    { name: 'Ankbröst', rare: 54, medium: 58, wellDone: 65, restTime: '5-8 min', tips: 'Starta i kall panna för krispigt skinn.' },
-    { name: 'Ankbröst med skinn', rare: 54, medium: 58, wellDone: 65, restTime: '5-8 min', tips: 'Rista skinnet. Börja i kall panna.' },
-    { name: 'Anklår', rare: null, medium: null, wellDone: 80, restTime: '10 min', tips: 'Konfiteras eller brässeras för bäst resultat.' },
-    { name: 'Anklever', rare: null, medium: 55, wellDone: 62, restTime: '2-3 min', tips: 'Stek snabbt på hög värme. Ska vara rosa.' },
-    { name: 'Gåsbröst', rare: 54, medium: 58, wellDone: 65, restTime: '8-10 min', tips: 'Behandlas som anka. Låt vila.' },
-    { name: 'Kalkonbröst', rare: null, medium: null, wellDone: 70, restTime: '10-15 min', tips: 'Blir lätt torrt, använd stektermometer.' },
-    { name: 'Kalkonfilé', rare: null, medium: null, wellDone: 70, restTime: '5-8 min', tips: 'Mager detalj. Undvik överstek.' },
-    { name: 'Kalkonlårfilé', rare: null, medium: null, wellDone: 80, restTime: '8-10 min', tips: 'Tål högre temperatur än bröst.' },
-    { name: 'Kycklingbröst', rare: null, medium: null, wellDone: 70, restTime: '5 min', tips: 'Saftigast vid exakt 70°C.' },
-    { name: 'Kycklingbröst med skinn', rare: null, medium: null, wellDone: 70, restTime: '5 min', tips: 'Börja med skinnsidan ner för krispigt skinn.' },
-    { name: 'Kycklinglever', rare: null, medium: 55, wellDone: 65, restTime: '2-3 min', tips: 'Ska vara rosa inuti. Bas för parfait.' },
-    { name: 'Kycklinglår', rare: null, medium: null, wellDone: 80, restTime: '5-8 min', tips: 'Mer förlåtande än bröst.' },
-    { name: 'Kycklingklubba', rare: null, medium: null, wellDone: 80, restTime: '5 min', tips: 'Tål högre temperatur. Saftig vid 80°C.' },
-    { name: 'Kycklingvingar', rare: null, medium: null, wellDone: 80, restTime: '-', tips: 'Grillas eller friteras.' },
-    { name: 'Hel kyckling', rare: null, medium: null, wellDone: 74, restTime: '10-15 min', tips: 'Mät i låret. Vila 10 min.' },
-    { name: 'Majskyckling', rare: null, medium: null, wellDone: 74, restTime: '10 min', tips: 'Som vanlig kyckling men saftigare.' },
+    { name: 'Ankbröst', rare: 54, medium: 58, wellDone: 65, restTime: '5-8 min', saltning: 'Dagen före', tips: 'Starta i kall panna för krispigt skinn.' },
+    { name: 'Ankbröst med skinn', rare: 54, medium: 58, wellDone: 65, restTime: '5-8 min', saltning: 'Dagen före', tips: 'Rista skinnet. Börja i kall panna.' },
+    { name: 'Anklår', rare: null, medium: null, wellDone: 80, restTime: '10 min', saltning: '1-2 dagar före', tips: 'Konfiteras eller brässeras för bäst resultat.' },
+    { name: 'Anklever', rare: null, medium: 55, wellDone: 62, restTime: '2-3 min', saltning: 'Vid tillagning', tips: 'Stek snabbt på hög värme. Ska vara rosa.' },
+    { name: 'Gåsbröst', rare: 54, medium: 58, wellDone: 65, restTime: '8-10 min', saltning: 'Dagen före', tips: 'Behandlas som anka. Låt vila.' },
+    { name: 'Kalkonbröst', rare: null, medium: null, wellDone: 70, restTime: '10-15 min', saltning: '2-3 dagar före', tips: 'Blir lätt torrt, använd stektermometer.' },
+    { name: 'Kalkonfilé', rare: null, medium: null, wellDone: 70, restTime: '5-8 min', saltning: 'Dagen före', tips: 'Mager detalj. Undvik överstek.' },
+    { name: 'Kalkonlårfilé', rare: null, medium: null, wellDone: 80, restTime: '8-10 min', saltning: 'Dagen före', tips: 'Tål högre temperatur än bröst.' },
+    { name: 'Kycklingbröst', rare: null, medium: null, wellDone: 70, restTime: '5 min', saltning: 'Minst 1 timme före', tips: 'Saftigast vid exakt 70°C.' },
+    { name: 'Kycklingbröst med skinn', rare: null, medium: null, wellDone: 70, restTime: '5 min', saltning: 'Dagen före', tips: 'Börja med skinnsidan ner för krispigt skinn.' },
+    { name: 'Kycklinglever', rare: null, medium: 55, wellDone: 65, restTime: '2-3 min', saltning: 'Vid tillagning', tips: 'Ska vara rosa inuti. Bas för parfait.' },
+    { name: 'Kycklinglår', rare: null, medium: null, wellDone: 80, restTime: '5-8 min', saltning: 'Dagen före', tips: 'Mer förlåtande än bröst.' },
+    { name: 'Kycklingklubba', rare: null, medium: null, wellDone: 80, restTime: '5 min', saltning: 'Dagen före', tips: 'Tål högre temperatur. Saftig vid 80°C.' },
+    { name: 'Kycklingvingar', rare: null, medium: null, wellDone: 80, restTime: '-', saltning: 'Minst 1 timme före', tips: 'Grillas eller friteras.' },
+    { name: 'Hel kyckling', rare: null, medium: null, wellDone: 74, restTime: '10-15 min', saltning: 'Dagen före', tips: 'Mät i låret. Vila 10 min.' },
+    { name: 'Majskyckling', rare: null, medium: null, wellDone: 74, restTime: '10 min', saltning: 'Dagen före', tips: 'Som vanlig kyckling men saftigare.' },
   ],
   'Vilt': [
-    { name: 'Älgfilé', rare: 55, medium: 60, wellDone: 70, restTime: '8-10 min', tips: 'Mycket mager. Serveras rosa. Vila väl.' },
-    { name: 'Älgstek', rare: 55, medium: 60, wellDone: 70, restTime: '15-20 min', tips: 'Magert, passar för stekning och sous vide.' },
-    { name: 'Rådjursfilé', rare: 55, medium: 58, wellDone: 65, restTime: '5-8 min', tips: 'Mycket mört, serveras gärna rosa.' },
-    { name: 'Rådjurssadel', rare: 55, medium: 60, wellDone: 70, restTime: '10-15 min', tips: 'Elegant styckdel. Vila 10 min.' },
-    { name: 'Hjortfilé', rare: 55, medium: 60, wellDone: 70, restTime: '8-10 min', tips: 'Magert kött, stek inte för länge.' },
-    { name: 'Hjortfärs', rare: null, medium: null, wellDone: 70, restTime: '-', tips: 'Blanda med fläskfett för saftighet.' },
-    { name: 'Vildsvinsstek', rare: null, medium: 68, wellDone: 75, restTime: '15-20 min', tips: 'Ska vara genomstekt av säkerhetsskäl.' },
-    { name: 'Renfilé', rare: 55, medium: 58, wellDone: 65, restTime: '5-8 min', tips: 'Delikat smak. Serveras rosa.' },
-    { name: 'Renstek', rare: 55, medium: 60, wellDone: 70, restTime: '10-15 min', tips: 'Vila minst 10 min före skärning.' },
-    { name: 'Hare', rare: 55, medium: 60, wellDone: 70, restTime: '8-10 min', tips: 'Magert, behöver fetttillskott vid tillagning.' },
-    { name: 'Fasanbröst', rare: 54, medium: 58, wellDone: 65, restTime: '5 min', tips: 'Mager fågel. Undvik överstekt.' },
-    { name: 'Rapphöna', rare: 54, medium: 58, wellDone: 65, restTime: '5 min', tips: 'Liten viltfågel. Stek snabbt.' },
-    { name: 'Vaktel', rare: null, medium: 60, wellDone: 68, restTime: '3-5 min', tips: 'Liten fågel. Grillas eller steks hel.' },
-    { name: 'Duva', rare: 54, medium: 58, wellDone: 65, restTime: '5 min', tips: 'Serveras rosa. Rik smak.' },
+    { name: 'Älgfilé', rare: 55, medium: 60, wellDone: 70, restTime: '8-10 min', saltning: 'Dagen före', tips: 'Mycket mager. Serveras rosa. Vila väl.' },
+    { name: 'Älgstek', rare: 55, medium: 60, wellDone: 70, restTime: '15-20 min', saltning: '1-2 dagar före', tips: 'Magert, passar för stekning och sous vide.' },
+    { name: 'Rådjursfilé', rare: 55, medium: 58, wellDone: 65, restTime: '5-8 min', saltning: 'Dagen före', tips: 'Mycket mört, serveras gärna rosa.' },
+    { name: 'Rådjurssadel', rare: 55, medium: 60, wellDone: 70, restTime: '10-15 min', saltning: 'Dagen före', tips: 'Elegant styckdel. Vila 10 min.' },
+    { name: 'Hjortfilé', rare: 55, medium: 60, wellDone: 70, restTime: '8-10 min', saltning: 'Dagen före', tips: 'Magert kött, stek inte för länge.' },
+    { name: 'Hjortfärs', rare: null, medium: null, wellDone: 70, restTime: '-', saltning: 'Vid tillagning', tips: 'Blanda med fläskfett för saftighet.' },
+    { name: 'Vildsvinsstek', rare: null, medium: 68, wellDone: 75, restTime: '15-20 min', saltning: '1-2 dagar före', tips: 'Ska vara genomstekt av säkerhetsskäl.' },
+    { name: 'Renfilé', rare: 55, medium: 58, wellDone: 65, restTime: '5-8 min', saltning: 'Dagen före', tips: 'Delikat smak. Serveras rosa.' },
+    { name: 'Renstek', rare: 55, medium: 60, wellDone: 70, restTime: '10-15 min', saltning: '1-2 dagar före', tips: 'Vila minst 10 min före skärning.' },
+    { name: 'Hare', rare: 55, medium: 60, wellDone: 70, restTime: '8-10 min', saltning: 'Dagen före', tips: 'Magert, behöver fetttillskott vid tillagning.' },
+    { name: 'Fasanbröst', rare: 54, medium: 58, wellDone: 65, restTime: '5 min', saltning: 'Dagen före', tips: 'Mager fågel. Undvik överstekt.' },
+    { name: 'Rapphöna', rare: 54, medium: 58, wellDone: 65, restTime: '5 min', saltning: 'Dagen före', tips: 'Liten viltfågel. Stek snabbt.' },
+    { name: 'Vaktel', rare: null, medium: 60, wellDone: 68, restTime: '3-5 min', saltning: 'Minst 1 timme före', tips: 'Liten fågel. Grillas eller steks hel.' },
+    { name: 'Duva', rare: 54, medium: 58, wellDone: 65, restTime: '5 min', saltning: 'Dagen före', tips: 'Serveras rosa. Rik smak.' },
   ],
   'Fisk': [
-    { name: 'Laxfilé', rare: 45, medium: 52, wellDone: 60, restTime: '2-3 min', tips: 'Glasig vid 45°C, genomstekt vid 60°C.' },
-    { name: 'Öring', rare: 45, medium: 52, wellDone: 58, restTime: '2-3 min', tips: 'Liknande lax. Fin smak.' },
-    { name: 'Röding', rare: 45, medium: 52, wellDone: 58, restTime: '2-3 min', tips: 'Fin smak, tillagas som lax.' },
-    { name: 'Sik', rare: 45, medium: 50, wellDone: 55, restTime: '2 min', tips: 'Klassisk svensk fisk. Mild smak.' },
-    { name: 'Abborre', rare: null, medium: 48, wellDone: 54, restTime: '2 min', tips: 'Fast, vitt kött. Tillagas försiktigt.' },
-    { name: 'Gädda', rare: null, medium: 50, wellDone: 55, restTime: '2-3 min', tips: 'Fast kött med många ben.' },
-    { name: 'Torsk', rare: null, medium: 50, wellDone: 55, restTime: '2-3 min', tips: 'Klassiker. Ska flagna lätt.' },
-    { name: 'Kolja', rare: null, medium: 50, wellDone: 55, restTime: '2 min', tips: 'Mild smak, tillagas försiktigt.' },
-    { name: 'Sej', rare: null, medium: 50, wellDone: 55, restTime: '2-3 min', tips: 'Fast kött, passar för grillning.' },
-    { name: 'Kummel', rare: null, medium: 50, wellDone: 55, restTime: '2-3 min', tips: 'Fast, vitt kött.' },
-    { name: 'Hälleflundra', rare: null, medium: 52, wellDone: 58, restTime: '3 min', tips: 'Fast kött, tål lite högre temp.' },
-    { name: 'Piggvar', rare: null, medium: 52, wellDone: 58, restTime: '3 min', tips: 'Exklusiv plattfisk med fast kött.' },
-    { name: 'Tonfisk', rare: 40, medium: 50, wellDone: 60, restTime: '2-3 min', tips: 'Serveras ofta rå eller rosa i mitten.' },
+    { name: 'Laxfilé', rare: 45, medium: 52, wellDone: 60, restTime: '2-3 min', saltning: '15 min före', tips: 'Glasig vid 45°C, genomstekt vid 60°C.' },
+    { name: 'Öring', rare: 45, medium: 52, wellDone: 58, restTime: '2-3 min', saltning: '15 min före', tips: 'Liknande lax. Fin smak.' },
+    { name: 'Röding', rare: 45, medium: 52, wellDone: 58, restTime: '2-3 min', saltning: '15 min före', tips: 'Fin smak, tillagas som lax.' },
+    { name: 'Sik', rare: 45, medium: 50, wellDone: 55, restTime: '2 min', saltning: '15 min före', tips: 'Klassisk svensk fisk. Mild smak.' },
+    { name: 'Abborre', rare: null, medium: 48, wellDone: 54, restTime: '2 min', saltning: '15 min före', tips: 'Fast, vitt kött. Tillagas försiktigt.' },
+    { name: 'Gädda', rare: null, medium: 50, wellDone: 55, restTime: '2-3 min', saltning: '15 min före', tips: 'Fast kött med många ben.' },
+    { name: 'Torsk', rare: null, medium: 50, wellDone: 55, restTime: '2-3 min', saltning: '15 min före', tips: 'Klassiker. Ska flagna lätt.' },
+    { name: 'Kolja', rare: null, medium: 50, wellDone: 55, restTime: '2 min', saltning: '15 min före', tips: 'Mild smak, tillagas försiktigt.' },
+    { name: 'Sej', rare: null, medium: 50, wellDone: 55, restTime: '2-3 min', saltning: '15 min före', tips: 'Fast kött, passar för grillning.' },
+    { name: 'Kummel', rare: null, medium: 50, wellDone: 55, restTime: '2-3 min', saltning: '15 min före', tips: 'Fast, vitt kött.' },
+    { name: 'Hälleflundra', rare: null, medium: 52, wellDone: 58, restTime: '3 min', saltning: '15 min före', tips: 'Fast kött, tål lite högre temp.' },
+    { name: 'Piggvar', rare: null, medium: 52, wellDone: 58, restTime: '3 min', saltning: '15 min före', tips: 'Exklusiv plattfisk med fast kött.' },
+    { name: 'Tonfisk', rare: 40, medium: 50, wellDone: 60, restTime: '2-3 min', saltning: '30 min före', tips: 'Serveras ofta rå eller rosa i mitten.' },
   ],
   'Skaldjur': [
-    { name: 'Hummer', rare: null, medium: null, wellDone: 63, restTime: '2-3 min', tips: 'Köttet ska vara ogenomskinligt.' },
-    { name: 'Krabba', rare: null, medium: null, wellDone: 63, restTime: '-', tips: 'Koka i saltat vatten.' },
-    { name: 'Kräftor', rare: null, medium: null, wellDone: 63, restTime: '-', tips: 'Koka i kryddad lag.' },
-    { name: 'Musslor', rare: null, medium: null, wellDone: 65, restTime: '-', tips: 'Kassera oöppnade efter kokning.' },
-    { name: 'Pilgrimsmusslor', rare: null, medium: 52, wellDone: 58, restTime: '1-2 min', tips: 'Snabbstek på hög värme.' },
-    { name: 'Räkor', rare: null, medium: null, wellDone: 63, restTime: '-', tips: 'Rosa och fast när de är klara.' },
-    { name: 'Bläckfisk', rare: null, medium: null, wellDone: 60, restTime: '2 min', tips: 'Snabbstek eller långkok - inget däremellan.' },
+    { name: 'Hummer', rare: null, medium: null, wellDone: 63, restTime: '2-3 min', saltning: 'Vid tillagning', tips: 'Köttet ska vara ogenomskinligt.' },
+    { name: 'Krabba', rare: null, medium: null, wellDone: 63, restTime: '-', saltning: 'I kokvattnet', tips: 'Koka i saltat vatten.' },
+    { name: 'Kräftor', rare: null, medium: null, wellDone: 63, restTime: '-', saltning: 'I kokvattnet', tips: 'Koka i kryddad lag.' },
+    { name: 'Musslor', rare: null, medium: null, wellDone: 65, restTime: '-', saltning: 'Vid tillagning', tips: 'Kassera oöppnade efter kokning.' },
+    { name: 'Pilgrimsmusslor', rare: null, medium: 52, wellDone: 58, restTime: '1-2 min', saltning: 'Vid tillagning', tips: 'Snabbstek på hög värme.' },
+    { name: 'Räkor', rare: null, medium: null, wellDone: 63, restTime: '-', saltning: 'I kokvattnet', tips: 'Rosa och fast när de är klara.' },
+    { name: 'Bläckfisk', rare: null, medium: null, wellDone: 60, restTime: '2 min', saltning: 'Vid tillagning', tips: 'Snabbstek eller långkok - inget däremellan.' },
   ],
   'Grönsaker': [
     { name: 'Sparris, grön (tunn)', blanchering: true, time: '1-2 min', tips: 'Böj sparrisen - den knäcks där träigheten börjar' },
@@ -688,7 +688,7 @@ const basicRecipesData = {
       description: 'Yoghurtens mjölksyra mörnar köttet. Perfekt för grillad kyckling.'
     },
   ],
-  'Smaksatta smör': [
+  'Smör': [
     {
       id: 'beurremonte',
       name: 'Beurre Monté',
@@ -1024,9 +1024,18 @@ const synonyms = {
   'chili': ['chiliflingor', 'jalapeño', 'habanero', 'sriracha'],
   'curry': ['currypasta', 'garam masala'],
   // Pasta & ris
-  'pasta': ['spaghetti', 'penne', 'tagliatelle', 'fusilli', 'rigatoni'],
+  'pasta': ['torkad pasta', 'färsk pasta'],
+  'spaghetti': ['torkad pasta'],
+  'penne': ['torkad pasta'],
+  'tagliatelle': ['torkad pasta', 'färsk pasta'],
+  'fusilli': ['torkad pasta'],
+  'rigatoni': ['torkad pasta'],
+  'linguine': ['torkad pasta'],
+  'farfalle': ['torkad pasta'],
+  'bucatini': ['torkad pasta'],
   'nudlar': ['risnudlar', 'udonnudlar', 'sobanudar', 'ramennudlar'],
-  'ris': ['jasminris', 'basmatiris', 'arboriris', 'sushiris'],
+  'ris': ['jasminris', 'basmatiris', 'arboriris', 'sushiris', 'fullkornsris'],
+  'råris': ['fullkornsris'],
   // Baljväxter
   'linser': ['röda linser', 'gröna linser', 'belugalinser'],
   'bönor': ['vita bönor', 'svarta bönor', 'kidneybönor', 'kikärtor'],
@@ -1576,23 +1585,12 @@ const foodDatabase = [
   { code: 'cf-0523', product_name: 'Gåsfett', category: 'Oljor & fetter', brands: 'Animaliskt fett', nutriments: { 'energy-kcal_100g': 900, proteins_100g: 0, carbohydrates_100g: 0, fat_100g: 100, fiber_100g: 0 }},
   { code: 'cf-0524', product_name: 'Talg (nötfett)', category: 'Oljor & fetter', brands: 'Animaliskt fett', nutriments: { 'energy-kcal_100g': 902, proteins_100g: 0, carbohydrates_100g: 0, fat_100g: 100, fiber_100g: 0 }},
   { code: 'cf-0525', product_name: 'Ister', category: 'Oljor & fetter', brands: 'Animaliskt fett', nutriments: { 'energy-kcal_100g': 902, proteins_100g: 0, carbohydrates_100g: 0, fat_100g: 100, fiber_100g: 0 }},
-  { code: 'cf-0526', product_name: 'Spaghetti torr', category: 'Pasta & nudlar', brands: 'Pasta', nutriments: { 'energy-kcal_100g': 371, proteins_100g: 13, carbohydrates_100g: 75, fat_100g: 2, fiber_100g: 3 }},
-  { code: 'cf-0527', product_name: 'Tagliatelle torr', category: 'Pasta & nudlar', brands: 'Pasta', nutriments: { 'energy-kcal_100g': 371, proteins_100g: 13, carbohydrates_100g: 75, fat_100g: 2, fiber_100g: 3 }},
-  { code: 'cf-0528', product_name: 'Penne torr', category: 'Pasta & nudlar', brands: 'Pasta', nutriments: { 'energy-kcal_100g': 371, proteins_100g: 13, carbohydrates_100g: 75, fat_100g: 2, fiber_100g: 3 }},
-  { code: 'cf-0529', product_name: 'Fusilli torr', category: 'Pasta & nudlar', brands: 'Pasta', nutriments: { 'energy-kcal_100g': 371, proteins_100g: 13, carbohydrates_100g: 75, fat_100g: 2, fiber_100g: 3 }},
-  { code: 'cf-0530', product_name: 'Rigatoni torr', category: 'Pasta & nudlar', brands: 'Pasta', nutriments: { 'energy-kcal_100g': 371, proteins_100g: 13, carbohydrates_100g: 75, fat_100g: 2, fiber_100g: 3 }},
-  { code: 'cf-0531', product_name: 'Farfalle torr', category: 'Pasta & nudlar', brands: 'Pasta', nutriments: { 'energy-kcal_100g': 371, proteins_100g: 13, carbohydrates_100g: 75, fat_100g: 2, fiber_100g: 3 }},
-  { code: 'cf-0532', product_name: 'Linguine torr', category: 'Pasta & nudlar', brands: 'Pasta', nutriments: { 'energy-kcal_100g': 371, proteins_100g: 13, carbohydrates_100g: 75, fat_100g: 2, fiber_100g: 3 }},
-  { code: 'cf-0533', product_name: 'Bucatini torr', category: 'Pasta & nudlar', brands: 'Pasta', nutriments: { 'energy-kcal_100g': 371, proteins_100g: 13, carbohydrates_100g: 75, fat_100g: 2, fiber_100g: 3 }},
-  { code: 'cf-0534', product_name: 'Orecchiette torr', category: 'Pasta & nudlar', brands: 'Pasta', nutriments: { 'energy-kcal_100g': 371, proteins_100g: 13, carbohydrates_100g: 75, fat_100g: 2, fiber_100g: 3 }},
-  { code: 'cf-0535', product_name: 'Lasagneplattor', category: 'Pasta & nudlar', brands: 'Pasta', nutriments: { 'energy-kcal_100g': 371, proteins_100g: 13, carbohydrates_100g: 75, fat_100g: 2, fiber_100g: 3 }},
-  { code: 'cf-0536', product_name: 'Cannelloni', category: 'Pasta & nudlar', brands: 'Pasta', nutriments: { 'energy-kcal_100g': 371, proteins_100g: 13, carbohydrates_100g: 75, fat_100g: 2, fiber_100g: 3 }},
-  { code: 'cf-0537', product_name: 'Orzo (risformad pasta)', category: 'Pasta & nudlar', brands: 'Pasta', nutriments: { 'energy-kcal_100g': 371, proteins_100g: 13, carbohydrates_100g: 75, fat_100g: 2, fiber_100g: 3 }},
-  { code: 'cf-0538', product_name: 'Gnocchi (potatispasta)', category: 'Pasta & nudlar', brands: 'Pasta', nutriments: { 'energy-kcal_100g': 163, proteins_100g: 4, carbohydrates_100g: 35, fat_100g: 0.5, fiber_100g: 2 }},
-  { code: 'cf-0539', product_name: 'Spätzle', category: 'Pasta & nudlar', brands: 'Pasta', nutriments: { 'energy-kcal_100g': 260, proteins_100g: 9, carbohydrates_100g: 45, fat_100g: 5, fiber_100g: 2 }},
+  { code: 'cf-0526', product_name: 'Torkad pasta', category: 'Pasta & nudlar', brands: 'Pasta', nutriments: { 'energy-kcal_100g': 371, proteins_100g: 13, carbohydrates_100g: 75, fat_100g: 2, fiber_100g: 3 }},
   { code: 'cf-0540', product_name: 'Färsk pasta', category: 'Pasta & nudlar', brands: 'Pasta', nutriments: { 'energy-kcal_100g': 270, proteins_100g: 10, carbohydrates_100g: 50, fat_100g: 3, fiber_100g: 2 }},
-  { code: 'cf-0541', product_name: 'Äggpasta', category: 'Pasta & nudlar', brands: 'Pasta', nutriments: { 'energy-kcal_100g': 380, proteins_100g: 14, carbohydrates_100g: 72, fat_100g: 4, fiber_100g: 3 }},
-  { code: 'cf-0542', product_name: 'Helkornspasta', category: 'Pasta & nudlar', brands: 'Pasta', nutriments: { 'energy-kcal_100g': 348, proteins_100g: 14, carbohydrates_100g: 66, fat_100g: 3, fiber_100g: 8 }},
+  { code: 'cf-0541', product_name: 'Äggpasta torr', category: 'Pasta & nudlar', brands: 'Pasta', nutriments: { 'energy-kcal_100g': 380, proteins_100g: 14, carbohydrates_100g: 72, fat_100g: 4, fiber_100g: 3 }},
+  { code: 'cf-0542', product_name: 'Helkornspasta torr', category: 'Pasta & nudlar', brands: 'Pasta', nutriments: { 'energy-kcal_100g': 348, proteins_100g: 14, carbohydrates_100g: 66, fat_100g: 3, fiber_100g: 8 }},
+  { code: 'cf-0535', product_name: 'Lasagneplattor', category: 'Pasta & nudlar', brands: 'Pasta', nutriments: { 'energy-kcal_100g': 371, proteins_100g: 13, carbohydrates_100g: 75, fat_100g: 2, fiber_100g: 3 }},
+  { code: 'cf-0538', product_name: 'Gnocchi', category: 'Pasta & nudlar', brands: 'Pasta', nutriments: { 'energy-kcal_100g': 163, proteins_100g: 4, carbohydrates_100g: 35, fat_100g: 0.5, fiber_100g: 2 }},
   { code: 'cf-0543', product_name: 'Risnudlar', category: 'Pasta & nudlar', brands: 'Nudlar', nutriments: { 'energy-kcal_100g': 360, proteins_100g: 3, carbohydrates_100g: 83, fat_100g: 0.5, fiber_100g: 1 }},
   { code: 'cf-0544', product_name: 'Glasnudlar', category: 'Pasta & nudlar', brands: 'Nudlar', nutriments: { 'energy-kcal_100g': 334, proteins_100g: 0, carbohydrates_100g: 83, fat_100g: 0.1, fiber_100g: 0 }},
   { code: 'cf-0545', product_name: 'Udonnudlar', category: 'Pasta & nudlar', brands: 'Nudlar', nutriments: { 'energy-kcal_100g': 338, proteins_100g: 7, carbohydrates_100g: 73, fat_100g: 0.5, fiber_100g: 2 }},
@@ -2444,15 +2442,15 @@ export default function App() {
         <span className="menu-arrow">→</span>
       </div>
       
-      <div className="menu-card" role="button" tabIndex="0" onClick={() => setActiveView('basics')} onKeyDown={(e) => e.key === 'Enter' && setActiveView('basics')}>
-        <h2>Grundrecept</h2>
-        <p>Såser, buljonger, marinader och smör</p>
-        <span className="menu-arrow">→</span>
-      </div>
-
       <div className="menu-card" role="button" tabIndex="0" onClick={() => setActiveView('eggguide')} onKeyDown={(e) => e.key === 'Enter' && setActiveView('eggguide')}>
         <h2>Äggguiden</h2>
         <p>Koktider, tekniker och vetenskap</p>
+        <span className="menu-arrow">→</span>
+      </div>
+
+      <div className="menu-card" role="button" tabIndex="0" onClick={() => setActiveView('basics')} onKeyDown={(e) => e.key === 'Enter' && setActiveView('basics')}>
+        <h2>Grundrecept</h2>
+        <p>Såser, buljonger, marinader och smör</p>
         <span className="menu-arrow">→</span>
       </div>
 
@@ -3118,6 +3116,14 @@ export default function App() {
               <h3>Vila-tid</h3>
               <p className="rest-time-value">{selectedItem.restTime}</p>
               <p className="rest-time-note">Temperaturen stiger 2-5°C under vila. Ta ut köttet när det är 3-5°C under måltemperatur.</p>
+            </div>
+          )}
+
+          {selectedItem.saltning && (
+            <div className="info-box saltning-box">
+              <h3>Salta</h3>
+              <p className="saltning-value">{selectedItem.saltning}</p>
+              <p className="saltning-note">Salt behöver tid för att tränga in och möra köttet. Ju tidigare desto bättre smak och textur.</p>
             </div>
           )}
 
@@ -4061,26 +4067,25 @@ export default function App() {
                 placeholder="Sök ingrediens..."
                 className="ingredient-search-input"
               />
+              {ingredientResults.length > 0 && (
+                <div className="ingredient-search-results">
+                  {ingredientResults.map(food => (
+                    <div
+                      key={food.code}
+                      className="ingredient-result-item"
+                      onClick={() => {
+                        setSelectedIngredientFood(food);
+                        setIngredientResults([]);
+                        setIngredientSearch(food.product_name);
+                      }}
+                    >
+                      <span className="ingredient-name">{food.product_name}</span>
+                      <span className="ingredient-kcal">{food.nutriments['energy-kcal_100g']} kcal/100g</span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-
-            {ingredientResults.length > 0 && (
-              <div className="ingredient-search-results">
-                {ingredientResults.map(food => (
-                  <div
-                    key={food.code}
-                    className="ingredient-result-item"
-                    onClick={() => {
-                      setSelectedIngredientFood(food);
-                      setIngredientResults([]);
-                      setIngredientSearch(food.product_name);
-                    }}
-                  >
-                    <span className="ingredient-name">{food.product_name}</span>
-                    <span className="ingredient-kcal">{food.nutriments['energy-kcal_100g']} kcal/100g</span>
-                  </div>
-                ))}
-              </div>
-            )}
 
             {selectedIngredientFood && (
               <div className="ingredient-amount-section">
@@ -5574,9 +5579,11 @@ export default function App() {
           background: white;
           border: 2px solid #D35F2D;
           border-top: none;
-          max-height: 200px;
+          border-radius: 0 0 8px 8px;
+          max-height: 250px;
           overflow-y: auto;
-          z-index: 10;
+          z-index: 1000;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
 
         .ingredient-result-item {
@@ -5926,6 +5933,25 @@ export default function App() {
         .rest-time-note {
           font-size: 0.85rem;
           color: #5C4A3D;
+          margin-top: 0.5rem;
+        }
+
+        /* === SALTNING BOX === */
+        .saltning-box {
+          background: linear-gradient(135deg, #F0F8FF, #E6F3FF);
+          border-left: 4px solid #4A90D9;
+        }
+
+        .saltning-value {
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: #2D5A8A;
+          margin: 0.5rem 0;
+        }
+
+        .saltning-note {
+          font-size: 0.85rem;
+          color: #4A6A8A;
           margin-top: 0.5rem;
         }
 
