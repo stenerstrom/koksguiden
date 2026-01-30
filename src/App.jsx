@@ -386,8 +386,8 @@ const basicRecipesData = {
       structuredIngredients: [
         { name: 'Smör', amount: 45, unit: 'g', foodDbName: 'Smör osaltat' },
         { name: 'Vetemjöl', amount: 27, unit: 'g', foodDbName: 'Vetemjöl' },
-        { name: 'Mjölk', amount: 500, unit: 'ml', foodDbName: 'Mjölk helmjölk' },
-        { name: 'Salt', amount: 2.5, unit: 'g', foodDbName: 'Salt bordssalt' },
+        { name: 'Mjölk', amount: 500, unit: 'ml', foodDbName: 'Helmjölk' },
+        { name: 'Salt', amount: 2.5, unit: 'g', foodDbName: null },
         { name: 'Vitpeppar', amount: null, unit: null, foodDbName: null, note: 'efter smak' },
         { name: 'Muskotnöt', amount: null, unit: null, foodDbName: null, note: 'ev. riven', optional: true },
       ],
@@ -434,7 +434,7 @@ const basicRecipesData = {
         { name: 'Mörk kalvfond', amount: 1000, unit: 'ml', foodDbName: 'Kalvfond' },
         { name: 'Morot', amount: 100, unit: 'g', foodDbName: 'Morot rå', note: 'tärnad' },
         { name: 'Lök', amount: 100, unit: 'g', foodDbName: 'Gul lök', note: 'tärnad' },
-        { name: 'Selleri', amount: 80, unit: 'g', foodDbName: 'Stjälkselleri', note: '2 stjälkar, tärnade' },
+        { name: 'Selleri', amount: 80, unit: 'g', foodDbName: 'Blekselleri', note: '2 stjälkar, tärnade' },
         { name: 'Tomatpuré', amount: 30, unit: 'g', foodDbName: 'Tomatpuré' },
         { name: 'Bukett garni', amount: null, unit: null, foodDbName: null, note: 'timjan, lagerblad, persilja' },
       ],
@@ -624,7 +624,7 @@ const basicRecipesData = {
         { name: 'Rosmarin', amount: 10, unit: 'g', foodDbName: 'Rosmarin färsk', note: 'färsk, hackad' },
         { name: 'Timjan', amount: 5, unit: 'g', foodDbName: 'Timjan färsk', note: 'färsk' },
         { name: 'Svartpeppar', amount: 2, unit: 'g', foodDbName: 'Svartpeppar', note: 'krossad' },
-        { name: 'Salt', amount: 3, unit: 'g', foodDbName: 'Salt bordssalt' },
+        { name: 'Salt', amount: 3, unit: 'g', foodDbName: null },
         { name: 'Citronzest', amount: null, unit: null, foodDbName: null, note: 'från 1 citron' },
       ],
       steps: [
@@ -666,7 +666,7 @@ const basicRecipesData = {
       portionUnit: 'g kyckling',
       time: '10 min + 4-24 tim',
       structuredIngredients: [
-        { name: 'Turkisk yoghurt', amount: 300, unit: 'g', foodDbName: 'Yoghurt turkisk' },
+        { name: 'Turkisk yoghurt', amount: 300, unit: 'g', foodDbName: 'Turkisk yoghurt' },
         { name: 'Citronjuice', amount: 30, unit: 'ml', foodDbName: 'Citronjuice' },
         { name: 'Vitlök', amount: 12, unit: 'g', foodDbName: 'Vitlök', note: '3 klyftor, pressade' },
         { name: 'Ingefära', amount: 15, unit: 'g', foodDbName: 'Ingefära färsk', note: 'riven' },
@@ -675,7 +675,7 @@ const basicRecipesData = {
         { name: 'Garam masala', amount: 2, unit: 'g', foodDbName: 'Garam masala' },
         { name: 'Cayennepeppar', amount: 1, unit: 'g', foodDbName: 'Cayennepeppar' },
         { name: 'Gurkmeja', amount: 1, unit: 'g', foodDbName: 'Gurkmeja' },
-        { name: 'Salt', amount: 5, unit: 'g', foodDbName: 'Salt bordssalt' },
+        { name: 'Salt', amount: 5, unit: 'g', foodDbName: null },
       ],
       steps: [
         'Blanda yoghurt med citronjuice.',
@@ -727,7 +727,7 @@ const basicRecipesData = {
         { name: 'Gräslök', amount: 10, unit: 'g', foodDbName: 'Gräslök', note: 'färsk, klippt' },
         { name: 'Vitlök', amount: 4, unit: 'g', foodDbName: 'Vitlök', note: '1 klyfta, pressad' },
         { name: 'Citronzest', amount: 3, unit: 'g', foodDbName: null, note: '1 tsk' },
-        { name: 'Salt', amount: 3, unit: 'g', foodDbName: 'Salt bordssalt' },
+        { name: 'Salt', amount: 3, unit: 'g', foodDbName: null },
         { name: 'Svartpeppar', amount: null, unit: null, foodDbName: null, note: 'efter smak' },
       ],
       steps: [
@@ -748,8 +748,8 @@ const basicRecipesData = {
       time: '15 min',
       structuredIngredients: [
         { name: 'Smör', amount: 200, unit: 'g', foodDbName: 'Smör osaltat' },
-        { name: 'Dijonsenap', amount: 15, unit: 'g', foodDbName: 'Dijonsenap' },
-        { name: 'Worcestershiresås', amount: 15, unit: 'ml', foodDbName: 'Worcestersås' },
+        { name: 'Dijonsenap', amount: 15, unit: 'g', foodDbName: 'Senap dijon' },
+        { name: 'Worcestershiresås', amount: 15, unit: 'ml', foodDbName: null },
         { name: 'Konjak', amount: 15, unit: 'ml', foodDbName: null },
         { name: 'Schalottenlök', amount: 30, unit: 'g', foodDbName: 'Schalottenlök', note: 'finhackad' },
         { name: 'Sardeller', amount: 10, unit: 'g', foodDbName: 'Ansjovis', note: '2 st, finhackade' },
@@ -805,7 +805,7 @@ const basicRecipesData = {
         { name: 'Olivolja', amount: 100, unit: 'ml', foodDbName: 'Olivolja' },
         { name: 'Rödvinsvinäger', amount: 45, unit: 'ml', foodDbName: 'Rödvinsvinäger' },
         { name: 'Chiliflingor', amount: 1, unit: 'g', foodDbName: 'Chiliflingor' },
-        { name: 'Salt', amount: 3, unit: 'g', foodDbName: 'Salt bordssalt' },
+        { name: 'Salt', amount: 3, unit: 'g', foodDbName: null },
       ],
       steps: [
         'Finhacka persilja, vitlök och oregano (för hand, ej mixer!).',
@@ -3579,9 +3579,11 @@ export default function App() {
     // Hitta näringsvärden för en ingrediens i databasen
     const findNutritionForIngredient = (foodDbName) => {
       if (!foodDbName) return null;
-      return foodDatabase.find(food =>
-        food.product_name.toLowerCase().includes(foodDbName.toLowerCase())
-      );
+      const searchName = foodDbName.toLowerCase();
+      return foodDatabase.find(food => {
+        const productName = food.product_name.toLowerCase();
+        return productName.includes(searchName) || searchName.includes(productName);
+      });
     };
 
     // Formatera mängd med enhet
