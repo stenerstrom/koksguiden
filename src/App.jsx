@@ -174,6 +174,20 @@ const temperatureData = {
     { name: 'Räkor', rare: null, medium: null, wellDone: 63, restTime: '-', tips: 'Rosa och fast när de är klara.' },
     { name: 'Bläckfisk', rare: null, medium: null, wellDone: 60, restTime: '2 min', tips: 'Snabbstek eller långkok - inget däremellan.' },
   ],
+  'Grönsaker': [
+    { name: 'Sparris, grön (tunn)', blanchering: true, time: '1-2 min', tips: 'Böj sparrisen - den knäcks där träigheten börjar' },
+    { name: 'Sparris, grön (tjock)', blanchering: true, time: '2-3 min', tips: 'Skala nedre delen för jämnare tillagning' },
+    { name: 'Haricots verts', blanchering: true, time: '2-3 min', tips: 'Ska vara krispiga men inte råa' },
+    { name: 'Sockerärter', blanchering: true, time: '1-2 min', tips: 'Behåll knaprigheten' },
+    { name: 'Ärter (färska)', blanchering: true, time: '2-3 min', tips: 'Smaka! Färska ärter varierar mycket' },
+    { name: 'Broccoli (buketter)', blanchering: true, time: '2-3 min', tips: 'Skär i jämna bitar för jämn tillagning' },
+    { name: 'Broccolini', blanchering: true, time: '2-3 min', tips: 'Stjälkarna tar lite längre än topparna' },
+    { name: 'Grönkål (blad)', blanchering: true, time: '3-4 min', tips: 'Ta bort grova stjälkar först' },
+    { name: 'Spenat', blanchering: true, time: '30 sek', tips: 'Extremt kort tid! Direkt i isbad' },
+    { name: 'Mangold', blanchering: true, time: '2-3 min', tips: 'Stjälkar och blad kan blancheras separat' },
+    { name: 'Salladsböna', blanchering: true, time: '3-4 min', tips: 'Klassisk svensk grönsak' },
+    { name: 'Bondbönor (skalade)', blanchering: true, time: '1-2 min', tips: 'Skala av det yttre vita skinnet efteråt' },
+  ],
 };
 
 // Äggguide-data (baserat på The Food Lab)
@@ -252,6 +266,111 @@ const eggGuideData = {
       { label: 'Grön ring bildas', value: '90°C+' },
     ],
     explanation: 'Äggvita och äggula stelnar vid olika temperaturer. Konsten är att hitta balansen där vitan är fast men gulan fortfarande krämig. Den gröna ringen på hårdkokta ägg beror på att järn i gulan reagerar med svavel i vitan vid för hög temperatur.'
+  }
+};
+
+// Blancheringsguide (baserat på The French Laundry)
+const blancheringData = {
+  intro: {
+    title: 'Big-Pot Blanching',
+    description: 'Tekniken för perfekt gröna grönsaker från The French Laundry.',
+    principle: 'Ju snabbare en grönsak kokas, desto grönare blir den. Värme frigör gas mellan skal och pigment, men snart börjar enzymer och syror döda den gröna färgen. Målet är att fullständigt koka grönsaken innan du förlorar färgen.'
+  },
+  keys: [
+    {
+      title: 'Mycket vatten',
+      description: 'Använd en stor mängd vatten i förhållande till grönsakerna. Vattnet ska inte tappa koket när du lägger i kalla grönsaker.'
+    },
+    {
+      title: 'Mycket salt',
+      description: '"Vattnet ska smaka som havet" - ca 1 dl salt per liter vatten. Saltet förhindrar att färg läcker ut och kryddar grönsaken jämnt.'
+    },
+    {
+      title: 'Isbad direkt',
+      description: 'Stoppa tillagningen genom att sänka ner grönsakerna i isvatten. Låt dem kylas helt, sen torka av.'
+    }
+  ],
+  vegetables: [
+    { name: 'Sparris, grön (tunn)', time: '1-2 min', tips: 'Böj sparrisen - den knäcks där träigheten börjar' },
+    { name: 'Sparris, grön (tjock)', time: '2-3 min', tips: 'Skala nedre delen för jämnare tillagning' },
+    { name: 'Haricots verts', time: '2-3 min', tips: 'Ska vara krispiga men inte råa' },
+    { name: 'Sockerärter', time: '1-2 min', tips: 'Behåll knaprigheten' },
+    { name: 'Ärter (färska)', time: '2-3 min', tips: 'Smaka! Färska ärter varierar mycket' },
+    { name: 'Broccoli (buketter)', time: '2-3 min', tips: 'Skär i jämna bitar för jämn tillagning' },
+    { name: 'Broccolini', time: '2-3 min', tips: 'Stjälkarna tar lite längre än topparna' },
+    { name: 'Grönkål (blad)', time: '3-4 min', tips: 'Ta bort grova stjälkar först' },
+    { name: 'Spenat', time: '30 sek', tips: 'Extremt kort tid! Direkt i isbad' },
+    { name: 'Mangold', time: '2-3 min', tips: 'Stjälkar och blad kan blancheras separat' },
+    { name: 'Salladsböna', time: '3-4 min', tips: 'Klassisk svensk grönsak' },
+    { name: 'Bondbönor (skalade)', time: '1-2 min', tips: 'Skala av det yttre vita skinnet efteråt' },
+  ],
+  science: {
+    title: 'Vetenskapen',
+    facts: [
+      { label: 'Enzymer förstörs vid', value: '100°C' },
+      { label: 'Gas frigörs vid', value: '60-80°C' },
+      { label: 'Klorofyll börjar brytas ner', value: 'pH < 6' },
+    ],
+    explanation: 'Råa gröna grönsaker ser matta ut eftersom ett lager gas bildas mellan skalet och pigmentet. Värme frigör denna gas och pigmentet strömmar till ytan - grönsaken blir lysande grön. Men detta sker snabbt, och snart frigörs syror och enzymer som dödar den gröna färgen. Därför är hastighet nyckeln.'
+  }
+};
+
+// Brässeringsguide (baserat på The French Laundry)
+const brasseringData = {
+  intro: {
+    title: 'Konsten att brässera',
+    description: 'Att göra sega styckdelar till något extraordinärt.',
+    principle: 'Jag älskar rätter som är saftiga och har karaktär, komplexitet och djup tack vare en lång tillagningsprocess. Det är tekniken som är tillfredsställande. En oxfilé är en oxfilé - det är liten skillnad mellan rått och tillagat. Men brässerade högrev eller bog blir något helt annat efter tillagningen. De transcenderar sig själva.'
+  },
+  steps: [
+    {
+      title: '1. Marinera',
+      description: 'Häll 1 flaska vin (rödvin till nöt/lamm, vitt till fläsk) i en kastrull och koka tills alkoholen dunstat av. Lägg till grovt skurna aromater: morot, lök, selleri, vitlök, timjan, lagerblad. Låt svalna helt och häll över köttet. Marinera i kylskåp 12-24 timmar.',
+      tips: 'Marinaden ska täcka köttet. Vänd det halvvägs.'
+    },
+    {
+      title: '2. Separera & klarna',
+      description: 'Sila marinaden från köttet och grönsakerna. Koka upp marinaden - proteiner koagulerar och bildar en "flotte" som klarnar vätskan. Skumma bort.',
+      tips: 'Renast möjliga smak kommer från klarnad vätska.'
+    },
+    {
+      title: '3. Bryn grönsakerna',
+      description: 'Fräs de aromatiska grönsakerna tills de fått färg - detta utvecklar karamelliserade sockerarter.',
+      tips: 'Bryn ordentligt men bränn inte.'
+    },
+    {
+      title: '4. Mjöla & bryn köttet',
+      description: 'Pudra köttet med mjöl och bryn på alla sidor. Denna arom av brynande kött har ett djup som inget annat.',
+      tips: 'Torka köttet först. Bryn i omgångar om du har mycket.'
+    },
+    {
+      title: '5. Brässera',
+      description: 'Lägg ihop kött, brynta grönsaker och klarnad marinad. Tillsätt fond så vätskan täcker halvvägs. In i ugn på 150°C i 4-6 timmar.',
+      tips: 'Vänd köttet halvvägs genom tillagningen.'
+    },
+    {
+      title: '6. Vila & reducera',
+      description: 'Lyft försiktigt upp köttet (det faller nästan isär). Sila vätskan, skumma bort fett, och reducera till sås.',
+      tips: 'Sila flera gånger för renast sås.'
+    }
+  ],
+  cuts: [
+    { name: 'Högrev', time: '4-5 timmar', temp: '150°C', tips: 'Klassiker för brässering. Rik på gelatin.' },
+    { name: 'Nötbringa', time: '5-6 timmar', temp: '150°C', tips: 'Behöver lång tid. Fantastiskt resultat.' },
+    { name: 'Oxsvans', time: '3-4 timmar', temp: '150°C', tips: 'Extremt gelatinrik. Självbastande.' },
+    { name: 'Bog (nöt/lamm)', time: '3-4 timmar', temp: '150°C', tips: 'Passar både hel och i bitar.' },
+    { name: 'Fläskbog', time: '4-5 timmar', temp: '130°C', tips: 'Lägre temp för pulled pork.' },
+    { name: 'Lammlägg', time: '2-3 timmar', temp: '150°C', tips: 'Fantastisk med rotfrukter.' },
+    { name: 'Fläskkind', time: '4-5 timmar', temp: '140°C', tips: 'Blir silkeslen och saftig.' },
+  ],
+  science: {
+    title: 'Vetenskapen',
+    facts: [
+      { label: 'Kollagen bryts ner vid', value: '70-80°C' },
+      { label: 'Ideell brässeringstemperatur', value: '85-95°C (i vätskan)' },
+      { label: 'Kollagen → gelatin tar', value: '2-6 timmar' },
+    ],
+    explanation: 'Sega styckdelar innehåller mycket bindväv (kollagen). Vid långsam uppvärmning i fuktig miljö omvandlas kollagenet till gelatin - det är detta som gör brässerad mat så saftig och mör. Fett smälter och genomsyrar köttet. Processen kan inte påskyndas - den kräver tid.'
   }
 };
 
@@ -386,31 +505,53 @@ const basicRecipesData = {
   ],
   'Buljonger & Fonder': [
     {
+      id: 'stockphilosophy',
+      name: 'Buljongens filosofi',
+      basePortions: null,
+      portionUnit: null,
+      time: null,
+      isPhilosophy: true,
+      structuredIngredients: [],
+      steps: [],
+      description: 'Du kan inte göra en bra sås om du börjar med en dålig buljong. Alltför många tar buljonger för givet.',
+      philosophy: {
+        principles: [
+          'Buljongen är inte en soptunna - använd kvalitetsingredienser',
+          'Koka aldrig - våldsam kokning emulgerar fett och föroreningar',
+          'Skumma kontinuerligt - ta bort blod, fett och partiklar',
+          'Sötma är nyckeln: morot, lök, tomat. Selleri kan ge bitterhet.',
+          'Rätt mängd vatten till ben - för mycket späder ut smaken',
+          'Gradvis temperaturökning - alltid starta med kallt vatten'
+        ],
+        quote: '"Ideologin bakom en buljong är viktig. Idén är att genom långsam, varsam värme extrahera smak och gelatin från benen och köttet, samtidigt som du kontinuerligt tar bort föroreningar."',
+        source: 'Thomas Keller, The French Laundry'
+      }
+    },
+    {
       id: 'quickchickenstock',
       name: 'Snabb kycklingbuljong',
       basePortions: 1,
       portionUnit: 'liter',
-      time: '30 min',
+      time: '45 min',
       structuredIngredients: [
-        { name: 'Kycklingvingar', amount: 500, unit: 'g', foodDbName: 'Kycklingvingar', note: 'hackade i bitar' },
+        { name: 'Kycklingvingar', amount: 500, unit: 'g', foodDbName: 'Kycklingvingar', note: 'hackade i små bitar' },
         { name: 'Vatten', amount: 1200, unit: 'ml', foodDbName: null, note: 'kallt' },
         { name: 'Morot', amount: 80, unit: 'g', foodDbName: 'Morot rå', note: 'grovt skuren' },
-        { name: 'Selleri', amount: 40, unit: 'g', foodDbName: 'Stjälkselleri', note: '1 stjälk' },
-        { name: 'Lök', amount: 50, unit: 'g', foodDbName: 'Gul lök', note: 'halverad' },
-        { name: 'Pepparkorn', amount: null, unit: null, foodDbName: null, note: '3 st' },
-        { name: 'Lagerblad', amount: null, unit: null, foodDbName: null, note: '1 st' },
+        { name: 'Lök', amount: 80, unit: 'g', foodDbName: 'Gul lök', note: 'halverad' },
+        { name: 'Vitlök', amount: 8, unit: 'g', foodDbName: 'Vitlök', note: '2 klyftor' },
         { name: 'Persilja', amount: null, unit: null, foodDbName: null, note: 'några kvistar' },
       ],
       steps: [
-        'Hacka kycklingvingarna i små bitar för maximal yta.',
-        'Lägg vingarna i en kastrull med kallt vatten.',
-        'Koka upp och skumma av det som flyter upp.',
-        'Tillsätt grönsaker och kryddor.',
-        'Låt sjuda i 20-30 minuter (inte koka!).',
-        'Sila buljongen genom finmaskigt såll.',
-        'Smaka av med salt vid behov.'
+        'Hacka kycklingvingarna i små bitar (2-3 cm) för maximal yta.',
+        'Lägg vingarna i en kastrull med KALLT vatten.',
+        'Värm långsamt upp till nästan kokpunkt.',
+        'Skumma bort allt som flyter upp - detta är avgörande för klarhet.',
+        'Tillsätt grönsaker (söta ingredienser - undvik selleri som kan ge bitterhet).',
+        'Låt SJUDA i 45 minuter - ALDRIG koka!',
+        'Sila genom finmaskigt såll. Tryck inte på resterna.',
+        'Använd direkt eller kyl snabbt.'
       ],
-      description: 'Snabb men smakrik buljong. Hemligheten: hacka vingarna små för snabb extraktion av smak och gelatin.'
+      description: 'French Laundry-metoden: Vi kokar vingarna bara 45 min för en lätt, ren smak som inte dominerar. Hemligheten är att aldrig koka - bara sjuda - och att skumma noggrant.'
     },
     {
       id: 'vegetablestock',
@@ -419,56 +560,55 @@ const basicRecipesData = {
       portionUnit: 'liter',
       time: '45 min',
       structuredIngredients: [
-        { name: 'Morötter', amount: 160, unit: 'g', foodDbName: 'Morot rå', note: '2 st, grovt skurna' },
-        { name: 'Selleri', amount: 80, unit: 'g', foodDbName: 'Stjälkselleri', note: '2 stjälkar' },
-        { name: 'Lök', amount: 150, unit: 'g', foodDbName: 'Gul lök', note: '1 stor, halverad' },
+        { name: 'Morötter', amount: 200, unit: 'g', foodDbName: 'Morot rå', note: 'mixade eller finhackade' },
+        { name: 'Lök', amount: 200, unit: 'g', foodDbName: 'Gul lök', note: 'mixad eller finhackad' },
         { name: 'Purjolök', amount: 100, unit: 'g', foodDbName: 'Purjolök', note: 'skuren' },
+        { name: 'Fänkål', amount: 80, unit: 'g', foodDbName: 'Fänkål', note: 'valfritt, ger sötma', optional: true },
         { name: 'Champinjoner', amount: 100, unit: 'g', foodDbName: 'Champinjoner' },
         { name: 'Vitlök', amount: 15, unit: 'g', foodDbName: 'Vitlök', note: '4 klyftor' },
-        { name: 'Tomat', amount: 100, unit: 'g', foodDbName: 'Tomat', note: '1 st' },
-        { name: 'Pepparkorn', amount: null, unit: null, foodDbName: null, note: '5 st' },
-        { name: 'Lagerblad', amount: null, unit: null, foodDbName: null, note: '1 st' },
+        { name: 'Tomat', amount: 150, unit: 'g', foodDbName: 'Tomat', note: '2 st' },
         { name: 'Persilja', amount: null, unit: null, foodDbName: null, note: 'kvistar' },
         { name: 'Vatten', amount: 2000, unit: 'ml', foodDbName: null },
       ],
       steps: [
-        'Rosta grönsakerna i ugn på 200°C i 20 min för djupare smak (valfritt).',
-        'Lägg alla ingredienser i en stor gryta.',
-        'Tillsätt kallt vatten.',
-        'Koka upp och skumma.',
-        'Sänk värmen och låt sjuda i 45 min.',
-        'Sila och pressa ut vätska ur grönsakerna.'
+        'MIXA eller finhacka grönsakerna - större yta = snabbare extraktion.',
+        'Lägg alla ingredienser i en stor gryta med KALLT vatten.',
+        'Värm långsamt och låt SJUDA (aldrig koka) i MAX 45 min.',
+        'VIKTIGT: Efter 45 min börjar grönsakerna absorbera vätska istället för att ge ifrån sig smak.',
+        'Sila snabbt - tryck INTE på resterna.',
+        'Kyl snabbt för bästa färg och fräschör.'
       ],
-      description: 'Allround grönsaksbuljong. Undvik kål, broccoli och betor som ger stark smak.'
+      description: 'French Laundry-metoden: Mixa grönsakerna för snabb extraktion. Koka MAX 45 min - efter det börjar de suga upp buljong och minska utbytet. Undvik selleri (bitterhet), kål, broccoli och betor (dominerar).'
     },
     {
       id: 'beefstock',
-      name: 'Mörk kalvfond',
+      name: 'Mörk kalvfond (French Laundry)',
       basePortions: 2,
       portionUnit: 'liter',
-      time: '6-8 timmar',
+      time: '8-10 timmar',
       structuredIngredients: [
-        { name: 'Kalvben och märgben', amount: 2000, unit: 'g', foodDbName: 'Märgben' },
-        { name: 'Nötkött', amount: 500, unit: 'g', foodDbName: 'Högrev', note: 'högrev eller bog' },
-        { name: 'Morötter', amount: 200, unit: 'g', foodDbName: 'Morot rå', note: '2 st' },
-        { name: 'Lökar', amount: 200, unit: 'g', foodDbName: 'Gul lök', note: '2 st, halverade' },
-        { name: 'Selleri', amount: 80, unit: 'g', foodDbName: 'Stjälkselleri', note: '2 stjälkar' },
-        { name: 'Tomatpuré', amount: 45, unit: 'g', foodDbName: 'Tomatpuré' },
-        { name: 'Rödvin', amount: 750, unit: 'ml', foodDbName: 'Rödvin', note: 'valfritt', optional: true },
-        { name: 'Vatten', amount: 4000, unit: 'ml', foodDbName: null },
+        { name: 'Kalvben', amount: 2000, unit: 'g', foodDbName: 'Märgben', note: 'hackade av slaktaren' },
+        { name: 'Kalvfötter', amount: 500, unit: 'g', foodDbName: null, note: 'för extra gelatin', optional: true },
+        { name: 'Morötter', amount: 250, unit: 'g', foodDbName: 'Morot rå', note: 'söta, grovt skurna' },
+        { name: 'Lökar', amount: 250, unit: 'g', foodDbName: 'Gul lök', note: '2 st, halverade' },
+        { name: 'Tomat', amount: 200, unit: 'g', foodDbName: 'Tomat', note: '2 st, halverade' },
+        { name: 'Vitlök', amount: 16, unit: 'g', foodDbName: 'Vitlök', note: '4 klyftor' },
+        { name: 'Vatten', amount: 5000, unit: 'ml', foodDbName: null, note: 'kallt' },
         { name: 'Bukett garni', amount: null, unit: null, foodDbName: null, note: 'timjan, lagerblad, persilja' },
       ],
       steps: [
-        'Rosta benen i ugn på 220°C i 45-60 min tills bruna.',
-        'Rosta grönsakerna i samma ugn de sista 20 min.',
-        'Lägg allt i en stor gryta. Häll av fettet.',
-        'Deglacera plåten med vin eller vatten och häll i grytan.',
-        'Tillsätt kallt vatten och koka upp. Skumma noga.',
-        'Låt sjuda i 6-8 timmar. Fyll på vatten vid behov.',
-        'Sila och låt svalna. Skrapa bort stelnat fett.',
-        'Reducera för starkare smak.'
+        'TVÄTTA benen under rinnande vatten.',
+        'BLANCHERA: Lägg benen i kallt vatten, koka upp. Häll av och skölj benen - detta tar bort blod och föroreningar.',
+        'Lägg de rena benen i en stor gryta med KALLT vatten.',
+        'Värm LÅNGSAMT - det ska ta 1-2 timmar att nå nästan kokpunkt.',
+        'SKUMMA kontinuerligt - ta bort allt som flyter upp.',
+        'Tillsätt grönsaker (söta: morot, lök, tomat, vitlök - INGEN selleri).',
+        'Låt SJUDA i 6-8 timmar. Placera grytan halvvägs av lågorna för naturlig konvektion.',
+        'Sila genom finmaskigt såll. PRESSA INTE - det gör fonden grumlig.',
+        'REDUCERA långsamt med grytan halvt av lågorna. Skumma under reduceringen.',
+        'REMOUILLAGE (valfritt): Gör en andra, svagare fond på samma ben med nytt vatten.'
       ],
-      description: 'Rik, gelatinös fond som är grunden för professionella såser. Värd tiden!'
+      description: 'Thomas Kellers metod från The French Laundry. Tre nyckelprinciper: 1) Blanchera benen först, 2) Aldrig koka - bara sjuda, 3) Skumma kontinuerligt. Kalvfötter ger extra gelatin. Undvik selleri - det ger bitterhet. Resultatet är en kristallklar, gelatinös fond.'
     },
   ],
   'Marinader': [
@@ -549,6 +689,32 @@ const basicRecipesData = {
     },
   ],
   'Smaksatta smör': [
+    {
+      id: 'beurremonte',
+      name: 'Beurre Monté',
+      basePortions: 500,
+      portionUnit: 'g',
+      time: '10 min',
+      structuredIngredients: [
+        { name: 'Vatten', amount: 30, unit: 'ml', foodDbName: null },
+        { name: 'Smör', amount: 500, unit: 'g', foodDbName: 'Smör osaltat', note: 'kallt, i bitar' },
+      ],
+      steps: [
+        'Koka upp vattnet i en kastrull.',
+        'Sänk värmen till låg.',
+        'Vispa i smöret, bit för bit, under ständig omrörning.',
+        'Fortsätt tills allt smör är emulgerat.',
+        'Håll varmt (80-88°C) men koka ALDRIG - då bryts emulsionen.',
+        'Använd direkt eller förvara varmt i upp till 2 timmar.'
+      ],
+      description: 'The French Laundrys "arbetssmör". Emulgerat smör som håller sig flytande utan att separera. Pochera fisk och skaldjur i det (80-88°C), basta kött i ugnen, eller vila kött i det för att förhindra att safterna rinner ut. Rester kan klaras och användas som vanligt smör.',
+      uses: [
+        { title: 'Pochera hummer/fisk', desc: 'Håll 80-88°C, lägg i köttet 5-6 min' },
+        { title: 'Basta kött', desc: 'Slev över kött i ugnen för jämn tillagning' },
+        { title: 'Vila kött', desc: 'Lägg stekt kött i beurre monté - stoppar carryover och behåller saft' },
+        { title: 'Snabbsåser', desc: 'Bas för alla à la minute-såser med smörsmak' }
+      ]
+    },
     {
       id: 'herbutter',
       name: 'Örtsmör',
@@ -1866,6 +2032,8 @@ export default function App() {
   const [selectedItem, setSelectedItem] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeEggSection, setActiveEggSection] = useState('boiling');
+  const [showBlanchering, setShowBlanchering] = useState(false);
+  const [showBrassering, setShowBrassering] = useState(false);
   const [recipeScale, setRecipeScale] = useState(1);
   const [showRecipeNutrition, setShowRecipeNutrition] = useState(false);
   const [selectedRecipeIngredient, setSelectedRecipeIngredient] = useState(null);
@@ -2734,18 +2902,184 @@ export default function App() {
   // Temperatur-vy
   const renderListView = (data, title) => {
     const categories = Object.keys(data);
-    
+
     const filterItems = (items) => {
       if (!searchTerm) return items;
-      return items.filter(item => 
+      return items.filter(item =>
         item.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
     };
-    
+
     const totalFiltered = categories.reduce((acc, cat) => acc + filterItems(data[cat]).length, 0);
+
+    // Blancheringsguide detaljvy
+    if (showBlanchering) {
+      return (
+        <div className="detail-view blanchering-view">
+          <button className="back-btn" aria-label="Gå tillbaka" onClick={() => setShowBlanchering(false)}>
+            ← Tillbaka
+          </button>
+
+          <h1>Blancheringsguiden</h1>
+          <p className="subtitle">{blancheringData.intro.title}</p>
+
+          <div className="info-box">
+            <p>{blancheringData.intro.principle}</p>
+          </div>
+
+          <div className="blanchering-keys">
+            <h3>De tre nycklarna</h3>
+            {blancheringData.keys.map((key, idx) => (
+              <div key={idx} className="blanchering-key-card">
+                <h4>{idx + 1}. {key.title}</h4>
+                <p>{key.description}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="blanchering-times">
+            <h3>Blancheringstider</h3>
+            <p className="times-note">Tiderna gäller i kraftigt kokande, saltat vatten. Smaka alltid!</p>
+            <div className="items-list">
+              {blancheringData.vegetables.map((veg, idx) => (
+                <div key={idx} className="blanchering-item">
+                  <div className="blanchering-item-main">
+                    <span className="item-name">{veg.name}</span>
+                    <span className="blanchering-time">{veg.time}</span>
+                  </div>
+                  <p className="blanchering-tips">{veg.tips}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="info-box">
+            <h3>{blancheringData.science.title}</h3>
+            <div className="science-facts">
+              {blancheringData.science.facts.map((fact, idx) => (
+                <div key={idx} className="science-fact-card">
+                  <span className="fact-label">{fact.label}</span>
+                  <span className="fact-value">{fact.value}</span>
+                </div>
+              ))}
+            </div>
+            <p className="science-explanation">{blancheringData.science.explanation}</p>
+          </div>
+        </div>
+      );
+    }
+
+    // Brässeringsguide detaljvy
+    if (showBrassering) {
+      return (
+        <div className="detail-view brassering-view">
+          <button className="back-btn" aria-label="Gå tillbaka" onClick={() => setShowBrassering(false)}>
+            ← Tillbaka
+          </button>
+
+          <h1>Brässeringsguiden</h1>
+          <p className="subtitle">{brasseringData.intro.title}</p>
+
+          <div className="info-box quote-box">
+            <p className="quote">"{brasseringData.intro.principle}"</p>
+            <p className="quote-author">— Thomas Keller, The French Laundry</p>
+          </div>
+
+          <div className="brassering-steps">
+            <h3>Processen steg för steg</h3>
+            {brasseringData.steps.map((step, idx) => (
+              <div key={idx} className="brassering-step-card">
+                <h4>{step.title}</h4>
+                <p>{step.description}</p>
+                <p className="step-tip"><strong>Tips:</strong> {step.tips}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="brassering-cuts">
+            <h3>Styckdelar & tider</h3>
+            <div className="items-list">
+              {brasseringData.cuts.map((cut, idx) => (
+                <div key={idx} className="brassering-cut-item">
+                  <div className="cut-main">
+                    <span className="item-name">{cut.name}</span>
+                    <div className="cut-details">
+                      <span className="cut-time">{cut.time}</span>
+                      <span className="cut-temp">{cut.temp}</span>
+                    </div>
+                  </div>
+                  <p className="cut-tips">{cut.tips}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="info-box">
+            <h3>{brasseringData.science.title}</h3>
+            <div className="science-facts">
+              {brasseringData.science.facts.map((fact, idx) => (
+                <div key={idx} className="science-fact-card">
+                  <span className="fact-label">{fact.label}</span>
+                  <span className="fact-value">{fact.value}</span>
+                </div>
+              ))}
+            </div>
+            <p className="science-explanation">{brasseringData.science.explanation}</p>
+          </div>
+        </div>
+      );
+    }
 
     if (selectedItem) {
       const nutritionData = findNutritionForItem(selectedItem.name, selectedItem.category);
+      const shouldBraise = selectedItem.tips && selectedItem.tips.toLowerCase().includes('brässer');
+
+      // Specialhantering för grönsaker (blanchering)
+      if (selectedItem.blanchering) {
+        return (
+          <div className="detail-view">
+            <button className="back-btn" aria-label="Gå tillbaka" onClick={() => setSelectedItem(null)}>
+              ← Tillbaka
+            </button>
+
+            <div className="detail-header">
+              <span className="detail-emoji">{selectedItem.image}</span>
+              <h2>{selectedItem.name}</h2>
+            </div>
+
+            <div className="blanchering-time-display">
+              <div className="time-card">
+                <span className="time-label">Blancheringstid</span>
+                <span className="time-value">{selectedItem.time}</span>
+              </div>
+            </div>
+
+            <div className="info-box blanchering-method">
+              <h3>Metod</h3>
+              <ol>
+                <li>Koka upp rikligt med vatten - "som havet" salt</li>
+                <li>Lägg i grönsaken, håll fullt kok</li>
+                <li>Koka i angiven tid</li>
+                <li>Flytta direkt till isbad</li>
+              </ol>
+            </div>
+
+            {selectedItem.tips && (
+              <div className="info-box">
+                <h3>Tips</h3>
+                <p>{selectedItem.tips}</p>
+              </div>
+            )}
+
+            <button
+              className="guide-link-btn"
+              onClick={() => setShowBlanchering(true)}
+            >
+              Läs hela blancheringsguiden →
+            </button>
+          </div>
+        );
+      }
 
       return (
         <div className="detail-view">
@@ -2781,7 +3115,7 @@ export default function App() {
 
           {selectedItem.restTime && selectedItem.restTime !== '-' && (
             <div className="info-box rest-time-box">
-              <h3>⏱️ Vila-tid</h3>
+              <h3>Vila-tid</h3>
               <p className="rest-time-value">{selectedItem.restTime}</p>
               <p className="rest-time-note">Temperaturen stiger 2-5°C under vila. Ta ut köttet när det är 3-5°C under måltemperatur.</p>
             </div>
@@ -2794,7 +3128,16 @@ export default function App() {
             </div>
           )}
 
-          {(selectedItem.rare || selectedItem.medium) && (
+          {shouldBraise && (
+            <button
+              className="guide-link-btn brassering-link"
+              onClick={() => setShowBrassering(true)}
+            >
+              Läs brässeringsguiden →
+            </button>
+          )}
+
+          {(selectedItem.rare || selectedItem.medium) && !shouldBraise && (
             <div className="info-box warning">
               <h3>Kom ihåg</h3>
               <p>Köttet fortsätter stiga 2-5°C efter att du tagit ut det. Ta ut det lite tidigare!</p>
@@ -2868,7 +3211,7 @@ export default function App() {
               {science && (
                 <details className="category-science">
                   <summary className="science-summary">
-                    <span className="science-icon">🔬</span> {science.title}
+                    {science.title}
                   </summary>
                   <div className="science-content">
                     <p>{science.explanation}</p>
@@ -2889,6 +3232,19 @@ export default function App() {
                   </div>
                 ))}
               </div>
+              {/* Blancheringsguide efter Grönsaker-kategorin */}
+              {category === 'Grönsaker' && title === 'Temperaturer' && !searchTerm && (
+                <div
+                  className="technique-card blanchering-card category-guide"
+                  onClick={() => setShowBlanchering(true)}
+                >
+                  <div className="technique-content">
+                    <h3>Blancheringsguiden</h3>
+                    <p>Big-pot blanching - tekniken för perfekt gröna grönsaker</p>
+                  </div>
+                  <span className="menu-arrow">→</span>
+                </div>
+              )}
             </div>
           );
         })}
@@ -3083,7 +3439,7 @@ export default function App() {
             className={activeEggSection === 'science' ? 'active' : ''}
             onClick={() => setActiveEggSection('science')}
           >
-            🔬
+            Vetenskap
           </button>
         </div>
 
@@ -3299,6 +3655,33 @@ export default function App() {
 
     if (selectedBasicRecipe) {
       const recipe = selectedBasicRecipe;
+
+      // Special rendering for philosophy entries
+      if (recipe.isPhilosophy) {
+        return (
+          <div className="detail-view philosophy-detail">
+            <button className="back-btn" aria-label="Gå tillbaka" onClick={() => setSelectedBasicRecipe(null)}>
+              ← Tillbaka
+            </button>
+            <h2>{recipe.name}</h2>
+
+            <div className="info-box quote-box">
+              <p className="quote">{recipe.philosophy.quote}</p>
+              <p className="quote-author">— {recipe.philosophy.source}</p>
+            </div>
+
+            <div className="philosophy-principles">
+              <h3>Grundprinciperna</h3>
+              <ul>
+                {recipe.philosophy.principles.map((principle, idx) => (
+                  <li key={idx}>{principle}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        );
+      }
+
       const hasStructuredIngredients = recipe.structuredIngredients && recipe.structuredIngredients.length > 0;
       const scaledPortions = hasStructuredIngredients ? recipe.basePortions * recipeScale : null;
       const nutrition = hasStructuredIngredients ? calculateRecipeNutrition(recipe, recipeScale) : null;
@@ -3469,18 +3852,31 @@ export default function App() {
             <h3 className="category-title">{category}</h3>
             <div className="items-list">
               {basicRecipesData[category].map(recipe => (
-                <div
-                  key={recipe.id}
-                  className="item-row"
-                  onClick={() => {
-                    setSelectedBasicRecipe(recipe);
-                    setRecipeScale(1);
-                  }}
-                >
-                  <span className="item-name">{recipe.name}</span>
-                  <span className="item-meta">{recipe.time}</span>
-                  <span className="item-arrow">›</span>
-                </div>
+                recipe.isPhilosophy ? (
+                  <div
+                    key={recipe.id}
+                    className="philosophy-card"
+                    onClick={() => setSelectedBasicRecipe(recipe)}
+                  >
+                    <div className="philosophy-header">
+                      <span className="philosophy-name">{recipe.name}</span>
+                    </div>
+                    <p className="philosophy-desc">{recipe.description}</p>
+                  </div>
+                ) : (
+                  <div
+                    key={recipe.id}
+                    className="item-row"
+                    onClick={() => {
+                      setSelectedBasicRecipe(recipe);
+                      setRecipeScale(1);
+                    }}
+                  >
+                    <span className="item-name">{recipe.name}</span>
+                    <span className="item-meta">{recipe.time}</span>
+                    <span className="item-arrow">›</span>
+                  </div>
+                )
               ))}
             </div>
           </div>
@@ -5820,6 +6216,422 @@ export default function App() {
           border-radius: 6px;
           font-size: 0.95rem;
           line-height: 1.6;
+        }
+
+        /* Technique Card (Blanchering etc.) */
+        .technique-card {
+          background: #E8F5E8;
+          padding: 1rem 1.25rem;
+          margin-bottom: 1.5rem;
+          border-left: 4px solid #4CAF50;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+        }
+
+        .technique-card:hover {
+          background: #D4EED4;
+        }
+
+        .technique-icon {
+          font-size: 2rem;
+        }
+
+        .technique-content {
+          flex: 1;
+        }
+
+        .technique-content h3 {
+          font-size: 1rem;
+          font-weight: 600;
+          color: #2D2A26;
+          margin: 0 0 0.25rem 0;
+        }
+
+        .technique-content p {
+          font-size: 0.85rem;
+          color: #3D5A3D;
+          margin: 0;
+        }
+
+        /* Blancheringsguide */
+        .blanchering-view .subtitle {
+          font-size: 0.9rem;
+          color: #5C4A3D;
+          margin-bottom: 1rem;
+          font-style: italic;
+        }
+
+        .blanchering-keys {
+          margin-bottom: 1.5rem;
+        }
+
+        .blanchering-keys h3 {
+          font-size: 0.85rem;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+          color: #5C4A3D;
+          margin-bottom: 0.75rem;
+        }
+
+        .blanchering-key-card {
+          background: #E8F5E8;
+          padding: 1rem;
+          margin-bottom: 0.5rem;
+          border-left: 3px solid #4CAF50;
+        }
+
+        .blanchering-key-card h4 {
+          font-size: 0.95rem;
+          color: #2D2A26;
+          margin: 0 0 0.5rem 0;
+        }
+
+        .blanchering-key-card p {
+          font-size: 0.9rem;
+          color: #3D5A3D;
+          margin: 0;
+          line-height: 1.4;
+        }
+
+        .blanchering-times {
+          margin-bottom: 1.5rem;
+        }
+
+        .blanchering-times h3 {
+          font-size: 0.85rem;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+          color: #5C4A3D;
+          margin-bottom: 0.5rem;
+        }
+
+        .times-note {
+          font-size: 0.85rem;
+          color: #8B7355;
+          margin-bottom: 0.75rem;
+        }
+
+        .blanchering-item {
+          padding: 0.75rem 1rem;
+          border-bottom: 1px solid #E0EEE0;
+        }
+
+        .blanchering-item:last-child {
+          border-bottom: none;
+        }
+
+        .blanchering-item-main {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .blanchering-item .item-name {
+          font-weight: 500;
+          color: #2D2A26;
+        }
+
+        .blanchering-time {
+          font-weight: 600;
+          color: #4CAF50;
+          background: #E8F5E8;
+          padding: 0.25rem 0.5rem;
+          font-size: 0.9rem;
+        }
+
+        .blanchering-tips {
+          font-size: 0.8rem;
+          color: #5C4A3D;
+          margin: 0.25rem 0 0 0;
+          font-style: italic;
+        }
+
+        /* Technique Guides Container */
+        .technique-guides {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+          margin-bottom: 1.5rem;
+        }
+
+        /* Brässeringsguide */
+        .brassering-card {
+          background: #FFF5EE;
+          border-left-color: #D35F2D;
+        }
+
+        .brassering-card:hover {
+          background: #FACBB0;
+        }
+
+        .brassering-card .technique-content p {
+          color: #8B5A2B;
+        }
+
+        .brassering-view .subtitle {
+          font-size: 0.9rem;
+          color: #5C4A3D;
+          margin-bottom: 1rem;
+          font-style: italic;
+        }
+
+        .quote-box {
+          background: #FFF5EE;
+          border-left: 3px solid #D35F2D;
+        }
+
+        .quote-box .quote {
+          font-style: italic;
+          color: #5C4A3D;
+          line-height: 1.6;
+          margin-bottom: 0.5rem;
+        }
+
+        .quote-box .quote-author {
+          font-size: 0.85rem;
+          color: #8B7355;
+          text-align: right;
+          margin: 0;
+        }
+
+        .brassering-steps {
+          margin-bottom: 1.5rem;
+        }
+
+        .brassering-steps h3 {
+          font-size: 0.85rem;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+          color: #5C4A3D;
+          margin-bottom: 0.75rem;
+        }
+
+        .brassering-step-card {
+          background: white;
+          padding: 1rem;
+          margin-bottom: 0.5rem;
+          border: 1px solid #E8E0D8;
+          border-left: 3px solid #D35F2D;
+        }
+
+        .brassering-step-card h4 {
+          font-size: 0.95rem;
+          color: #D35F2D;
+          margin: 0 0 0.5rem 0;
+        }
+
+        .brassering-step-card p {
+          font-size: 0.9rem;
+          color: #2D2A26;
+          margin: 0 0 0.5rem 0;
+          line-height: 1.4;
+        }
+
+        .brassering-step-card .step-tip {
+          font-size: 0.85rem;
+          color: #5C4A3D;
+          margin: 0;
+        }
+
+        .brassering-cuts {
+          margin-bottom: 1.5rem;
+        }
+
+        .brassering-cuts h3 {
+          font-size: 0.85rem;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+          color: #5C4A3D;
+          margin-bottom: 0.75rem;
+        }
+
+        .brassering-cut-item {
+          padding: 0.75rem 1rem;
+          border-bottom: 1px solid #F5EFE8;
+        }
+
+        .brassering-cut-item:last-child {
+          border-bottom: none;
+        }
+
+        .cut-main {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .cut-details {
+          display: flex;
+          gap: 0.75rem;
+        }
+
+        .cut-time {
+          font-weight: 600;
+          color: #D35F2D;
+          background: #FFF5EE;
+          padding: 0.2rem 0.5rem;
+          font-size: 0.85rem;
+        }
+
+        .cut-temp {
+          font-weight: 500;
+          color: #5C4A3D;
+          font-size: 0.85rem;
+        }
+
+        .cut-tips {
+          font-size: 0.8rem;
+          color: #8B7355;
+          margin: 0.25rem 0 0 0;
+          font-style: italic;
+        }
+
+        /* Guide Link Button (in detail views) */
+        .guide-link-btn {
+          display: block;
+          width: 100%;
+          padding: 1rem;
+          margin-top: 1rem;
+          background: #E8F5E8;
+          border: none;
+          border-left: 3px solid #4CAF50;
+          color: #2D5A2D;
+          font-size: 0.95rem;
+          font-weight: 500;
+          text-align: left;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+
+        .guide-link-btn:hover {
+          background: #D4EED4;
+        }
+
+        .guide-link-btn.brassering-link {
+          background: #FFF5EE;
+          border-left-color: #D35F2D;
+          color: #8B5A2B;
+        }
+
+        .guide-link-btn.brassering-link:hover {
+          background: #FACBB0;
+        }
+
+        /* Vegetable Detail View */
+        .blanchering-time-display {
+          display: flex;
+          justify-content: center;
+          margin: 1rem 0 1.5rem 0;
+        }
+
+        .time-card {
+          background: #E8F5E8;
+          padding: 1.5rem 2rem;
+          text-align: center;
+          border-left: 4px solid #4CAF50;
+        }
+
+        .time-label {
+          display: block;
+          font-size: 0.8rem;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+          color: #3D5A3D;
+          margin-bottom: 0.5rem;
+        }
+
+        .time-value {
+          display: block;
+          font-size: 1.75rem;
+          font-weight: 600;
+          color: #2D5A2D;
+        }
+
+        .blanchering-method {
+          background: #F5FBF5;
+          border: 1px solid #D4EED4;
+        }
+
+        .blanchering-method ol {
+          margin: 0;
+          padding-left: 1.25rem;
+        }
+
+        .blanchering-method li {
+          font-size: 0.9rem;
+          color: #2D2A26;
+          margin-bottom: 0.5rem;
+          line-height: 1.4;
+        }
+
+        /* Category Guide Card */
+        .category-guide {
+          margin-top: 1rem;
+          border-radius: 4px;
+        }
+
+        /* Philosophy Cards */
+        .philosophy-card {
+          background: #F5F0E8;
+          padding: 1rem;
+          cursor: pointer;
+          border-left: 3px solid #8B7355;
+          transition: all 0.2s;
+        }
+
+        .philosophy-card:hover {
+          background: #EDE5D8;
+        }
+
+        .philosophy-header {
+          margin-bottom: 0.5rem;
+        }
+
+        .philosophy-name {
+          font-weight: 600;
+          color: #5C4A3D;
+          font-size: 0.95rem;
+        }
+
+        .philosophy-desc {
+          font-size: 0.85rem;
+          color: #8B7355;
+          font-style: italic;
+          margin: 0;
+          line-height: 1.4;
+        }
+
+        .philosophy-detail .quote-box {
+          margin-bottom: 1.5rem;
+        }
+
+        .philosophy-principles {
+          background: white;
+          padding: 1rem;
+          border: 1px solid #E8E0D8;
+        }
+
+        .philosophy-principles h3 {
+          font-size: 0.85rem;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+          color: #5C4A3D;
+          margin: 0 0 0.75rem 0;
+        }
+
+        .philosophy-principles ul {
+          margin: 0;
+          padding-left: 1.25rem;
+        }
+
+        .philosophy-principles li {
+          font-size: 0.9rem;
+          color: #2D2A26;
+          margin-bottom: 0.5rem;
+          line-height: 1.5;
         }
 
         /* Recipe Scaler Styles */
