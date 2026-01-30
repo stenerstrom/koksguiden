@@ -3041,7 +3041,6 @@ export default function App() {
             </button>
 
             <div className="detail-header">
-              <span className="detail-emoji">{selectedItem.image}</span>
               <h2>{selectedItem.name}</h2>
             </div>
 
@@ -3086,7 +3085,6 @@ export default function App() {
           </button>
 
           <div className="detail-header">
-            <span className="detail-emoji">{selectedItem.image}</span>
             <h2>{selectedItem.name}</h2>
           </div>
 
@@ -3232,7 +3230,6 @@ export default function App() {
                     className="item-row"
                     onClick={() => setSelectedItem({...item, category})}
                   >
-                    <span className="item-emoji">{item.image}</span>
                     <span className="item-name">{item.name}</span>
                     <span className="item-arrow">›</span>
                   </div>
@@ -3707,7 +3704,9 @@ export default function App() {
           {/* Portionsskalare */}
           {hasStructuredIngredients && (
             <div className="recipe-scaler">
-              <span className="scaler-label">Portioner:</span>
+              <span className="scaler-label">
+                {recipe.portionUnit === 'portioner' ? 'Portioner:' : 'Ger:'}
+              </span>
               <div className="scaler-controls">
                 <button
                   className="scaler-btn"
@@ -3819,7 +3818,7 @@ export default function App() {
                     <span>K: {nutrition.carbs.toFixed(0)}g</span>
                     <span>F: {nutrition.fat.toFixed(0)}g</span>
                   </div>
-                  {recipe.basePortions > 1 && (
+                  {recipe.portionUnit === 'portioner' && scaledPortions > 1 && (
                     <div className="nutrition-row per-portion">
                       <span className="nutrition-label">Per portion</span>
                       <span>{Math.round(nutrition.kcal / scaledPortions)} kcal</span>
@@ -4560,11 +4559,6 @@ export default function App() {
           background: #FFF5EE;
         }
 
-        .item-emoji {
-          font-size: 1.5rem;
-          margin-right: 1rem;
-        }
-
         .item-name {
           flex: 1;
           font-weight: 500;
@@ -4597,10 +4591,6 @@ export default function App() {
           align-items: center;
           gap: 1rem;
           margin-bottom: 1.5rem;
-        }
-
-        .detail-emoji {
-          display: none;
         }
 
         /* Temperature Grid */
