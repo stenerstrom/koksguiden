@@ -1,104 +1,258 @@
 import React, { useState, useCallback, useEffect } from 'react';
 
+// Vila-tider för kött (baserat på The Food Lab)
+const restingTimes = {
+  'Biff (tunn, 2cm)': { time: '5 min', tempRise: '2-3°C' },
+  'Biff (tjock, 4cm)': { time: '8-10 min', tempRise: '3-5°C' },
+  'Fläskfilé': { time: '5-8 min', tempRise: '2-3°C' },
+  'Fläskkotlett': { time: '5 min', tempRise: '2-3°C' },
+  'Kycklingbröst': { time: '5 min', tempRise: '2-3°C' },
+  'Hel kyckling': { time: '10-15 min', tempRise: '3-5°C' },
+  'Lammstek': { time: '15-20 min', tempRise: '4-6°C' },
+  'Lammrack': { time: '8-10 min', tempRise: '3-4°C' },
+  'Rostbiff': { time: '20-30 min', tempRise: '5-8°C' },
+  'Oxfilé (hel)': { time: '15-20 min', tempRise: '4-6°C' },
+  'Fläskkarré': { time: '10-15 min', tempRise: '3-5°C' },
+  'Revbensspjäll': { time: '10 min', tempRise: '2-3°C' },
+};
+
+// Vetenskaplig förklaring per kategori (baserat på The Food Lab)
+const categoryScience = {
+  'Nötkött': {
+    title: 'Varför nötkött kan ätas rosa',
+    explanation: 'Nötkött är säkert att äta rosa eftersom eventuella bakterier (som E. coli och Salmonella) endast finns på köttets yta och dödas vid stekning. Innertemperaturen avgör konsistensen – vid 55°C är proteinerna fortfarande mjuka och saftiga, medan de vid 70°C har kontraherat och pressat ut mycket av vätskan.',
+    tip: 'Använd alltid stektermometer för perfekt resultat.'
+  },
+  'Kalv': {
+    title: 'Kalvkött – mildare och mörare',
+    explanation: 'Kalvkött har mindre bindväv och en mildare smak än nötkött. Det tål lite lägre temperaturer och blir snabbt torrt om det översteks. Kalvlever ska vara rosa inuti för bäst smak och textur.',
+    tip: 'Stek kalvkött varsamt – det är mer förlåtande än nötkött.'
+  },
+  'Lamm': {
+    title: 'Lamm – smaken av fett',
+    explanation: 'Lammets karakteristiska smak kommer från fettet, särskilt fettlösliga föreningar som bildas när djuret betar. Rosa lamm (55-60°C) har mer smak och bättre textur. Fettet börjar smälta vid ca 54°C.',
+    tip: 'Skär bort synligt fett om du vill ha mildare smak.'
+  },
+  'Fläsk': {
+    title: 'Fläsk – säkert vid lägre temp',
+    explanation: 'Modern fläskproduktion har i princip eliminerat risken för trikiner. 63°C ger saftigt, rosa fläskkött – den gamla regeln om 77°C är föråldrad. Kollagen i sega detaljer (bog, lägg) kräver dock långsam tillagning vid 85°C+ för att brytas ner.',
+    tip: 'Fläskfilé är saftigast vid exakt 63°C innertemperatur.'
+  },
+  'Fågel': {
+    title: 'Fågel kräver genomstekning',
+    explanation: 'Till skillnad från nötkött kan Salmonella finnas inuti fågelkött, inte bara på ytan. Därför måste fågel vara genomstekt (70-74°C). Undantag: lever kan serveras rosa (55-65°C) då den har annan struktur. Lår tål högre temp (80°C) eftersom de har mer bindväv.',
+    tip: 'Mät alltid i lårets tjockaste del, inte i bröstet.'
+  },
+  'Vilt': {
+    title: 'Vilt – magert kräver omsorg',
+    explanation: 'Viltkött är betydligt magrare än tamdjur och har därför mindre marginal för fel. Det torkar snabbt ut vid överstekt. De flesta viltsorter är säkra att äta rosa. Undantag: vildsvin ska alltid vara genomstekt pga risk för parasiter.',
+    tip: 'Tillsätt fett (bacon, smör) vid tillagning av magert vilt.'
+  },
+  'Fisk': {
+    title: 'Fisk – proteiner som skiljer sig',
+    explanation: 'Fiskproteiner koagulerar vid lägre temperatur än köttproteiner. Lax är glasig vid 45°C, medium vid 52°C och genomstekt vid 60°C. Vitfisk (torsk, sej) ska precis "flagna" – det sker vid ca 50-55°C.',
+    tip: 'Fisk fortsätter tillagas efter den tagits av värmen – ta av den lite tidigt.'
+  },
+  'Skaldjur': {
+    title: 'Skaldjur – snabb tillagning',
+    explanation: 'Skaldjur blir snabbt sega och gummiaktiga vid överstekt. Räkor är klara så fort de blir rosa och fasta (63°C). Musslor ska kasseras om de inte öppnar sig. Pilgrimsmusslor och bläckfisk kräver antingen mycket kort eller mycket lång tillagning.',
+    tip: 'Snabbstek eller långkok – inget däremellan för bläckfisk.'
+  }
+};
+
 // Komplett data för innertemperaturer baserat på research
 const temperatureData = {
   'Nötkött': [
-    { name: 'Biff', rare: 55, medium: 60, wellDone: 70, tips: 'Låt köttet vila efter stekning. Temperaturen stiger 2-4°C.' },
-    { name: 'Entrecôte', rare: 55, medium: 60, wellDone: 70, tips: 'Salta och peppra runt om. Ugnstemperatur 125-175°C. Låt vila 30 min.' },
-    { name: 'Flankstek', rare: 56, medium: 58, wellDone: 60, tips: 'Skär tunt snett mot fibrerna efter tillagning.' },
-    { name: 'Fransyska', rare: null, medium: 60, wellDone: 70, tips: 'Passar för långkok eller stekning. Kan göras som tjälknöl.' },
-    { name: 'Hamburgare', rare: null, medium: null, wellDone: 70, tips: 'Alltid genomstekt av säkerhetsskäl.' },
-    { name: 'Högrev', rare: 55, medium: 60, wellDone: 70, tips: 'Utmärkt för långkok och brässering. Kräver tid för mörhet.' },
-    { name: 'Köttfärslimpa', rare: null, medium: null, wellDone: 70, tips: 'Använd stektermometer för säker tillagning.' },
-    { name: 'Märgpipa', rare: null, medium: null, wellDone: 80, tips: 'Rostas i ugn tills märgen är mjuk.' },
-    { name: 'Nötbog', rare: null, medium: 70, wellDone: 80, tips: 'Långkok eller brässering rekommenderas.' },
-    { name: 'Nötbringa', rare: null, medium: 85, wellDone: 90, tips: 'Kräver lång tillagning vid låg temperatur.' },
-    { name: 'Nötfärs', rare: null, medium: null, wellDone: 70, tips: 'Alltid genomstekt. 70°C rekommenderas.' },
-    { name: 'Nötytterfilé', rare: 55, medium: 60, wellDone: 70, tips: 'Mör och mager detalj, stek snabbt.' },
-    { name: 'Oxfilé', rare: 53, medium: 58, wellDone: 70, tips: 'Premium styckdel. Stek kort tid på hög värme.' },
-    { name: 'Rostas', rare: 55, medium: 60, wellDone: 70, tips: 'Fin smak, passar för stekning eller grillning.' },
-    { name: 'Rostbiff', rare: 55, medium: 60, wellDone: 70, tips: 'Ugnstemperatur 125°C för perfekt resultat.' },
-    { name: 'Rumpstek', rare: 55, medium: 60, wellDone: 70, tips: 'Mör detalj från bakdelen.' },
-    { name: 'Ryggbiff', rare: 55, medium: 60, wellDone: 70, tips: 'Klassisk grilldetalj. Stek på hög värme.' },
-    { name: 'Ungnötslever', rare: null, medium: null, wellDone: 70, tips: 'Stek snabbt, blir lätt torr.' },
-    { name: 'Ytterlår', rare: 55, medium: 60, wellDone: 70, tips: 'Passar för stekning eller långkok.' },
+    { name: 'Biff', rare: 55, medium: 60, wellDone: 70, restTime: '5-8 min', tips: 'Låt köttet vila efter stekning. Temperaturen stiger 2-4°C.' },
+    { name: 'Entrecôte', rare: 55, medium: 60, wellDone: 70, restTime: '8-10 min', tips: 'Salta och peppra runt om. Ugnstemperatur 125-175°C. Låt vila 30 min.' },
+    { name: 'Flankstek', rare: 56, medium: 58, wellDone: 60, restTime: '5-8 min', tips: 'Skär tunt snett mot fibrerna efter tillagning.' },
+    { name: 'Fransyska', rare: null, medium: 60, wellDone: 70, restTime: '10-15 min', tips: 'Passar för långkok eller stekning. Kan göras som tjälknöl.' },
+    { name: 'Högrev', rare: 55, medium: 60, wellDone: 70, restTime: '15-20 min', tips: 'Utmärkt för långkok och brässering. Kräver tid för mörhet.' },
+    { name: 'Innanlår', rare: 55, medium: 60, wellDone: 70, restTime: '10-15 min', tips: 'Mager styckdel, perfekt för stekning eller sous vide.' },
+    { name: 'Märgben', rare: null, medium: null, wellDone: 80, restTime: '-', tips: 'Rostas i ugn tills märgen är mjuk.' },
+    { name: 'Nötbog', rare: null, medium: 70, wellDone: 80, restTime: '15-20 min', tips: 'Långkok eller brässering rekommenderas.' },
+    { name: 'Nötbringa', rare: null, medium: 85, wellDone: 90, restTime: '15-20 min', tips: 'Kräver lång tillagning vid låg temperatur.' },
+    { name: 'Nötytterfilé', rare: 55, medium: 60, wellDone: 70, restTime: '5-8 min', tips: 'Mör och mager detalj, stek snabbt.' },
+    { name: 'Oxfilé', rare: 53, medium: 58, wellDone: 70, restTime: '8-10 min', tips: 'Premium styckdel. Stek kort tid på hög värme.' },
+    { name: 'Oxsvans', rare: null, medium: null, wellDone: 85, restTime: '10 min', tips: 'Brässeras i 3-4 timmar för perfekt mörhet.' },
+    { name: 'Oxtunga', rare: null, medium: null, wellDone: 85, restTime: '10 min', tips: 'Koka länge tills mör. Skala efter kokning.' },
+    { name: 'Rostbiff', rare: 55, medium: 60, wellDone: 70, restTime: '20-30 min', tips: 'Ugnstemperatur 125°C för perfekt resultat.' },
+    { name: 'Ryggbiff', rare: 55, medium: 60, wellDone: 70, restTime: '5-8 min', tips: 'Klassisk grilldetalj. Stek på hög värme.' },
+    { name: 'Tjockt kött', rare: 55, medium: 60, wellDone: 70, restTime: '10-15 min', tips: 'Mör styckdel, passar för stekning.' },
+    { name: 'Ytterlår', rare: 55, medium: 60, wellDone: 70, restTime: '10-15 min', tips: 'Passar för stekning eller långkok.' },
   ],
   'Kalv': [
-    { name: 'Kalventrecôte', rare: 55, medium: 60, wellDone: 70, tips: 'Mild smak, passar med delikata såser.' },
-    { name: 'Kalvfilé', rare: 55, medium: 60, wellDone: 70, tips: 'Mycket mör, stek varsamt.' },
-    { name: 'Kalvfransyska', rare: null, medium: 60, wellDone: 70, tips: 'Passar för brässering.' },
-    { name: 'Kalvfärs', rare: null, medium: null, wellDone: 70, tips: 'Alltid genomstekt.' },
-    { name: 'Kalvkotlett', rare: 55, medium: 60, wellDone: 70, tips: 'Stek på medelvärme för saftig kotlett.' },
-    { name: 'Kalvlever', rare: null, medium: 58, wellDone: 65, tips: 'Ska vara rosa inuti. Blir seg om den översteks.' },
-    { name: 'Kalvnjure', rare: null, medium: null, wellDone: 70, tips: 'Blötlägg före tillagning för mildare smak.' },
-    { name: 'Kalvstek', rare: 58, medium: 62, wellDone: 70, tips: 'Ugnstemperatur 125°C. Vila minst 15 min.' },
+    { name: 'Kalventrecôte', rare: 55, medium: 60, wellDone: 70, restTime: '5-8 min', tips: 'Mild smak, passar med delikata såser.' },
+    { name: 'Kalvfilé', rare: 55, medium: 60, wellDone: 70, restTime: '5-8 min', tips: 'Mycket mör, stek varsamt.' },
+    { name: 'Kalvfransyska', rare: null, medium: 60, wellDone: 70, restTime: '10-15 min', tips: 'Passar för brässering.' },
+    { name: 'Kalvkotlett', rare: 55, medium: 60, wellDone: 70, restTime: '5 min', tips: 'Stek på medelvärme för saftig kotlett.' },
+    { name: 'Kalvlever', rare: null, medium: 58, wellDone: 65, restTime: '2-3 min', tips: 'Ska vara rosa inuti. Blir seg om den översteks.' },
+    { name: 'Kalvnjure', rare: null, medium: null, wellDone: 70, restTime: '3 min', tips: 'Blötlägg före tillagning för mildare smak.' },
+    { name: 'Kalvbräss', rare: null, medium: null, wellDone: 72, restTime: '3-5 min', tips: 'Delikatess. Blanchera först, stek sedan i smör.' },
   ],
   'Lamm': [
-    { name: 'Lammfilé', rare: 55, medium: 60, wellDone: 70, tips: 'Mör detalj med fin smak. Stek snabbt.' },
-    { name: 'Lammfärs', rare: null, medium: null, wellDone: 70, tips: 'Alltid genomstekt.' },
-    { name: 'Lammkotlett', rare: 55, medium: 60, wellDone: 70, tips: 'Grilla eller stek på hög värme.' },
-    { name: 'Lammlever', rare: null, medium: 58, wellDone: 65, tips: 'Mildare än nötlever. Stek kort tid.' },
-    { name: 'Lammsadel', rare: 55, medium: 60, wellDone: 70, tips: 'Elegant styckdel för festmåltider.' },
-    { name: 'Lammstek', rare: 55, medium: 62, wellDone: 70, tips: 'Vila minst 15 min före skärning.' },
-    { name: 'Lammlägg', rare: null, medium: null, wellDone: 85, tips: 'Brässera i 2-3 timmar för mör konsistens.' },
-    { name: 'Rack of lamb', rare: 55, medium: 60, wellDone: 70, tips: 'Bryn först, avsluta i ugn.' },
+    { name: 'Lammfilé', rare: 55, medium: 60, wellDone: 70, restTime: '5-8 min', tips: 'Mör detalj med fin smak. Stek snabbt.' },
+    { name: 'Lammkotlett', rare: 55, medium: 60, wellDone: 70, restTime: '5 min', tips: 'Grilla eller stek på hög värme.' },
+    { name: 'Lammlever', rare: null, medium: 58, wellDone: 65, restTime: '2-3 min', tips: 'Mildare än nötlever. Stek kort tid.' },
+    { name: 'Lammsadel', rare: 55, medium: 60, wellDone: 70, restTime: '10-15 min', tips: 'Elegant styckdel för festmåltider.' },
+    { name: 'Lammstek', rare: 55, medium: 62, wellDone: 70, restTime: '15-20 min', tips: 'Vila minst 15 min före skärning.' },
+    { name: 'Lammbog', rare: null, medium: null, wellDone: 80, restTime: '15-20 min', tips: 'Perfekt för långkok och brässering.' },
+    { name: 'Lammlägg', rare: null, medium: null, wellDone: 85, restTime: '10 min', tips: 'Brässera i 2-3 timmar för mör konsistens.' },
+    { name: 'Lammrack', rare: 55, medium: 60, wellDone: 70, restTime: '8-10 min', tips: 'Bryn först, avsluta i ugn.' },
+    { name: 'Lammhjärta', rare: null, medium: 60, wellDone: 68, restTime: '3 min', tips: 'Stek snabbt på hög värme.' },
+    { name: 'Lammnjure', rare: null, medium: null, wellDone: 70, restTime: '3 min', tips: 'Blötlägg före tillagning.' },
   ],
   'Fläsk': [
-    { name: 'Bacon', rare: null, medium: null, wellDone: 70, tips: 'Stek tills önskad krispighet.' },
-    { name: 'Fläskfilé', rare: null, medium: 63, wellDone: 70, tips: 'Säker vid 63°C. Vila 5 min.' },
-    { name: 'Fläskkotlett', rare: null, medium: 63, wellDone: 70, tips: 'Stek på medelvärme för saftigt resultat.' },
-    { name: 'Fläskfärs', rare: null, medium: null, wellDone: 70, tips: 'Alltid genomstekt.' },
-    { name: 'Fläskkarré', rare: null, medium: 63, wellDone: 70, tips: 'Perfekt för ugnsstekning.' },
-    { name: 'Julskinka', rare: null, medium: null, wellDone: 72, tips: 'Koka först, griljera sedan i ugn.' },
-    { name: 'Kassler', rare: null, medium: null, wellDone: 70, tips: 'Redan rökt, värms till 70°C.' },
-    { name: 'Pulled pork', rare: null, medium: null, wellDone: 95, tips: '95°C för perfekt rivbar konsistens. Tar 8-12 timmar.' },
-    { name: 'Revbensspjäll', rare: null, medium: null, wellDone: 90, tips: 'Låg och långsam tillagning för mörhet.' },
-    { name: 'Sidfläsk', rare: null, medium: null, wellDone: 75, tips: 'Stek tills sprött på utsidan.' },
-    { name: 'Skinka', rare: null, medium: null, wellDone: 70, tips: 'Redan tillagad, värms försiktigt.' },
+    { name: 'Bacon', rare: null, medium: null, wellDone: 70, restTime: '-', tips: 'Stek tills önskad krispighet.' },
+    { name: 'Fläskfilé', rare: null, medium: 63, wellDone: 70, restTime: '5-8 min', tips: 'Säker vid 63°C. Vila 5 min.' },
+    { name: 'Fläskkotlett', rare: null, medium: 63, wellDone: 70, restTime: '5 min', tips: 'Stek på medelvärme för saftigt resultat.' },
+    { name: 'Fläskkarré', rare: null, medium: 63, wellDone: 70, restTime: '10-15 min', tips: 'Perfekt för ugnsstekning.' },
+    { name: 'Fläskbog', rare: null, medium: null, wellDone: 85, restTime: '15-20 min', tips: 'Perfekt för pulled pork. Långsam tillagning.' },
+    { name: 'Fläsklägg', rare: null, medium: null, wellDone: 80, restTime: '10 min', tips: 'Kokas eller brässeras.' },
+    { name: 'Pancetta', rare: null, medium: null, wellDone: 70, restTime: '-', tips: 'Italienskt bacon. Steks krispigt.' },
+    { name: 'Guanciale', rare: null, medium: null, wellDone: 70, restTime: '-', tips: 'Grisskinn. Bas för carbonara och amatriciana.' },
+    { name: 'Revbensspjäll', rare: null, medium: null, wellDone: 90, restTime: '10 min', tips: 'Låg och långsam tillagning för mörhet.' },
+    { name: 'Sidfläsk', rare: null, medium: null, wellDone: 75, restTime: '-', tips: 'Stek tills sprött på utsidan.' },
+    { name: 'Skinkstek', rare: null, medium: 65, wellDone: 72, restTime: '15-20 min', tips: 'Ugnstemperatur 125°C. Vila minst 15 min.' },
+    { name: 'Fläskkind', rare: null, medium: null, wellDone: 85, restTime: '10 min', tips: 'Brässeras i flera timmar för silkeslen konsistens.' },
   ],
   'Fågel': [
-    { name: 'Ankbröst', rare: 54, medium: 58, wellDone: 65, tips: 'Starta i kall panna för krispigt skinn.' },
-    { name: 'Gås', rare: null, medium: null, wellDone: 74, tips: 'Stek länge på låg värme. Stöt regelbundet.' },
-    { name: 'Kalkon, bröst', rare: null, medium: null, wellDone: 70, tips: 'Blir lätt torrt, använd stektermometer.' },
-    { name: 'Kalkon, hel', rare: null, medium: null, wellDone: 74, tips: 'Vila 30 min före skärning.' },
-    { name: 'Kalkon, lår', rare: null, medium: null, wellDone: 80, tips: 'Tål högre temperatur än bröst.' },
-    { name: 'Kyckling, bröst', rare: null, medium: null, wellDone: 70, tips: 'Saftigast vid exakt 70°C.' },
-    { name: 'Kyckling, hel', rare: null, medium: null, wellDone: 74, tips: 'Mät i låret. Vila 10 min.' },
-    { name: 'Kyckling, lår', rare: null, medium: null, wellDone: 80, tips: 'Mer förlåtande än bröst.' },
-    { name: 'Kycklingfärs', rare: null, medium: null, wellDone: 74, tips: 'Alltid genomstekt.' },
+    { name: 'Ankbröst', rare: 54, medium: 58, wellDone: 65, restTime: '5-8 min', tips: 'Starta i kall panna för krispigt skinn.' },
+    { name: 'Ankbröst med skinn', rare: 54, medium: 58, wellDone: 65, restTime: '5-8 min', tips: 'Rista skinnet. Börja i kall panna.' },
+    { name: 'Anklår', rare: null, medium: null, wellDone: 80, restTime: '10 min', tips: 'Konfiteras eller brässeras för bäst resultat.' },
+    { name: 'Anklever', rare: null, medium: 55, wellDone: 62, restTime: '2-3 min', tips: 'Stek snabbt på hög värme. Ska vara rosa.' },
+    { name: 'Gåsbröst', rare: 54, medium: 58, wellDone: 65, restTime: '8-10 min', tips: 'Behandlas som anka. Låt vila.' },
+    { name: 'Kalkonbröst', rare: null, medium: null, wellDone: 70, restTime: '10-15 min', tips: 'Blir lätt torrt, använd stektermometer.' },
+    { name: 'Kalkonfilé', rare: null, medium: null, wellDone: 70, restTime: '5-8 min', tips: 'Mager detalj. Undvik överstek.' },
+    { name: 'Kalkonlårfilé', rare: null, medium: null, wellDone: 80, restTime: '8-10 min', tips: 'Tål högre temperatur än bröst.' },
+    { name: 'Kycklingbröst', rare: null, medium: null, wellDone: 70, restTime: '5 min', tips: 'Saftigast vid exakt 70°C.' },
+    { name: 'Kycklingbröst med skinn', rare: null, medium: null, wellDone: 70, restTime: '5 min', tips: 'Börja med skinnsidan ner för krispigt skinn.' },
+    { name: 'Kycklinglever', rare: null, medium: 55, wellDone: 65, restTime: '2-3 min', tips: 'Ska vara rosa inuti. Bas för parfait.' },
+    { name: 'Kycklinglår', rare: null, medium: null, wellDone: 80, restTime: '5-8 min', tips: 'Mer förlåtande än bröst.' },
+    { name: 'Kycklingklubba', rare: null, medium: null, wellDone: 80, restTime: '5 min', tips: 'Tål högre temperatur. Saftig vid 80°C.' },
+    { name: 'Kycklingvingar', rare: null, medium: null, wellDone: 80, restTime: '-', tips: 'Grillas eller friteras.' },
+    { name: 'Hel kyckling', rare: null, medium: null, wellDone: 74, restTime: '10-15 min', tips: 'Mät i låret. Vila 10 min.' },
+    { name: 'Majskyckling', rare: null, medium: null, wellDone: 74, restTime: '10 min', tips: 'Som vanlig kyckling men saftigare.' },
   ],
   'Vilt': [
-    { name: 'Hjort', rare: 55, medium: 60, wellDone: 70, tips: 'Magert kött, stek inte för länge.' },
-    { name: 'Rådjur', rare: 55, medium: 60, wellDone: 70, tips: 'Mycket mört, serveras gärna rosa.' },
-    { name: 'Vildsvin', rare: null, medium: 68, wellDone: 75, tips: 'Ska vara genomstekt av säkerhetsskäl.' },
-    { name: 'Vildsvinsfärs', rare: null, medium: null, wellDone: 75, tips: 'Alltid genomstekt.' },
-    { name: 'Älg', rare: 55, medium: 60, wellDone: 70, tips: 'Magert, passar för stekning och grytrecept.' },
-    { name: 'Älgfärs', rare: null, medium: null, wellDone: 70, tips: 'Blanda gärna med fläskfärs för saftighet.' },
-    { name: 'Ren', rare: 55, medium: 60, wellDone: 70, tips: 'Delikat smak. Serveras rosa.' },
-    { name: 'Hare', rare: 55, medium: 60, wellDone: 70, tips: 'Magert, behöver fetttillskott vid tillagning.' },
+    { name: 'Älgfilé', rare: 55, medium: 60, wellDone: 70, restTime: '8-10 min', tips: 'Mycket mager. Serveras rosa. Vila väl.' },
+    { name: 'Älgstek', rare: 55, medium: 60, wellDone: 70, restTime: '15-20 min', tips: 'Magert, passar för stekning och sous vide.' },
+    { name: 'Rådjursfilé', rare: 55, medium: 58, wellDone: 65, restTime: '5-8 min', tips: 'Mycket mört, serveras gärna rosa.' },
+    { name: 'Rådjurssadel', rare: 55, medium: 60, wellDone: 70, restTime: '10-15 min', tips: 'Elegant styckdel. Vila 10 min.' },
+    { name: 'Hjortfilé', rare: 55, medium: 60, wellDone: 70, restTime: '8-10 min', tips: 'Magert kött, stek inte för länge.' },
+    { name: 'Hjortfärs', rare: null, medium: null, wellDone: 70, restTime: '-', tips: 'Blanda med fläskfett för saftighet.' },
+    { name: 'Vildsvinsstek', rare: null, medium: 68, wellDone: 75, restTime: '15-20 min', tips: 'Ska vara genomstekt av säkerhetsskäl.' },
+    { name: 'Renfilé', rare: 55, medium: 58, wellDone: 65, restTime: '5-8 min', tips: 'Delikat smak. Serveras rosa.' },
+    { name: 'Renstek', rare: 55, medium: 60, wellDone: 70, restTime: '10-15 min', tips: 'Vila minst 10 min före skärning.' },
+    { name: 'Hare', rare: 55, medium: 60, wellDone: 70, restTime: '8-10 min', tips: 'Magert, behöver fetttillskott vid tillagning.' },
+    { name: 'Fasanbröst', rare: 54, medium: 58, wellDone: 65, restTime: '5 min', tips: 'Mager fågel. Undvik överstekt.' },
+    { name: 'Rapphöna', rare: 54, medium: 58, wellDone: 65, restTime: '5 min', tips: 'Liten viltfågel. Stek snabbt.' },
+    { name: 'Vaktel', rare: null, medium: 60, wellDone: 68, restTime: '3-5 min', tips: 'Liten fågel. Grillas eller steks hel.' },
+    { name: 'Duva', rare: 54, medium: 58, wellDone: 65, restTime: '5 min', tips: 'Serveras rosa. Rik smak.' },
   ],
   'Fisk': [
-    { name: 'Gravad lax', rare: null, medium: null, wellDone: null, tips: 'Rå, gravas i salt och socker 24-72 timmar.' },
-    { name: 'Hälleflundra', rare: null, medium: 52, wellDone: 58, tips: 'Fast kött, tål lite högre temp.' },
-    { name: 'Kolja', rare: null, medium: 50, wellDone: 55, tips: 'Mild smak, tillagas försiktigt.' },
-    { name: 'Kummel', rare: null, medium: 50, wellDone: 55, tips: 'Fast, vitt kött.' },
-    { name: 'Lax', rare: 45, medium: 52, wellDone: 60, tips: 'Glasig vid 45°C, genomstekt vid 60°C.' },
-    { name: 'Piggvar', rare: null, medium: 52, wellDone: 58, tips: 'Exklusiv plattfisk med fast kött.' },
-    { name: 'Regnbåge', rare: 45, medium: 52, wellDone: 60, tips: 'Liknande lax i tillagning.' },
-    { name: 'Röding', rare: 45, medium: 52, wellDone: 58, tips: 'Fin smak, tillagas som lax.' },
-    { name: 'Sej', rare: null, medium: 50, wellDone: 55, tips: 'Fast kött, passar för grillning.' },
-    { name: 'Torsk', rare: null, medium: 50, wellDone: 55, tips: 'Klassiker. Ska flagna lätt.' },
-    { name: 'Tonfisk', rare: 40, medium: 50, wellDone: 60, tips: 'Serveras ofta rå eller rosa i mitten.' },
+    { name: 'Laxfilé', rare: 45, medium: 52, wellDone: 60, restTime: '2-3 min', tips: 'Glasig vid 45°C, genomstekt vid 60°C.' },
+    { name: 'Öring', rare: 45, medium: 52, wellDone: 58, restTime: '2-3 min', tips: 'Liknande lax. Fin smak.' },
+    { name: 'Röding', rare: 45, medium: 52, wellDone: 58, restTime: '2-3 min', tips: 'Fin smak, tillagas som lax.' },
+    { name: 'Sik', rare: 45, medium: 50, wellDone: 55, restTime: '2 min', tips: 'Klassisk svensk fisk. Mild smak.' },
+    { name: 'Abborre', rare: null, medium: 48, wellDone: 54, restTime: '2 min', tips: 'Fast, vitt kött. Tillagas försiktigt.' },
+    { name: 'Gädda', rare: null, medium: 50, wellDone: 55, restTime: '2-3 min', tips: 'Fast kött med många ben.' },
+    { name: 'Torsk', rare: null, medium: 50, wellDone: 55, restTime: '2-3 min', tips: 'Klassiker. Ska flagna lätt.' },
+    { name: 'Kolja', rare: null, medium: 50, wellDone: 55, restTime: '2 min', tips: 'Mild smak, tillagas försiktigt.' },
+    { name: 'Sej', rare: null, medium: 50, wellDone: 55, restTime: '2-3 min', tips: 'Fast kött, passar för grillning.' },
+    { name: 'Kummel', rare: null, medium: 50, wellDone: 55, restTime: '2-3 min', tips: 'Fast, vitt kött.' },
+    { name: 'Hälleflundra', rare: null, medium: 52, wellDone: 58, restTime: '3 min', tips: 'Fast kött, tål lite högre temp.' },
+    { name: 'Piggvar', rare: null, medium: 52, wellDone: 58, restTime: '3 min', tips: 'Exklusiv plattfisk med fast kött.' },
+    { name: 'Tonfisk', rare: 40, medium: 50, wellDone: 60, restTime: '2-3 min', tips: 'Serveras ofta rå eller rosa i mitten.' },
   ],
   'Skaldjur': [
-    { name: 'Hummer', rare: null, medium: null, wellDone: 63, tips: 'Köttet ska vara ogenomskinligt.' },
-    { name: 'Krabba', rare: null, medium: null, wellDone: 63, tips: 'Koka i saltat vatten.' },
-    { name: 'Kräftor', rare: null, medium: null, wellDone: 63, tips: 'Koka i kryddad lag.' },
-    { name: 'Musslor', rare: null, medium: null, wellDone: 65, tips: 'Kassera oöppnade efter kokning.' },
-    { name: 'Pilgrimsmusslor', rare: null, medium: 52, wellDone: 58, tips: 'Snabbstek på hög värme.' },
-    { name: 'Räkor', rare: null, medium: null, wellDone: 63, tips: 'Rosa och fast när de är klara.' },
-    { name: 'Bläckfisk', rare: null, medium: null, wellDone: 60, tips: 'Snabbstek eller långkok - inget däremellan.' },
+    { name: 'Hummer', rare: null, medium: null, wellDone: 63, restTime: '2-3 min', tips: 'Köttet ska vara ogenomskinligt.' },
+    { name: 'Krabba', rare: null, medium: null, wellDone: 63, restTime: '-', tips: 'Koka i saltat vatten.' },
+    { name: 'Kräftor', rare: null, medium: null, wellDone: 63, restTime: '-', tips: 'Koka i kryddad lag.' },
+    { name: 'Musslor', rare: null, medium: null, wellDone: 65, restTime: '-', tips: 'Kassera oöppnade efter kokning.' },
+    { name: 'Pilgrimsmusslor', rare: null, medium: 52, wellDone: 58, restTime: '1-2 min', tips: 'Snabbstek på hög värme.' },
+    { name: 'Räkor', rare: null, medium: null, wellDone: 63, restTime: '-', tips: 'Rosa och fast när de är klara.' },
+    { name: 'Bläckfisk', rare: null, medium: null, wellDone: 60, restTime: '2 min', tips: 'Snabbstek eller långkok - inget däremellan.' },
   ],
+};
+
+// Äggguide-data (baserat på The Food Lab)
+const eggGuideData = {
+  boiling: {
+    title: 'Koktider för ägg',
+    description: 'Tiden räknas från att ägget läggs i kokande vatten. För ägg direkt från kylen, lägg till 1 minut.',
+    times: [
+      { name: 'Löskokt', time: '6 min', description: 'Rinnande gula, fast vita', temp: '62°C i gulan' },
+      { name: 'Smörgåsägg', time: '7 min', description: 'Krämig gula, perfekt på macka', temp: '65°C i gulan' },
+      { name: 'Mjukkokt', time: '8 min', description: 'Något fast men krämig gula', temp: '68°C i gulan' },
+      { name: 'Medium', time: '9 min', description: 'Nästan fast gula, lite krämig mitt', temp: '70°C i gulan' },
+      { name: 'Hårdkokt', time: '11 min', description: 'Helt fast gula utan grön ring', temp: '77°C i gulan' },
+      { name: 'Överkokt', time: '14+ min', description: 'Grön ring runt gulan (undvik!)', temp: '90°C+' },
+    ],
+    tips: [
+      'Lägg äggen i isvatten direkt efter kokning för att stoppa tillagningen',
+      'Äldre ägg (7-10 dagar) är lättare att skala',
+      'Starta med kokande vatten för jämnare resultat',
+      'Den gröna ringen beror på järn + svavel vid för hög temp'
+    ]
+  },
+  poaching: {
+    title: 'Pocherade ägg',
+    description: 'Perfekta pocherade ägg kräver rätt temperatur och teknik.',
+    steps: [
+      'Använd färska ägg (vita håller ihop bättre)',
+      'Vatten 80-85°C (sjudande, INTE kokande)',
+      'Tillsätt 1 msk vit vinäger per liter vatten',
+      'Virvla vattnet, släpp ägget mitt i virveln',
+      'Koka 3-4 minuter för rinnande gula'
+    ],
+    tips: [
+      'Knäck ägget i en liten skål först',
+      'Sila av tunna vita i ett finmaskigt såll',
+      'Pocherade ägg kan förberedas och förvaras i kallt vatten'
+    ]
+  },
+  scrambled: {
+    title: 'Äggröra - två stilar',
+    styles: [
+      {
+        name: 'Fluffig amerikansk stil',
+        method: 'Hög värme, rör sällan, stora bitar',
+        tips: ['Rör bara när äggen börjar stelna', 'Ta av värmen medan de fortfarande är lite lösa']
+      },
+      {
+        name: 'Krämig fransk stil',
+        method: 'Låg värme, rör konstant, små bitar',
+        tips: ['Använd smör och/eller grädde', 'Rör konstant i 10-15 minuter', 'Ska vara som krämig gröt']
+      }
+    ]
+  },
+  frying: {
+    title: 'Stekt ägg',
+    description: 'Perfekta stekta ägg med krispiga kanter och rinnande gula.',
+    steps: [
+      'Hetta upp smör eller olja på medel-hög värme',
+      'Knäck ägget direkt i pannan',
+      'Sänk värmen till medel-låg',
+      'Stek i 3-4 minuter för rinnande gula'
+    ],
+    tips: [
+      'För extra krispiga kanter: högre värme och mer fett',
+      'Täck pannan med lock för snabbare tillagning av ovansidan',
+      'Söt äggen med en skvätt vatten under locket för ångeffekt'
+    ]
+  },
+  science: {
+    title: 'Vetenskapen bakom ägg',
+    facts: [
+      { label: 'Vitan börjar stelna', value: '62°C' },
+      { label: 'Vitan helt fast', value: '80°C' },
+      { label: 'Gulan börjar stelna', value: '65°C' },
+      { label: 'Gulan helt fast', value: '70°C' },
+      { label: 'Grön ring bildas', value: '90°C+' },
+    ],
+    explanation: 'Äggvita och äggula stelnar vid olika temperaturer. Konsten är att hitta balansen där vitan är fast men gulan fortfarande krämig. Den gröna ringen på hårdkokta ägg beror på att järn i gulan reagerar med svavel i vitan vid för hög temperatur.'
+  }
 };
 
 // Grundrecept data
@@ -107,15 +261,16 @@ const basicRecipesData = {
     {
       id: 'bechamel',
       name: 'Béchamelsås',
-      portions: '4 portioner',
+      basePortions: 4,
+      portionUnit: 'portioner',
       time: '15 min',
-      ingredients: [
-        '3 msk smör (45g)',
-        '3 msk vetemjöl (27g)',
-        '5 dl mjölk',
-        '1/2 tsk salt',
-        'Vitpeppar',
-        'Ev. riven muskotnöt'
+      structuredIngredients: [
+        { name: 'Smör', amount: 45, unit: 'g', foodDbName: 'Smör osaltat' },
+        { name: 'Vetemjöl', amount: 27, unit: 'g', foodDbName: 'Vetemjöl' },
+        { name: 'Mjölk', amount: 500, unit: 'ml', foodDbName: 'Mjölk helmjölk' },
+        { name: 'Salt', amount: 2.5, unit: 'g', foodDbName: 'Salt bordssalt' },
+        { name: 'Vitpeppar', amount: null, unit: null, foodDbName: null, note: 'efter smak' },
+        { name: 'Muskotnöt', amount: null, unit: null, foodDbName: null, note: 'ev. riven', optional: true },
       ],
       steps: [
         'Smält smöret i en kastrull på medelvärme.',
@@ -129,13 +284,15 @@ const basicRecipesData = {
     {
       id: 'veloute',
       name: 'Veloutésås',
-      portions: '4 portioner',
+      basePortions: 4,
+      portionUnit: 'portioner',
       time: '20 min',
-      ingredients: [
-        '3 msk smör (45g)',
-        '3 msk vetemjöl (27g)',
-        '5 dl ljus fond (kyckling, kalv eller fisk)',
-        'Salt och vitpeppar'
+      structuredIngredients: [
+        { name: 'Smör', amount: 45, unit: 'g', foodDbName: 'Smör osaltat' },
+        { name: 'Vetemjöl', amount: 27, unit: 'g', foodDbName: 'Vetemjöl' },
+        { name: 'Ljus fond', amount: 500, unit: 'ml', foodDbName: 'Kycklingbuljong', note: 'kyckling, kalv eller fisk' },
+        { name: 'Salt', amount: null, unit: null, foodDbName: null, note: 'efter smak' },
+        { name: 'Vitpeppar', amount: null, unit: null, foodDbName: null, note: 'efter smak' },
       ],
       steps: [
         'Smält smöret i en kastrull på medelvärme.',
@@ -149,17 +306,18 @@ const basicRecipesData = {
     {
       id: 'espagnole',
       name: 'Espagnole / Demi-glace',
-      portions: '6 portioner',
+      basePortions: 6,
+      portionUnit: 'portioner',
       time: '2-3 timmar',
-      ingredients: [
-        '2 msk smör (30g)',
-        '2 msk vetemjöl (18g)',
-        '1 liter mörk kalvfond',
-        '1 morot, tärnad',
-        '1 lök, tärnad',
-        '2 stjälkar selleri, tärnade',
-        '2 msk tomatpuré',
-        '1 bukett garni (timjan, lagerblad, persilja)'
+      structuredIngredients: [
+        { name: 'Smör', amount: 30, unit: 'g', foodDbName: 'Smör osaltat' },
+        { name: 'Vetemjöl', amount: 18, unit: 'g', foodDbName: 'Vetemjöl' },
+        { name: 'Mörk kalvfond', amount: 1000, unit: 'ml', foodDbName: 'Kalvfond' },
+        { name: 'Morot', amount: 100, unit: 'g', foodDbName: 'Morot rå', note: 'tärnad' },
+        { name: 'Lök', amount: 100, unit: 'g', foodDbName: 'Gul lök', note: 'tärnad' },
+        { name: 'Selleri', amount: 80, unit: 'g', foodDbName: 'Stjälkselleri', note: '2 stjälkar, tärnade' },
+        { name: 'Tomatpuré', amount: 30, unit: 'g', foodDbName: 'Tomatpuré' },
+        { name: 'Bukett garni', amount: null, unit: null, foodDbName: null, note: 'timjan, lagerblad, persilja' },
       ],
       steps: [
         'Smält smöret och fräs grönsakerna tills de fått färg.',
@@ -175,15 +333,17 @@ const basicRecipesData = {
     {
       id: 'hollandaise',
       name: 'Hollandaisesås',
-      portions: '4 portioner',
+      basePortions: 4,
+      portionUnit: 'portioner',
       time: '15 min',
-      ingredients: [
-        '3 äggulor',
-        '200g smör, klarnat',
-        '1 msk citronjuice',
-        '1 msk vatten',
-        'Salt och vitpeppar',
-        'Ev. cayennepeppar'
+      structuredIngredients: [
+        { name: 'Äggulor', amount: 3, unit: 'st', foodDbName: 'Äggula' },
+        { name: 'Smör', amount: 200, unit: 'g', foodDbName: 'Smör osaltat', note: 'klarnat' },
+        { name: 'Citronjuice', amount: 15, unit: 'ml', foodDbName: 'Citronjuice' },
+        { name: 'Vatten', amount: 15, unit: 'ml', foodDbName: null },
+        { name: 'Salt', amount: null, unit: null, foodDbName: null, note: 'efter smak' },
+        { name: 'Vitpeppar', amount: null, unit: null, foodDbName: null, note: 'efter smak' },
+        { name: 'Cayennepeppar', amount: null, unit: null, foodDbName: null, note: 'ev.', optional: true },
       ],
       steps: [
         'Klarna smöret genom att smälta det och skumma av det vita.',
@@ -198,17 +358,19 @@ const basicRecipesData = {
     {
       id: 'tomato',
       name: 'Tomatsås',
-      portions: '4 portioner',
+      basePortions: 4,
+      portionUnit: 'portioner',
       time: '30 min',
-      ingredients: [
-        '2 msk olivolja',
-        '1 lök, finhackad',
-        '2 vitlöksklyftor, finhackade',
-        '400g krossade tomater',
-        '2 msk tomatpuré',
-        '1 tsk socker',
-        'Salt och peppar',
-        'Färsk basilika'
+      structuredIngredients: [
+        { name: 'Olivolja', amount: 30, unit: 'ml', foodDbName: 'Olivolja' },
+        { name: 'Lök', amount: 100, unit: 'g', foodDbName: 'Gul lök', note: 'finhackad' },
+        { name: 'Vitlök', amount: 10, unit: 'g', foodDbName: 'Vitlök', note: '2 klyftor, finhackade' },
+        { name: 'Krossade tomater', amount: 400, unit: 'g', foodDbName: 'Tomater krossade konserv' },
+        { name: 'Tomatpuré', amount: 30, unit: 'g', foodDbName: 'Tomatpuré' },
+        { name: 'Socker', amount: 4, unit: 'g', foodDbName: 'Strösocker' },
+        { name: 'Salt', amount: null, unit: null, foodDbName: null, note: 'efter smak' },
+        { name: 'Svartpeppar', amount: null, unit: null, foodDbName: null, note: 'efter smak' },
+        { name: 'Färsk basilika', amount: null, unit: null, foodDbName: null, note: 'efter smak' },
       ],
       steps: [
         'Hetta upp oljan i en kastrull.',
@@ -220,6 +382,273 @@ const basicRecipesData = {
         'Rör ner färsk basilika precis innan servering.'
       ],
       description: 'Klassisk tomatsås. Bas för pasta, pizza, arrabiata och puttanesca.'
+    },
+  ],
+  'Buljonger & Fonder': [
+    {
+      id: 'quickchickenstock',
+      name: 'Snabb kycklingbuljong',
+      basePortions: 1,
+      portionUnit: 'liter',
+      time: '30 min',
+      structuredIngredients: [
+        { name: 'Kycklingvingar', amount: 500, unit: 'g', foodDbName: 'Kycklingvingar', note: 'hackade i bitar' },
+        { name: 'Vatten', amount: 1200, unit: 'ml', foodDbName: null, note: 'kallt' },
+        { name: 'Morot', amount: 80, unit: 'g', foodDbName: 'Morot rå', note: 'grovt skuren' },
+        { name: 'Selleri', amount: 40, unit: 'g', foodDbName: 'Stjälkselleri', note: '1 stjälk' },
+        { name: 'Lök', amount: 50, unit: 'g', foodDbName: 'Gul lök', note: 'halverad' },
+        { name: 'Pepparkorn', amount: null, unit: null, foodDbName: null, note: '3 st' },
+        { name: 'Lagerblad', amount: null, unit: null, foodDbName: null, note: '1 st' },
+        { name: 'Persilja', amount: null, unit: null, foodDbName: null, note: 'några kvistar' },
+      ],
+      steps: [
+        'Hacka kycklingvingarna i små bitar för maximal yta.',
+        'Lägg vingarna i en kastrull med kallt vatten.',
+        'Koka upp och skumma av det som flyter upp.',
+        'Tillsätt grönsaker och kryddor.',
+        'Låt sjuda i 20-30 minuter (inte koka!).',
+        'Sila buljongen genom finmaskigt såll.',
+        'Smaka av med salt vid behov.'
+      ],
+      description: 'Snabb men smakrik buljong. Hemligheten: hacka vingarna små för snabb extraktion av smak och gelatin.'
+    },
+    {
+      id: 'vegetablestock',
+      name: 'Grönsaksbuljong',
+      basePortions: 1.5,
+      portionUnit: 'liter',
+      time: '45 min',
+      structuredIngredients: [
+        { name: 'Morötter', amount: 160, unit: 'g', foodDbName: 'Morot rå', note: '2 st, grovt skurna' },
+        { name: 'Selleri', amount: 80, unit: 'g', foodDbName: 'Stjälkselleri', note: '2 stjälkar' },
+        { name: 'Lök', amount: 150, unit: 'g', foodDbName: 'Gul lök', note: '1 stor, halverad' },
+        { name: 'Purjolök', amount: 100, unit: 'g', foodDbName: 'Purjolök', note: 'skuren' },
+        { name: 'Champinjoner', amount: 100, unit: 'g', foodDbName: 'Champinjoner' },
+        { name: 'Vitlök', amount: 15, unit: 'g', foodDbName: 'Vitlök', note: '4 klyftor' },
+        { name: 'Tomat', amount: 100, unit: 'g', foodDbName: 'Tomat', note: '1 st' },
+        { name: 'Pepparkorn', amount: null, unit: null, foodDbName: null, note: '5 st' },
+        { name: 'Lagerblad', amount: null, unit: null, foodDbName: null, note: '1 st' },
+        { name: 'Persilja', amount: null, unit: null, foodDbName: null, note: 'kvistar' },
+        { name: 'Vatten', amount: 2000, unit: 'ml', foodDbName: null },
+      ],
+      steps: [
+        'Rosta grönsakerna i ugn på 200°C i 20 min för djupare smak (valfritt).',
+        'Lägg alla ingredienser i en stor gryta.',
+        'Tillsätt kallt vatten.',
+        'Koka upp och skumma.',
+        'Sänk värmen och låt sjuda i 45 min.',
+        'Sila och pressa ut vätska ur grönsakerna.'
+      ],
+      description: 'Allround grönsaksbuljong. Undvik kål, broccoli och betor som ger stark smak.'
+    },
+    {
+      id: 'beefstock',
+      name: 'Mörk kalvfond',
+      basePortions: 2,
+      portionUnit: 'liter',
+      time: '6-8 timmar',
+      structuredIngredients: [
+        { name: 'Kalvben och märgben', amount: 2000, unit: 'g', foodDbName: 'Märgben' },
+        { name: 'Nötkött', amount: 500, unit: 'g', foodDbName: 'Högrev', note: 'högrev eller bog' },
+        { name: 'Morötter', amount: 200, unit: 'g', foodDbName: 'Morot rå', note: '2 st' },
+        { name: 'Lökar', amount: 200, unit: 'g', foodDbName: 'Gul lök', note: '2 st, halverade' },
+        { name: 'Selleri', amount: 80, unit: 'g', foodDbName: 'Stjälkselleri', note: '2 stjälkar' },
+        { name: 'Tomatpuré', amount: 45, unit: 'g', foodDbName: 'Tomatpuré' },
+        { name: 'Rödvin', amount: 750, unit: 'ml', foodDbName: 'Rödvin', note: 'valfritt', optional: true },
+        { name: 'Vatten', amount: 4000, unit: 'ml', foodDbName: null },
+        { name: 'Bukett garni', amount: null, unit: null, foodDbName: null, note: 'timjan, lagerblad, persilja' },
+      ],
+      steps: [
+        'Rosta benen i ugn på 220°C i 45-60 min tills bruna.',
+        'Rosta grönsakerna i samma ugn de sista 20 min.',
+        'Lägg allt i en stor gryta. Häll av fettet.',
+        'Deglacera plåten med vin eller vatten och häll i grytan.',
+        'Tillsätt kallt vatten och koka upp. Skumma noga.',
+        'Låt sjuda i 6-8 timmar. Fyll på vatten vid behov.',
+        'Sila och låt svalna. Skrapa bort stelnat fett.',
+        'Reducera för starkare smak.'
+      ],
+      description: 'Rik, gelatinös fond som är grunden för professionella såser. Värd tiden!'
+    },
+  ],
+  'Marinader': [
+    {
+      id: 'basicmarinade',
+      name: 'Klassisk örtolja',
+      basePortions: 500,
+      portionUnit: 'g kött',
+      time: '5 min + 2-24 tim',
+      structuredIngredients: [
+        { name: 'Olivolja', amount: 100, unit: 'ml', foodDbName: 'Olivolja' },
+        { name: 'Vitlök', amount: 12, unit: 'g', foodDbName: 'Vitlök', note: '3 klyftor, pressade' },
+        { name: 'Rosmarin', amount: 10, unit: 'g', foodDbName: 'Rosmarin färsk', note: 'färsk, hackad' },
+        { name: 'Timjan', amount: 5, unit: 'g', foodDbName: 'Timjan färsk', note: 'färsk' },
+        { name: 'Svartpeppar', amount: 2, unit: 'g', foodDbName: 'Svartpeppar', note: 'krossad' },
+        { name: 'Salt', amount: 3, unit: 'g', foodDbName: 'Salt bordssalt' },
+        { name: 'Citronzest', amount: null, unit: null, foodDbName: null, note: 'från 1 citron' },
+      ],
+      steps: [
+        'Blanda alla ingredienser i en skål.',
+        'Lägg köttet i en plastpåse eller skål.',
+        'Häll över marinaden och massera in.',
+        'Låt marinera i kylskåp: Fågel 2-4 tim, Lamm/Nöt 4-24 tim.',
+        'Ta ut 30 min före tillagning. Torka av överflödig marinad.'
+      ],
+      description: 'Bra för lamm, kyckling och nötkött. OBS: Marinaden tränger bara in 1-2 mm - smaken sitter mest på ytan.'
+    },
+    {
+      id: 'asiansimple',
+      name: 'Asiatisk marinad',
+      basePortions: 500,
+      portionUnit: 'g kött',
+      time: '5 min + 1-4 tim',
+      structuredIngredients: [
+        { name: 'Sojasås', amount: 45, unit: 'ml', foodDbName: 'Sojasås', note: 'japansk' },
+        { name: 'Sesamolja', amount: 30, unit: 'ml', foodDbName: 'Sesamolja' },
+        { name: 'Risvinäger', amount: 15, unit: 'ml', foodDbName: 'Risvinäger' },
+        { name: 'Honung', amount: 20, unit: 'g', foodDbName: 'Honung' },
+        { name: 'Vitlök', amount: 8, unit: 'g', foodDbName: 'Vitlök', note: '2 klyftor, rivna' },
+        { name: 'Ingefära', amount: 10, unit: 'g', foodDbName: 'Ingefära färsk', note: 'färsk, riven' },
+        { name: 'Chiliflakes', amount: 2, unit: 'g', foodDbName: 'Chiliflingor', note: 'valfritt', optional: true },
+      ],
+      steps: [
+        'Vispa ihop soja, sesamolja, vinäger och honung.',
+        'Rör ner vitlök, ingefära och chili.',
+        'Marinera kött i 1-4 timmar (ej längre pga sojan).',
+        'Torka av innan stekning för bättre brunning.'
+      ],
+      description: 'Passar utmärkt till fläsk, kyckling och biff. Kan också användas som glaze.'
+    },
+    {
+      id: 'yogurtmarinade',
+      name: 'Yoghurtmarinad (Tandoori-stil)',
+      basePortions: 1000,
+      portionUnit: 'g kyckling',
+      time: '10 min + 4-24 tim',
+      structuredIngredients: [
+        { name: 'Turkisk yoghurt', amount: 300, unit: 'g', foodDbName: 'Yoghurt turkisk' },
+        { name: 'Citronjuice', amount: 30, unit: 'ml', foodDbName: 'Citronjuice' },
+        { name: 'Vitlök', amount: 12, unit: 'g', foodDbName: 'Vitlök', note: '3 klyftor, pressade' },
+        { name: 'Ingefära', amount: 15, unit: 'g', foodDbName: 'Ingefära färsk', note: 'riven' },
+        { name: 'Paprikapulver', amount: 4, unit: 'g', foodDbName: 'Paprikapulver' },
+        { name: 'Spiskummin', amount: 2, unit: 'g', foodDbName: 'Spiskummin' },
+        { name: 'Garam masala', amount: 2, unit: 'g', foodDbName: 'Garam masala' },
+        { name: 'Cayennepeppar', amount: 1, unit: 'g', foodDbName: 'Cayennepeppar' },
+        { name: 'Gurkmeja', amount: 1, unit: 'g', foodDbName: 'Gurkmeja' },
+        { name: 'Salt', amount: 5, unit: 'g', foodDbName: 'Salt bordssalt' },
+      ],
+      steps: [
+        'Blanda yoghurt med citronjuice.',
+        'Rör ner vitlök, ingefära och alla kryddor.',
+        'Gör snitt i kycklingen för bättre penetration.',
+        'Marinera i 4-24 timmar (yoghurtens enzymer mörnar).',
+        'Skaka av överflödig marinad före grillning.',
+        'Grilla på hög värme för karaktäristisk yta.'
+      ],
+      description: 'Yoghurtens mjölksyra mörnar köttet. Perfekt för grillad kyckling.'
+    },
+  ],
+  'Smaksatta smör': [
+    {
+      id: 'herbutter',
+      name: 'Örtsmör',
+      basePortions: 200,
+      portionUnit: 'g',
+      time: '10 min',
+      structuredIngredients: [
+        { name: 'Smör', amount: 200, unit: 'g', foodDbName: 'Smör osaltat', note: 'rumstempererat' },
+        { name: 'Persilja', amount: 15, unit: 'g', foodDbName: 'Persilja färsk', note: 'färsk, finhackad' },
+        { name: 'Gräslök', amount: 10, unit: 'g', foodDbName: 'Gräslök', note: 'färsk, klippt' },
+        { name: 'Vitlök', amount: 4, unit: 'g', foodDbName: 'Vitlök', note: '1 klyfta, pressad' },
+        { name: 'Citronzest', amount: 3, unit: 'g', foodDbName: null, note: '1 tsk' },
+        { name: 'Salt', amount: 3, unit: 'g', foodDbName: 'Salt bordssalt' },
+        { name: 'Svartpeppar', amount: null, unit: null, foodDbName: null, note: 'efter smak' },
+      ],
+      steps: [
+        'Låt smöret bli rumstempererat (mjukt men inte smält).',
+        'Hacka örterna fint.',
+        'Arbeta in alla ingredienser i smöret med gaffel eller maskin.',
+        'Smaka av med salt och peppar.',
+        'Rulla smöret i plastfolie till en cylinder.',
+        'Frys i minst 1 timme. Skiva vid servering.'
+      ],
+      description: 'Klassiker till biff, fisk och nygrillade grönsaker. Håller 2 veckor i kyl, 3 månader i frys.'
+    },
+    {
+      id: 'cafedeparis',
+      name: 'Café de Paris-smör',
+      basePortions: 250,
+      portionUnit: 'g',
+      time: '15 min',
+      structuredIngredients: [
+        { name: 'Smör', amount: 200, unit: 'g', foodDbName: 'Smör osaltat' },
+        { name: 'Dijonsenap', amount: 15, unit: 'g', foodDbName: 'Dijonsenap' },
+        { name: 'Worcestershiresås', amount: 15, unit: 'ml', foodDbName: 'Worcestersås' },
+        { name: 'Konjak', amount: 15, unit: 'ml', foodDbName: null },
+        { name: 'Schalottenlök', amount: 30, unit: 'g', foodDbName: 'Schalottenlök', note: 'finhackad' },
+        { name: 'Sardeller', amount: 10, unit: 'g', foodDbName: 'Ansjovis', note: '2 st, finhackade' },
+        { name: 'Kapris', amount: 15, unit: 'g', foodDbName: 'Kapris', note: 'hackade' },
+        { name: 'Persilja', amount: 8, unit: 'g', foodDbName: 'Persilja färsk', note: 'färsk' },
+        { name: 'Paprikapulver', amount: 2, unit: 'g', foodDbName: 'Paprikapulver' },
+        { name: 'Curry', amount: 1, unit: 'g', foodDbName: 'Curry' },
+        { name: 'Salt', amount: null, unit: null, foodDbName: null, note: 'efter smak' },
+        { name: 'Peppar', amount: null, unit: null, foodDbName: null, note: 'efter smak' },
+      ],
+      steps: [
+        'Finhacka schalottenlök, sardeller och kapris.',
+        'Arbeta ihop mjukt smör med alla ingredienser.',
+        'Smaka av och justera kryddningen.',
+        'Rulla i plastfolie till cylinder.',
+        'Kyl i minst 2 timmar så smakerna gifter sig.'
+      ],
+      description: 'Den klassiska stekhussmörens smör. Perfekt till entrecôte och ryggbiff.'
+    },
+    {
+      id: 'bluecheesebutter',
+      name: 'Blåmögelsmör',
+      basePortions: 280,
+      portionUnit: 'g',
+      time: '10 min',
+      structuredIngredients: [
+        { name: 'Smör', amount: 200, unit: 'g', foodDbName: 'Smör osaltat' },
+        { name: 'Blåmögelost', amount: 80, unit: 'g', foodDbName: 'Gorgonzola', note: 'Roquefort eller Gorgonzola' },
+        { name: 'Konjak', amount: 15, unit: 'ml', foodDbName: null, note: 'eller portvin' },
+        { name: 'Valnötter', amount: 20, unit: 'g', foodDbName: 'Valnötter', note: 'hackade', optional: true },
+        { name: 'Svartpeppar', amount: null, unit: null, foodDbName: null, note: 'nymalen' },
+      ],
+      steps: [
+        'Låt smör och ost bli rumstempererade.',
+        'Mosa osten med en gaffel.',
+        'Arbeta ihop smör och ost tills jämnt blandat.',
+        'Tillsätt konjak och valnötter.',
+        'Krydda med nymalen svartpeppar.',
+        'Rulla och kyl som örtsmöret.'
+      ],
+      description: 'Kraftfullt smör som passar perfekt till grillad biff. Smälter underbart på varmt kött.'
+    },
+    {
+      id: 'chimichurri',
+      name: 'Chimichurri',
+      basePortions: 200,
+      portionUnit: 'ml',
+      time: '15 min',
+      structuredIngredients: [
+        { name: 'Persilja', amount: 30, unit: 'g', foodDbName: 'Persilja färsk', note: '1 stort knippe' },
+        { name: 'Vitlök', amount: 16, unit: 'g', foodDbName: 'Vitlök', note: '4 klyftor' },
+        { name: 'Oregano', amount: 8, unit: 'g', foodDbName: 'Oregano färsk', note: 'färsk, eller 4g torkad' },
+        { name: 'Olivolja', amount: 100, unit: 'ml', foodDbName: 'Olivolja' },
+        { name: 'Rödvinsvinäger', amount: 45, unit: 'ml', foodDbName: 'Rödvinsvinäger' },
+        { name: 'Chiliflingor', amount: 1, unit: 'g', foodDbName: 'Chiliflingor' },
+        { name: 'Salt', amount: 3, unit: 'g', foodDbName: 'Salt bordssalt' },
+      ],
+      steps: [
+        'Finhacka persilja, vitlök och oregano (för hand, ej mixer!).',
+        'Blanda med olivolja och vinäger.',
+        'Krydda med chili och salt.',
+        'Låt stå minst 30 min så smakerna utvecklas.',
+        'Servera rumstempererad.'
+      ],
+      description: 'Argentinsk klassiker till grillat kött. Ska vara hackad, inte mixad, för rätt textur.'
     },
   ],
 };
@@ -1436,6 +1865,10 @@ export default function App() {
   const [activeView, setActiveView] = useState('home');
   const [selectedItem, setSelectedItem] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [activeEggSection, setActiveEggSection] = useState('boiling');
+  const [recipeScale, setRecipeScale] = useState(1);
+  const [showRecipeNutrition, setShowRecipeNutrition] = useState(false);
+  const [selectedRecipeIngredient, setSelectedRecipeIngredient] = useState(null);
   
   // Måttomvandling state (förbättrad)
   const [conversionMode, setConversionMode] = useState('weight');
@@ -1574,6 +2007,128 @@ export default function App() {
   };
 
   const isFavorite = (code) => favorites.some(f => f.code === code);
+
+  // Hitta näringsinformation för en temperaturitem
+  const findNutritionForItem = (itemName, category) => {
+    // Skapa en mapping mellan temperatur-namn och foodDatabase-namn
+    const nameMapping = {
+      // Nötkött
+      'Biff': 'Ryggbiff',
+      'Entrecôte': 'Entrecôte',
+      'Flankstek': 'Flanksteak',
+      'Fransyska': 'Fransyska',
+      'Högrev': 'Högrev',
+      'Innanlår': 'Innanlår',
+      'Märgben': 'Märgben',
+      'Nötbog': 'Bog',
+      'Nötbringa': 'Bringa',
+      'Nötytterfilé': 'Rostbiff',
+      'Oxfilé': 'Oxfilé',
+      'Oxsvans': 'Oxsvans',
+      'Oxtunga': 'Oxtunga',
+      'Rostbiff': 'Rostbiff',
+      'Ryggbiff': 'Ryggbiff',
+      'Tjockt kött': 'Tjockt kött',
+      'Ytterlår': 'Ytterlår',
+      // Kalv
+      'Kalventrecôte': 'Kalvkotlett',
+      'Kalvfilé': 'Kalvfilé',
+      'Kalvfransyska': 'Kalvkotlett',
+      'Kalvkotlett': 'Kalvkotlett',
+      'Kalvlever': 'Kalvlever',
+      'Kalvnjure': 'Kalvnjure',
+      'Kalvbräss': 'Kalvbräss',
+      // Lamm
+      'Lammfilé': 'Lammfilé',
+      'Lammkotlett': 'Lammkotlett',
+      'Lammlever': 'Lammlever',
+      'Lammsadel': 'Lammsadel',
+      'Lammstek': 'Lammstek',
+      'Lammbog': 'Lammbog',
+      'Lammlägg': 'Lammlägg',
+      'Lammrack': 'Lammrack',
+      'Lammhjärta': 'Lammhjärta',
+      'Lammnjure': 'Lammnjure',
+      // Fläsk
+      'Bacon': 'Bacon',
+      'Fläskfilé': 'Fläskfilé',
+      'Fläskkotlett': 'Fläskkotlett',
+      'Fläskkarré': 'Fläskkarré',
+      'Fläskbog': 'Fläskbog',
+      'Fläsklägg': 'Fläsklägg',
+      'Pancetta': 'Pancetta',
+      'Guanciale': 'Guanciale',
+      'Revbensspjäll': 'Revbensspjäll',
+      'Sidfläsk': 'Sidfläsk',
+      'Skinkstek': 'Skinkstek',
+      'Fläskkind': 'Fläskkind',
+      // Fågel
+      'Ankbröst': 'Ankbröst',
+      'Ankbröst med skinn': 'Ankbröst med skinn',
+      'Anklår': 'Anklår',
+      'Anklever': 'Anklever',
+      'Gåsbröst': 'Gåsbröst',
+      'Kalkonbröst': 'Kalkonbröst',
+      'Kalkonfilé': 'Kalkonfilé',
+      'Kalkonlårfilé': 'Kalkonlårfilé',
+      'Kycklingbröst': 'Kycklingbröst',
+      'Kycklingbröst med skinn': 'Kycklingbröst med skinn',
+      'Kycklinglever': 'Kycklinglever',
+      'Kycklinglår': 'Kycklinglår',
+      'Kycklingklubba': 'Kycklingklubba',
+      'Kycklingvingar': 'Kycklingvingar',
+      'Hel kyckling': 'Hel kyckling',
+      'Majskyckling': 'Majskyckling',
+      // Vilt
+      'Älgfilé': 'Älgfilé',
+      'Älgstek': 'Älgstek',
+      'Rådjursfilé': 'Rådjursfilé',
+      'Rådjurssadel': 'Rådjurssadel',
+      'Hjortfilé': 'Hjortfilé',
+      'Hjortfärs': 'Hjortfärs',
+      'Vildsvinsstek': 'Vildsvinsstek',
+      'Renfilé': 'Renfilé',
+      'Renstek': 'Renstek',
+      'Hare': 'Hare',
+      'Fasanbröst': 'Fasanbröst',
+      'Rapphöna': 'Rapphöna',
+      'Vaktel': 'Vaktel',
+      'Duva': 'Duva',
+      // Fisk
+      'Laxfilé': 'Laxfilé',
+      'Öring': 'Öring',
+      'Röding': 'Röding',
+      'Sik': 'Sik',
+      'Abborre': 'Abborre',
+      'Gädda': 'Gädda',
+      'Torsk': 'Torskfilé',
+      'Kolja': 'Kolja',
+      'Sej': 'Sej',
+      'Kummel': 'Kummel',
+      'Hälleflundra': 'Hälleflundra',
+      'Piggvar': 'Piggvar',
+      'Tonfisk': 'Tonfisk',
+      // Skaldjur
+      'Hummer': 'Hummer',
+      'Krabba': 'Krabba',
+      'Kräftor': 'Kräftor',
+      'Musslor': 'Musslor',
+      'Pilgrimsmusslor': 'Pilgrimsmusslor',
+      'Räkor': 'Tigerräkor',
+      'Bläckfisk': 'Bläckfisk',
+    };
+
+    const searchName = nameMapping[itemName] || itemName;
+
+    // Sök i foodDatabase
+    const match = foodDatabase.find(food => {
+      const foodName = food.product_name.toLowerCase();
+      const search = searchName.toLowerCase();
+      return foodName === search || foodName.includes(search) || search.includes(foodName);
+    });
+
+    return match;
+  };
 
   // Portionsskalning
   const getScaledPortions = (recipeId, originalPortions) => {
@@ -1723,10 +2278,16 @@ export default function App() {
       
       <div className="menu-card" role="button" tabIndex="0" onClick={() => setActiveView('basics')} onKeyDown={(e) => e.key === 'Enter' && setActiveView('basics')}>
         <h2>Grundrecept</h2>
-        <p>Såser, degar och klassiska baser</p>
+        <p>Såser, buljonger, marinader och smör</p>
         <span className="menu-arrow">→</span>
       </div>
-      
+
+      <div className="menu-card" role="button" tabIndex="0" onClick={() => setActiveView('eggguide')} onKeyDown={(e) => e.key === 'Enter' && setActiveView('eggguide')}>
+        <h2>Äggguiden</h2>
+        <p>Koktider, tekniker och vetenskap</p>
+        <span className="menu-arrow">→</span>
+      </div>
+
       <div className="menu-card" role="button" tabIndex="0" onClick={() => setActiveView('create')} onKeyDown={(e) => e.key === 'Enter' && setActiveView('create')}>
         <h2>Skapa recept</h2>
         <p>Bygg och spara egna recept</p>
@@ -2184,12 +2745,14 @@ export default function App() {
     const totalFiltered = categories.reduce((acc, cat) => acc + filterItems(data[cat]).length, 0);
 
     if (selectedItem) {
+      const nutritionData = findNutritionForItem(selectedItem.name, selectedItem.category);
+
       return (
         <div className="detail-view">
           <button className="back-btn" aria-label="Gå tillbaka" onClick={() => setSelectedItem(null)}>
             ← Tillbaka
           </button>
-          
+
           <div className="detail-header">
             <span className="detail-emoji">{selectedItem.image}</span>
             <h2>{selectedItem.name}</h2>
@@ -2216,6 +2779,14 @@ export default function App() {
             )}
           </div>
 
+          {selectedItem.restTime && selectedItem.restTime !== '-' && (
+            <div className="info-box rest-time-box">
+              <h3>⏱️ Vila-tid</h3>
+              <p className="rest-time-value">{selectedItem.restTime}</p>
+              <p className="rest-time-note">Temperaturen stiger 2-5°C under vila. Ta ut köttet när det är 3-5°C under måltemperatur.</p>
+            </div>
+          )}
+
           {selectedItem.tips && (
             <div className="info-box">
               <h3>Tips</h3>
@@ -2227,6 +2798,30 @@ export default function App() {
             <div className="info-box warning">
               <h3>Kom ihåg</h3>
               <p>Köttet fortsätter stiga 2-5°C efter att du tagit ut det. Ta ut det lite tidigare!</p>
+            </div>
+          )}
+
+          {nutritionData && (
+            <div className="info-box nutrition-info">
+              <h3>Näringsvärden per 100g</h3>
+              <div className="nutrition-grid">
+                <div className="nutrition-card">
+                  <span className="nutrition-value">{Math.round(nutritionData.nutriments['energy-kcal_100g'] || 0)}</span>
+                  <span className="nutrition-label">kcal</span>
+                </div>
+                <div className="nutrition-card">
+                  <span className="nutrition-value">{(nutritionData.nutriments.proteins_100g || 0).toFixed(1)}</span>
+                  <span className="nutrition-label">protein (g)</span>
+                </div>
+                <div className="nutrition-card">
+                  <span className="nutrition-value">{(nutritionData.nutriments.carbohydrates_100g || 0).toFixed(1)}</span>
+                  <span className="nutrition-label">kolhydrater (g)</span>
+                </div>
+                <div className="nutrition-card">
+                  <span className="nutrition-value">{(nutritionData.nutriments.fat_100g || 0).toFixed(1)}</span>
+                  <span className="nutrition-label">fett (g)</span>
+                </div>
+              </div>
             </div>
           )}
         </div>
@@ -2265,16 +2860,28 @@ export default function App() {
         {categories.map(category => {
           const filteredItems = filterItems(data[category]);
           if (filteredItems.length === 0) return null;
-          
+          const science = categoryScience[category];
+
           return (
             <div key={category} className="category-section">
               <h3 className="category-title">{category}</h3>
+              {science && (
+                <details className="category-science">
+                  <summary className="science-summary">
+                    <span className="science-icon">🔬</span> {science.title}
+                  </summary>
+                  <div className="science-content">
+                    <p>{science.explanation}</p>
+                    <p className="science-tip"><strong>Tips:</strong> {science.tip}</p>
+                  </div>
+                </details>
+              )}
               <div className="items-list">
                 {filteredItems.map((item, idx) => (
-                  <div 
-                    key={idx} 
+                  <div
+                    key={idx}
                     className="item-row"
-                    onClick={() => setSelectedItem(item)}
+                    onClick={() => setSelectedItem({...item, category})}
                   >
                     <span className="item-emoji">{item.image}</span>
                     <span className="item-name">{item.name}</span>
@@ -2437,39 +3044,411 @@ export default function App() {
     );
   };
 
+  // Äggguide-vy
+  const renderEggGuide = () => {
+    return (
+      <div className="egg-guide-view">
+        <button className="back-btn" aria-label="Gå tillbaka" onClick={() => setActiveView('home')}>
+          ← Tillbaka
+        </button>
+        <h1>Äggguiden</h1>
+
+        {/* Navigation tabs */}
+        <div className="egg-guide-tabs">
+          <button
+            className={activeEggSection === 'boiling' ? 'active' : ''}
+            onClick={() => setActiveEggSection('boiling')}
+          >
+            Koka
+          </button>
+          <button
+            className={activeEggSection === 'poaching' ? 'active' : ''}
+            onClick={() => setActiveEggSection('poaching')}
+          >
+            Pochera
+          </button>
+          <button
+            className={activeEggSection === 'scrambled' ? 'active' : ''}
+            onClick={() => setActiveEggSection('scrambled')}
+          >
+            Äggröra
+          </button>
+          <button
+            className={activeEggSection === 'frying' ? 'active' : ''}
+            onClick={() => setActiveEggSection('frying')}
+          >
+            Steka
+          </button>
+          <button
+            className={activeEggSection === 'science' ? 'active' : ''}
+            onClick={() => setActiveEggSection('science')}
+          >
+            🔬
+          </button>
+        </div>
+
+        {/* Kokning */}
+        {activeEggSection === 'boiling' && (
+          <div className="egg-section">
+            <h2>{eggGuideData.boiling.title}</h2>
+            <p className="section-description">{eggGuideData.boiling.description}</p>
+
+            <div className="egg-time-cards">
+              {eggGuideData.boiling.times.map((item, idx) => (
+                <div key={idx} className={`egg-time-card ${item.name === 'Överkokt' ? 'warning' : ''}`}>
+                  <div className="egg-time-header">
+                    <span className="egg-time-name">{item.name}</span>
+                    <span className="egg-time-value">{item.time}</span>
+                  </div>
+                  <p className="egg-time-desc">{item.description}</p>
+                  <span className="egg-time-temp">{item.temp}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="egg-tips-section">
+              <h3>Tips</h3>
+              <ul>
+                {eggGuideData.boiling.tips.map((tip, idx) => (
+                  <li key={idx}>{tip}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        )}
+
+        {/* Pochering */}
+        {activeEggSection === 'poaching' && (
+          <div className="egg-section">
+            <h2>{eggGuideData.poaching.title}</h2>
+            <p className="section-description">{eggGuideData.poaching.description}</p>
+
+            <div className="steps-list-guide">
+              <h3>Steg för steg</h3>
+              <ol>
+                {eggGuideData.poaching.steps.map((step, idx) => (
+                  <li key={idx}>{step}</li>
+                ))}
+              </ol>
+            </div>
+
+            <div className="egg-tips-section">
+              <h3>Tips</h3>
+              <ul>
+                {eggGuideData.poaching.tips.map((tip, idx) => (
+                  <li key={idx}>{tip}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        )}
+
+        {/* Äggröra */}
+        {activeEggSection === 'scrambled' && (
+          <div className="egg-section">
+            <h2>{eggGuideData.scrambled.title}</h2>
+
+            <div className="scrambled-styles">
+              {eggGuideData.scrambled.styles.map((style, idx) => (
+                <div key={idx} className="scrambled-style-card">
+                  <h3>{style.name}</h3>
+                  <p className="style-method">{style.method}</p>
+                  <ul>
+                    {style.tips.map((tip, tipIdx) => (
+                      <li key={tipIdx}>{tip}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Stekning */}
+        {activeEggSection === 'frying' && (
+          <div className="egg-section">
+            <h2>{eggGuideData.frying.title}</h2>
+            <p className="section-description">{eggGuideData.frying.description}</p>
+
+            <div className="steps-list-guide">
+              <h3>Steg för steg</h3>
+              <ol>
+                {eggGuideData.frying.steps.map((step, idx) => (
+                  <li key={idx}>{step}</li>
+                ))}
+              </ol>
+            </div>
+
+            <div className="egg-tips-section">
+              <h3>Tips</h3>
+              <ul>
+                {eggGuideData.frying.tips.map((tip, idx) => (
+                  <li key={idx}>{tip}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        )}
+
+        {/* Vetenskap */}
+        {activeEggSection === 'science' && (
+          <div className="egg-section">
+            <h2>{eggGuideData.science.title}</h2>
+
+            <div className="science-facts">
+              {eggGuideData.science.facts.map((fact, idx) => (
+                <div key={idx} className="science-fact-card">
+                  <span className="fact-label">{fact.label}</span>
+                  <span className="fact-value">{fact.value}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="science-explanation">
+              <p>{eggGuideData.science.explanation}</p>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   // Grundrecept-vy
   const renderBasics = () => {
     const categories = Object.keys(basicRecipesData);
-    
+
+    // Hitta näringsvärden för en ingrediens i databasen
+    const findNutritionForIngredient = (foodDbName) => {
+      if (!foodDbName) return null;
+      return foodDatabase.find(food =>
+        food.product_name.toLowerCase().includes(foodDbName.toLowerCase())
+      );
+    };
+
+    // Formatera mängd med enhet
+    const formatAmount = (amount, unit, scale) => {
+      if (!amount) return null;
+      const scaled = amount * scale;
+
+      // Avrundning baserat på mängd
+      let rounded;
+      if (scaled >= 100) {
+        rounded = Math.round(scaled / 5) * 5; // Avrunda till närmaste 5
+      } else if (scaled >= 10) {
+        rounded = Math.round(scaled);
+      } else {
+        rounded = Math.round(scaled * 10) / 10;
+      }
+
+      // Konvertera till läsbart format
+      if (unit === 'g' && rounded >= 1000) {
+        return `${(rounded / 1000).toFixed(1)} kg`;
+      }
+      if (unit === 'ml' && rounded >= 1000) {
+        return `${(rounded / 1000).toFixed(1)} l`;
+      }
+      if (unit === 'ml' && rounded >= 100) {
+        return `${Math.round(rounded / 100)} dl`;
+      }
+
+      return `${rounded} ${unit}`;
+    };
+
+    // Hitta omvandling för ingrediens
+    const getConversionInfo = (name, amount, unit) => {
+      const convIngredient = Object.keys(conversionData.weightToVolume).find(
+        ing => name.toLowerCase().includes(ing.toLowerCase()) ||
+               ing.toLowerCase().includes(name.toLowerCase())
+      );
+      if (!convIngredient) return null;
+      const gPerDl = conversionData.weightToVolume[convIngredient].gPerDl;
+      if (unit === 'g' && amount) {
+        const dl = amount / gPerDl;
+        if (dl >= 1) return `≈ ${dl.toFixed(1)} dl`;
+        const msk = (amount / gPerDl) * (100 / 15);
+        if (msk >= 1) return `≈ ${Math.round(msk)} msk`;
+        const tsk = (amount / gPerDl) * (100 / 5);
+        return `≈ ${Math.round(tsk)} tsk`;
+      }
+      return null;
+    };
+
+    // Beräkna totalt näringsvärde för receptet
+    const calculateRecipeNutrition = (recipe, scale) => {
+      if (!recipe.structuredIngredients) return null;
+
+      return recipe.structuredIngredients.reduce((totals, ing) => {
+        if (!ing.amount || !ing.foodDbName) return totals;
+        const nutrition = findNutritionForIngredient(ing.foodDbName);
+        if (!nutrition) return totals;
+
+        const grams = ing.unit === 'g' ? ing.amount * scale :
+                      ing.unit === 'ml' ? ing.amount * scale : // approximation
+                      ing.unit === 'st' ? ing.amount * 20 * scale : // ägg ~20g gula
+                      0;
+        const factor = grams / 100;
+
+        return {
+          kcal: totals.kcal + (nutrition.nutriments['energy-kcal_100g'] || 0) * factor,
+          protein: totals.protein + (nutrition.nutriments.proteins_100g || 0) * factor,
+          carbs: totals.carbs + (nutrition.nutriments.carbohydrates_100g || 0) * factor,
+          fat: totals.fat + (nutrition.nutriments.fat_100g || 0) * factor,
+        };
+      }, { kcal: 0, protein: 0, carbs: 0, fat: 0 });
+    };
+
     if (selectedBasicRecipe) {
+      const recipe = selectedBasicRecipe;
+      const hasStructuredIngredients = recipe.structuredIngredients && recipe.structuredIngredients.length > 0;
+      const scaledPortions = hasStructuredIngredients ? recipe.basePortions * recipeScale : null;
+      const nutrition = hasStructuredIngredients ? calculateRecipeNutrition(recipe, recipeScale) : null;
+
       return (
-        <div className="detail-view">
-          <button className="back-btn" aria-label="Gå tillbaka" onClick={() => setSelectedBasicRecipe(null)}>
+        <div className="detail-view recipe-detail">
+          <button className="back-btn" aria-label="Gå tillbaka" onClick={() => {
+            setSelectedBasicRecipe(null);
+            setRecipeScale(1);
+            setShowRecipeNutrition(false);
+            setSelectedRecipeIngredient(null);
+          }}>
             ← Tillbaka
           </button>
-          <h2>{selectedBasicRecipe.name}</h2>
-          <div className="recipe-meta">
-            <span className="meta-item">{selectedBasicRecipe.portions}</span>
-            <span className="meta-item">{selectedBasicRecipe.time}</span>
-          </div>
-          
-          {selectedBasicRecipe.description && (
-            <p className="recipe-description">{selectedBasicRecipe.description}</p>
+          <h2>{recipe.name}</h2>
+
+          {/* Portionsskalare */}
+          {hasStructuredIngredients && (
+            <div className="recipe-scaler">
+              <span className="scaler-label">Portioner:</span>
+              <div className="scaler-controls">
+                <button
+                  className="scaler-btn"
+                  onClick={() => setRecipeScale(Math.max(0.25, recipeScale - 0.25))}
+                  disabled={recipeScale <= 0.25}
+                >
+                  −
+                </button>
+                <span className="scaler-value">
+                  {scaledPortions % 1 === 0 ? scaledPortions : scaledPortions.toFixed(1)} {recipe.portionUnit}
+                </span>
+                <button
+                  className="scaler-btn"
+                  onClick={() => setRecipeScale(recipeScale + 0.25)}
+                >
+                  +
+                </button>
+              </div>
+              <div className="scaler-presets">
+                {[0.5, 1, 2, 4].map(preset => (
+                  <button
+                    key={preset}
+                    className={`preset-btn ${recipeScale === preset ? 'active' : ''}`}
+                    onClick={() => setRecipeScale(preset)}
+                  >
+                    {preset === 1 ? 'Original' : `×${preset}`}
+                  </button>
+                ))}
+              </div>
+            </div>
           )}
-          
+
+          <div className="recipe-meta">
+            <span className="meta-item">{recipe.time}</span>
+          </div>
+
+          {recipe.description && (
+            <p className="recipe-description">{recipe.description}</p>
+          )}
+
+          {/* Ingredienser */}
           <div className="recipe-section">
             <h3>Ingredienser</h3>
-            <ul className="ingredient-list">
-              {selectedBasicRecipe.ingredients.map((ing, idx) => (
-                <li key={idx}>{ing}</li>
-              ))}
-            </ul>
+            {hasStructuredIngredients ? (
+              <ul className="structured-ingredient-list">
+                {recipe.structuredIngredients.map((ing, idx) => {
+                  const scaledAmount = ing.amount ? ing.amount * recipeScale : null;
+                  const formattedAmount = formatAmount(ing.amount, ing.unit, recipeScale);
+                  const conversion = scaledAmount ? getConversionInfo(ing.name, scaledAmount, ing.unit) : null;
+                  const nutritionInfo = findNutritionForIngredient(ing.foodDbName);
+
+                  return (
+                    <li
+                      key={idx}
+                      className={`structured-ingredient ${ing.optional ? 'optional' : ''} ${nutritionInfo ? 'has-nutrition' : ''}`}
+                      onClick={() => nutritionInfo && setSelectedRecipeIngredient(
+                        selectedRecipeIngredient?.name === ing.name ? null : { ...ing, nutrition: nutritionInfo, scaledAmount }
+                      )}
+                    >
+                      <div className="ingredient-main">
+                        <span className="ingredient-amount">{formattedAmount || ''}</span>
+                        <span className="ingredient-name">
+                          {ing.name}
+                          {ing.note && <span className="ingredient-note">, {ing.note}</span>}
+                          {ing.optional && <span className="optional-tag">(valfritt)</span>}
+                        </span>
+                        {conversion && <span className="ingredient-conversion">{conversion}</span>}
+                        {nutritionInfo && <span className="nutrition-indicator">ℹ️</span>}
+                      </div>
+                      {selectedRecipeIngredient?.name === ing.name && nutritionInfo && (
+                        <div className="ingredient-nutrition-popup">
+                          <div className="popup-header">{ing.name} - {formatAmount(ing.amount, ing.unit, recipeScale)}</div>
+                          <div className="popup-nutrition">
+                            <span>{Math.round((nutritionInfo.nutriments['energy-kcal_100g'] || 0) * (scaledAmount || 0) / 100)} kcal</span>
+                            <span>P: {((nutritionInfo.nutriments.proteins_100g || 0) * (scaledAmount || 0) / 100).toFixed(1)}g</span>
+                            <span>K: {((nutritionInfo.nutriments.carbohydrates_100g || 0) * (scaledAmount || 0) / 100).toFixed(1)}g</span>
+                            <span>F: {((nutritionInfo.nutriments.fat_100g || 0) * (scaledAmount || 0) / 100).toFixed(1)}g</span>
+                          </div>
+                        </div>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            ) : (
+              <ul className="ingredient-list">
+                {recipe.ingredients && recipe.ingredients.map((ing, idx) => (
+                  <li key={idx}>{ing}</li>
+                ))}
+              </ul>
+            )}
           </div>
-          
+
+          {/* Näringsvärden för hela receptet */}
+          {nutrition && (
+            <div className="recipe-section">
+              <button
+                className="nutrition-toggle"
+                onClick={() => setShowRecipeNutrition(!showRecipeNutrition)}
+              >
+                {showRecipeNutrition ? '▼' : '▶'} Näringsvärden (uppskattat)
+              </button>
+              {showRecipeNutrition && (
+                <div className="recipe-nutrition">
+                  <div className="nutrition-row">
+                    <span className="nutrition-label">Totalt ({scaledPortions} {recipe.portionUnit})</span>
+                    <span>{Math.round(nutrition.kcal)} kcal</span>
+                    <span>P: {nutrition.protein.toFixed(0)}g</span>
+                    <span>K: {nutrition.carbs.toFixed(0)}g</span>
+                    <span>F: {nutrition.fat.toFixed(0)}g</span>
+                  </div>
+                  {recipe.basePortions > 1 && (
+                    <div className="nutrition-row per-portion">
+                      <span className="nutrition-label">Per portion</span>
+                      <span>{Math.round(nutrition.kcal / scaledPortions)} kcal</span>
+                      <span>P: {(nutrition.protein / scaledPortions).toFixed(0)}g</span>
+                      <span>K: {(nutrition.carbs / scaledPortions).toFixed(0)}g</span>
+                      <span>F: {(nutrition.fat / scaledPortions).toFixed(0)}g</span>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Instruktioner */}
           <div className="recipe-section">
             <h3>Instruktioner</h3>
             <ol className="steps-list">
-              {selectedBasicRecipe.steps.map((step, idx) => (
+              {recipe.steps.map((step, idx) => (
                 <li key={idx}>{step}</li>
               ))}
             </ol>
@@ -2484,16 +3463,19 @@ export default function App() {
           ← Tillbaka
         </button>
         <h1>Grundrecept</h1>
-        
+
         {categories.map(category => (
           <div key={category} className="category-section">
             <h3 className="category-title">{category}</h3>
             <div className="items-list">
               {basicRecipesData[category].map(recipe => (
-                <div 
-                  key={recipe.id} 
+                <div
+                  key={recipe.id}
                   className="item-row"
-                  onClick={() => setSelectedBasicRecipe(recipe)}
+                  onClick={() => {
+                    setSelectedBasicRecipe(recipe);
+                    setRecipeScale(1);
+                  }}
                 >
                   <span className="item-name">{recipe.name}</span>
                   <span className="item-meta">{recipe.time}</span>
@@ -2986,6 +3968,7 @@ export default function App() {
         {activeView === 'conversion' && renderConversion()}
         {activeView === 'calories' && renderCalories()}
         {activeView === 'basics' && renderBasics()}
+        {activeView === 'eggguide' && renderEggGuide()}
         {activeView === 'create' && renderCreate()}
       </main>
 
@@ -3298,6 +4281,48 @@ export default function App() {
         .info-box.warning {
           background: #FFF5EE;
           border: 1px solid #FACBB0;
+        }
+
+        .info-box.nutrition-info {
+          background: #F5F9F5;
+          border: 1px solid #C8E0C8;
+        }
+
+        .info-box.nutrition-info .nutrition-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 0.5rem;
+          margin-top: 0.5rem;
+        }
+
+        .info-box.nutrition-info .nutrition-card {
+          background: #FFFFFF;
+          padding: 0.75rem 0.5rem;
+          text-align: center;
+          border-radius: 4px;
+          border: 1px solid #E0EEE0;
+        }
+
+        .info-box.nutrition-info .nutrition-value {
+          display: block;
+          font-size: 1.2rem;
+          font-weight: 600;
+          color: #3D5A3D;
+        }
+
+        .info-box.nutrition-info .nutrition-label {
+          display: block;
+          font-size: 0.65rem;
+          color: #666;
+          margin-top: 0.25rem;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+        }
+
+        @media (max-width: 400px) {
+          .info-box.nutrition-info .nutrition-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
         }
 
         /* Conversion View */
@@ -4487,6 +5512,700 @@ export default function App() {
           font-size: 0.875rem;
           color: #5C4A3D;
           margin-bottom: 1rem;
+        }
+
+        /* === VILA-TID BOX === */
+        .rest-time-box {
+          background: linear-gradient(135deg, #FFF5EE, #FFEEE5);
+          border-left: 4px solid #E87D48;
+        }
+
+        .rest-time-value {
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: #D35F2D;
+          margin: 0.5rem 0;
+        }
+
+        .rest-time-note {
+          font-size: 0.85rem;
+          color: #5C4A3D;
+          margin-top: 0.5rem;
+        }
+
+        /* === CATEGORY SCIENCE === */
+        .category-science {
+          margin: 0.5rem 0 1rem;
+          background: #F5EFE8;
+          border-radius: 6px;
+          overflow: hidden;
+        }
+
+        .science-summary {
+          padding: 0.75rem 1rem;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-size: 0.9rem;
+          font-weight: 500;
+          color: #5C4A3D;
+          list-style: none;
+        }
+
+        .science-summary::-webkit-details-marker {
+          display: none;
+        }
+
+        .science-summary::after {
+          content: '+';
+          margin-left: auto;
+          font-size: 1.2rem;
+          color: #D35F2D;
+        }
+
+        details[open] .science-summary::after {
+          content: '−';
+        }
+
+        .science-icon {
+          font-size: 1.1rem;
+        }
+
+        .science-content {
+          padding: 0 1rem 1rem;
+          font-size: 0.9rem;
+          line-height: 1.6;
+          color: #2D2A26;
+        }
+
+        .science-content p {
+          margin-bottom: 0.75rem;
+        }
+
+        .science-tip {
+          background: white;
+          padding: 0.75rem;
+          border-radius: 4px;
+          font-size: 0.85rem;
+        }
+
+        /* === ÄGGGUIDE === */
+        .egg-guide-view {
+          padding-bottom: 2rem;
+        }
+
+        .egg-guide-view .subtitle {
+          font-size: 0.85rem;
+          color: #8B7355;
+          margin-bottom: 1.5rem;
+        }
+
+        .egg-guide-tabs {
+          display: flex;
+          gap: 0.25rem;
+          margin-bottom: 1.5rem;
+          flex-wrap: wrap;
+        }
+
+        .egg-guide-tabs button {
+          flex: 1;
+          min-width: 60px;
+          padding: 0.75rem 0.5rem;
+          background: #E8E0D8;
+          border: none;
+          cursor: pointer;
+          font-size: 0.85rem;
+          font-weight: 500;
+          color: #5C4A3D;
+          transition: all 0.2s;
+        }
+
+        .egg-guide-tabs button:first-child {
+          border-radius: 6px 0 0 6px;
+        }
+
+        .egg-guide-tabs button:last-child {
+          border-radius: 0 6px 6px 0;
+        }
+
+        .egg-guide-tabs button.active {
+          background: #D35F2D;
+          color: white;
+        }
+
+        .egg-section h2 {
+          font-size: 1.25rem;
+          color: #2D2A26;
+          margin-bottom: 0.5rem;
+        }
+
+        .section-description {
+          color: #5C4A3D;
+          font-size: 0.95rem;
+          margin-bottom: 1.5rem;
+          line-height: 1.5;
+        }
+
+        .egg-time-cards {
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+          margin-bottom: 1.5rem;
+        }
+
+        .egg-time-card {
+          background: white;
+          border: 1px solid #E8E0D8;
+          border-left: 4px solid #E87D48;
+          padding: 1rem;
+          border-radius: 0 6px 6px 0;
+        }
+
+        .egg-time-card.warning {
+          border-left-color: #DC3545;
+          background: #FFF5F5;
+        }
+
+        .egg-time-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 0.5rem;
+        }
+
+        .egg-time-name {
+          font-weight: 600;
+          color: #2D2A26;
+        }
+
+        .egg-time-value {
+          font-size: 1.25rem;
+          font-weight: 700;
+          color: #D35F2D;
+        }
+
+        .egg-time-card.warning .egg-time-value {
+          color: #DC3545;
+        }
+
+        .egg-time-desc {
+          font-size: 0.9rem;
+          color: #5C4A3D;
+          margin-bottom: 0.25rem;
+        }
+
+        .egg-time-temp {
+          font-size: 0.8rem;
+          color: #8B7355;
+        }
+
+        .egg-tips-section {
+          background: #F5EFE8;
+          padding: 1rem;
+          border-radius: 6px;
+        }
+
+        .egg-tips-section h3 {
+          font-size: 0.9rem;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          color: #5C4A3D;
+          margin-bottom: 0.75rem;
+        }
+
+        .egg-tips-section ul {
+          margin: 0;
+          padding-left: 1.25rem;
+        }
+
+        .egg-tips-section li {
+          font-size: 0.9rem;
+          margin-bottom: 0.5rem;
+          line-height: 1.4;
+        }
+
+        .steps-list-guide {
+          margin-bottom: 1.5rem;
+        }
+
+        .steps-list-guide h3 {
+          font-size: 0.9rem;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          color: #5C4A3D;
+          margin-bottom: 0.75rem;
+        }
+
+        .steps-list-guide ol {
+          margin: 0;
+          padding-left: 1.5rem;
+        }
+
+        .steps-list-guide li {
+          font-size: 0.95rem;
+          margin-bottom: 0.75rem;
+          line-height: 1.5;
+          padding-left: 0.5rem;
+        }
+
+        .scrambled-styles {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+        }
+
+        .scrambled-style-card {
+          background: white;
+          border: 1px solid #E8E0D8;
+          padding: 1rem;
+          border-radius: 6px;
+        }
+
+        .scrambled-style-card h3 {
+          font-size: 1rem;
+          color: #2D2A26;
+          margin-bottom: 0.5rem;
+        }
+
+        .style-method {
+          color: #D35F2D;
+          font-weight: 500;
+          margin-bottom: 0.75rem;
+          font-size: 0.95rem;
+        }
+
+        .scrambled-style-card ul {
+          margin: 0;
+          padding-left: 1.25rem;
+        }
+
+        .scrambled-style-card li {
+          font-size: 0.9rem;
+          margin-bottom: 0.25rem;
+        }
+
+        .science-facts {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 0.75rem;
+          margin-bottom: 1.5rem;
+        }
+
+        .science-fact-card {
+          background: white;
+          border: 1px solid #E8E0D8;
+          padding: 0.75rem;
+          text-align: center;
+          border-radius: 6px;
+        }
+
+        .fact-label {
+          display: block;
+          font-size: 0.8rem;
+          color: #5C4A3D;
+          margin-bottom: 0.25rem;
+        }
+
+        .fact-value {
+          display: block;
+          font-size: 1.1rem;
+          font-weight: 700;
+          color: #D35F2D;
+        }
+
+        .science-explanation {
+          background: #F5EFE8;
+          padding: 1rem;
+          border-radius: 6px;
+          font-size: 0.95rem;
+          line-height: 1.6;
+        }
+
+        /* Recipe Scaler Styles */
+        .recipe-scaler {
+          background: #FFF5EE;
+          padding: 1rem;
+          margin-bottom: 1.5rem;
+          border: 1px solid #FACBB0;
+        }
+
+        .scaler-label {
+          font-size: 0.75rem;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          color: #5C4A3D;
+          margin-bottom: 0.75rem;
+          font-weight: 600;
+        }
+
+        .scaler-controls {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 1rem;
+          margin-bottom: 1rem;
+        }
+
+        .scaler-btn {
+          width: 40px;
+          height: 40px;
+          border: 2px solid #D35F2D;
+          background: white;
+          color: #D35F2D;
+          font-size: 1.5rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.15s;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .scaler-btn:hover {
+          background: #D35F2D;
+          color: white;
+        }
+
+        .scaler-btn:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+
+        .scaler-value {
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: #D35F2D;
+          min-width: 80px;
+          text-align: center;
+        }
+
+        .scaler-presets {
+          display: flex;
+          gap: 0.5rem;
+          justify-content: center;
+          flex-wrap: wrap;
+        }
+
+        .preset-btn {
+          padding: 0.4rem 0.75rem;
+          border: 1px solid #E8E0D8;
+          background: white;
+          font-size: 0.85rem;
+          cursor: pointer;
+          transition: all 0.15s;
+          font-family: inherit;
+        }
+
+        .preset-btn:hover {
+          border-color: #D35F2D;
+        }
+
+        .preset-btn.active {
+          background: #D35F2D;
+          border-color: #D35F2D;
+          color: white;
+        }
+
+        /* Structured Ingredient List */
+        .structured-ingredient-list {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+        }
+
+        .structured-ingredient {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: baseline;
+          padding: 0.6rem 0;
+          border-bottom: 1px solid #F5EFE8;
+          cursor: pointer;
+          transition: background 0.15s;
+        }
+
+        .structured-ingredient:last-child {
+          border-bottom: none;
+        }
+
+        .structured-ingredient:hover {
+          background: #FFF5EE;
+          margin: 0 -0.5rem;
+          padding-left: 0.5rem;
+          padding-right: 0.5rem;
+        }
+
+        .ingredient-main {
+          display: flex;
+          align-items: baseline;
+          gap: 0.5rem;
+          flex: 1;
+          min-width: 200px;
+        }
+
+        .ingredient-amount {
+          font-weight: 600;
+          color: #D35F2D;
+          min-width: 70px;
+        }
+
+        .structured-ingredient .ingredient-name {
+          font-weight: 500;
+          color: #2D2A26;
+        }
+
+        .ingredient-note {
+          font-size: 0.85rem;
+          color: #8B7355;
+          font-style: italic;
+        }
+
+        .ingredient-extras {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          flex-wrap: wrap;
+          margin-top: 0.25rem;
+          width: 100%;
+        }
+
+        .ingredient-conversion {
+          font-size: 0.8rem;
+          color: #5C4A3D;
+          background: #F5EFE8;
+          padding: 0.2rem 0.5rem;
+        }
+
+        .nutrition-indicator {
+          font-size: 0.75rem;
+          color: #3D5A3D;
+          background: #E8F5E8;
+          padding: 0.15rem 0.4rem;
+        }
+
+        .optional-tag {
+          font-size: 0.75rem;
+          color: #8B7355;
+          background: #F5EFE8;
+          padding: 0.15rem 0.4rem;
+        }
+
+        /* Ingredient Nutrition Popup */
+        .ingredient-nutrition-popup {
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          background: white;
+          padding: 1.5rem;
+          border: 2px solid #D35F2D;
+          box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+          z-index: 1000;
+          max-width: 320px;
+          width: 90%;
+        }
+
+        .popup-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0,0,0,0.3);
+          z-index: 999;
+        }
+
+        .popup-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          margin-bottom: 1rem;
+        }
+
+        .popup-header h4 {
+          font-size: 1rem;
+          color: #2D2A26;
+          margin: 0;
+          letter-spacing: 0.05em;
+          text-transform: uppercase;
+        }
+
+        .popup-close {
+          background: none;
+          border: none;
+          font-size: 1.5rem;
+          cursor: pointer;
+          color: #8B7355;
+          padding: 0;
+          line-height: 1;
+        }
+
+        .popup-amount {
+          font-size: 0.9rem;
+          color: #D35F2D;
+          margin-bottom: 1rem;
+        }
+
+        .popup-nutrition {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 0.75rem;
+        }
+
+        .popup-nutrition-item {
+          background: #FFF5EE;
+          padding: 0.6rem;
+          text-align: center;
+        }
+
+        .popup-nutrition-value {
+          display: block;
+          font-size: 1.1rem;
+          font-weight: 600;
+          color: #D35F2D;
+        }
+
+        .popup-nutrition-label {
+          display: block;
+          font-size: 0.7rem;
+          color: #5C4A3D;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+        }
+
+        .popup-no-data {
+          color: #8B7355;
+          font-size: 0.9rem;
+          text-align: center;
+          padding: 1rem 0;
+        }
+
+        /* Recipe Nutrition Toggle & Display */
+        .nutrition-toggle {
+          width: 100%;
+          padding: 0.75rem;
+          margin-top: 1rem;
+          background: #F5F9F5;
+          border: 1px solid #C8E0C8;
+          font-size: 0.85rem;
+          cursor: pointer;
+          transition: all 0.2s;
+          font-family: inherit;
+          color: #3D5A3D;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+        }
+
+        .nutrition-toggle:hover {
+          background: #E8F5E8;
+        }
+
+        .recipe-nutrition {
+          background: #F5F9F5;
+          border: 1px solid #C8E0C8;
+          border-top: none;
+          padding: 1rem;
+        }
+
+        .nutrition-row {
+          display: flex;
+          justify-content: space-between;
+          padding: 0.5rem 0;
+          border-bottom: 1px solid #E0EEE0;
+        }
+
+        .nutrition-row:last-child {
+          border-bottom: none;
+        }
+
+        .nutrition-row .label {
+          color: #5C4A3D;
+        }
+
+        .nutrition-row .value {
+          font-weight: 600;
+          color: #3D5A3D;
+        }
+
+        .per-portion {
+          margin-top: 1rem;
+          padding-top: 1rem;
+          border-top: 2px solid #C8E0C8;
+        }
+
+        .per-portion h4 {
+          font-size: 0.75rem;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          color: #3D5A3D;
+          margin-bottom: 0.75rem;
+        }
+
+        /* Recipe Category Section in Basics */
+        .recipe-category-section {
+          margin-bottom: 2rem;
+        }
+
+        .recipe-category-header {
+          background: #FFF5EE;
+          padding: 0.75rem 1rem;
+          font-size: 0.75rem;
+          letter-spacing: 0.15em;
+          text-transform: uppercase;
+          color: #2D2A26;
+          font-weight: 600;
+          border-left: 4px solid #E87D48;
+          margin-bottom: 0.5rem;
+        }
+
+        .recipe-list {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+
+        .recipe-item-card {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 1rem;
+          background: white;
+          border: 1px solid #E8E0D8;
+          cursor: pointer;
+          transition: all 0.15s;
+        }
+
+        .recipe-item-card:hover {
+          border-color: #D35F2D;
+          background: #FEFBF7;
+        }
+
+        .recipe-item-info h3 {
+          font-size: 1rem;
+          font-weight: 600;
+          color: #2D2A26;
+          margin: 0 0 0.25rem 0;
+        }
+
+        .recipe-item-info p {
+          font-size: 0.85rem;
+          color: #5C4A3D;
+          margin: 0;
+        }
+
+        .recipe-item-meta {
+          display: flex;
+          gap: 0.5rem;
+          align-items: center;
+        }
+
+        .recipe-time-tag {
+          background: #FFF5EE;
+          padding: 0.25rem 0.5rem;
+          font-size: 0.8rem;
+          color: #D35F2D;
         }
       `}</style>
     </div>
