@@ -2302,6 +2302,22 @@ export default function App() {
   const [sousVideDoneness, setSousVideDoneness] = useState('medium');
   const [sousVideThicknessValue, setSousVideThicknessValue] = useState(3); // cm
 
+  // Max tjocklek per kategori
+  const sousVideMaxThickness = {
+    'Nötkött': 8,
+    'Fläskkött': 6,
+    'Kyckling & Fågel': 5,
+    'Lamm': 6,
+  };
+
+  // Justera tjocklek om den överstiger max för kategorin
+  useEffect(() => {
+    const max = sousVideMaxThickness[sousVideCategory] || 6;
+    if (sousVideThicknessValue > max) {
+      setSousVideThicknessValue(max);
+    }
+  }, [sousVideCategory]);
+
   // Beräkna sous vide-tid baserat på tjocklek
   const calculateSousVideTime = (item, doneness, thickness) => {
     if (!item || !doneness) return null;
@@ -3475,13 +3491,17 @@ export default function App() {
           </div>
 
           {/* Thickness selector - dölj för ägg och skaldjur */}
-          {sousVideCategory !== 'Ägg' && sousVideCategory !== 'Skaldjur' && (
+          {sousVideCategory !== 'Ägg' && sousVideCategory !== 'Skaldjur' && (() => {
+            const max = sousVideMaxThickness[sousVideCategory] || 6;
+            const mid = Math.round(max / 2);
+
+            return (
             <div className="thickness-selector">
               <label className="thickness-label">Tjocklek: <strong>{sousVideThicknessValue} cm</strong></label>
               <input
                 type="range"
                 min="1"
-                max="8"
+                max={max}
                 step="0.5"
                 value={sousVideThicknessValue}
                 onChange={(e) => setSousVideThicknessValue(parseFloat(e.target.value))}
@@ -3489,11 +3509,12 @@ export default function App() {
               />
               <div className="thickness-marks">
                 <span>1 cm</span>
-                <span>4 cm</span>
-                <span>8 cm</span>
+                <span>{mid} cm</span>
+                <span>{max} cm</span>
               </div>
             </div>
-          )}
+            );
+          })()}
 
           {setting ? (
             <>
