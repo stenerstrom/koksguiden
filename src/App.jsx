@@ -1,5 +1,186 @@
 import React, { useState, useCallback, useEffect } from 'react';
 
+// ========================================
+// SOUS VIDE DATA (baserat på Modernist Cuisine)
+// ========================================
+// Tjockleksbaserade tider (minuter) för sous vide (från Modernist Cuisine)
+// Tid för att nå kärntemperatur från kylskåpstemperatur (~5°C)
+const sousVideThickness = {
+  // Tjocklek i cm → minuter för att nå kärntemperatur
+  heating: {
+    1.0: 25,
+    1.5: 35,
+    2.0: 50,
+    2.5: 60,
+    3.0: 90,
+    3.5: 120,
+    4.0: 150,
+    4.5: 180,
+    5.0: 210,
+    5.5: 250,
+    6.0: 280,
+    7.0: 360,
+    8.0: 450,
+  },
+  // Extra tid för pastörisering vid olika temperaturer (minuter)
+  // Baserat på FDA/USDA riktlinjer och Modernist Cuisine
+  pasteurization: {
+    54: 120,  // 2 timmar extra vid 54°C
+    55: 90,
+    56: 60,
+    57: 45,
+    58: 30,
+    60: 15,
+    63: 5,
+    65: 1,
+    68: 0,    // Omedelbar pastörisering vid 68°C+
+  },
+  // Texturförbättringstid för tuffa styckningsdelar (timmar)
+  tenderizing: {
+    'Flankstek': 8,
+    'Högrev': 24,
+    'Nötbringa': 48,
+    'Revbensspjäll': 12,
+    'Fläskbog (Pulled)': 18,
+    'Fläsklägg': 8,
+    'Lammlägg': 12,
+    'Lammbog': 18,
+    'Anklår (Confit)': 8,
+    'Bläckfisk': 4,
+  }
+};
+
+const sousVideData = {
+  'Nötkött': [
+    { name: 'Oxfilé', rare: { temp: 54, time: '1-2h' }, medium: { temp: 58, time: '1-2h' }, wellDone: { temp: 65, time: '1-2h' }, maxTime: '4h', tips: 'Perfekt för sous vide. Bryn snabbt efteråt för Maillard-reaktion.', afterCare: 'Bryn snabbt (30-60 sek per sida) på mycket hög värme för Maillard-reaktion och krispig yta.' },
+    { name: 'Entrecôte', rare: { temp: 54, time: '1-2h' }, medium: { temp: 58, time: '1-2h' }, wellDone: { temp: 65, time: '2-3h' }, maxTime: '4h', tips: 'Fettet behöver lite längre tid för att mjukna.', afterCare: 'Bryn snabbt (30-60 sek per sida) på mycket hög värme. Fettet blir extra gott vid hög värme.' },
+    { name: 'Flankstek', rare: { temp: 54, time: '8-12h' }, medium: { temp: 58, time: '8-12h' }, wellDone: null, maxTime: '24h', tips: 'Lång tid bryter ner bindväv. Skär tunt mot fibrerna.', afterCare: 'Bryn snabbt på hög värme. Skär tunt mot fibrerna före servering.' },
+    { name: 'Högrev', rare: null, medium: { temp: 62, time: '24-48h' }, wellDone: { temp: 68, time: '24-36h' }, maxTime: '72h', tips: 'Tough cut - kräver lång tid. Perfekt för pulled beef.', afterCare: 'Shreddas för pulled beef eller bryn snabbt för servering som stek.' },
+    { name: 'Rostbiff', rare: { temp: 54, time: '3-6h' }, medium: { temp: 58, time: '3-6h' }, wellDone: { temp: 65, time: '4-8h' }, maxTime: '12h', tips: 'Jämn temperatur genom hela steken.', afterCare: 'Bryn snabbt på alla sidor för fin yta. Vila 5 min innan skivning.' },
+    { name: 'Nötbringa', rare: null, medium: null, wellDone: { temp: 68, time: '48-72h' }, maxTime: '72h', tips: 'Blir silkeslen efter 48+ timmar. Toppas med BBQ-glaze.', afterCare: 'Pensla med BBQ-glaze och gratinierera i ugn eller på grill.' },
+  ],
+  'Fläsk': [
+    { name: 'Fläskfilé', rare: null, medium: { temp: 60, time: '1-2h' }, wellDone: { temp: 65, time: '1-2h' }, maxTime: '4h', tips: 'Säker vid 60°C. Saftigare än traditionellt.', afterCare: 'Bryn snabbt på hög värme för fin yta och färg.' },
+    { name: 'Fläskkotlett', rare: null, medium: { temp: 60, time: '1-2h' }, wellDone: { temp: 65, time: '1-2h' }, maxTime: '4h', tips: 'Med ben tar lite längre tid.', afterCare: 'Bryn snabbt på hög värme, särskilt fettkanten.' },
+    { name: 'Fläskkarré', rare: null, medium: { temp: 60, time: '2-4h' }, wellDone: { temp: 65, time: '2-4h' }, maxTime: '6h', tips: 'Perfekt jämnhet genom hela stycket.', afterCare: 'Bryn snabbt eller gratinierera i ugn för fin yta.' },
+    { name: 'Revbensspjäll', rare: null, medium: null, wellDone: { temp: 68, time: '12-24h' }, maxTime: '36h', tips: 'Fall-off-the-bone mörhet. Grilla/rök efteråt för bark.', afterCare: 'Pensla med glaze och grilla/bränna på hög värme för karamelliserad bark.' },
+    { name: 'Fläskbog (Pulled)', rare: null, medium: null, wellDone: { temp: 68, time: '18-24h' }, maxTime: '36h', tips: 'Shreddas enkelt efter sous vide. Krydda väl innan.', afterCare: 'Shreddas med två gafflar. Blanda med BBQ-sås och värm eventuellt i ugn.' },
+    { name: 'Fläsklägg', rare: null, medium: null, wellDone: { temp: 77, time: '8-12h' }, maxTime: '24h', tips: 'Kollagen bryts ner perfekt.', afterCare: 'Servera direkt med sky eller gratinierera för krispigt skinn.' },
+  ],
+  'Kyckling & Fågel': [
+    { name: 'Kycklingbröst', rare: null, medium: { temp: 63, time: '1-2h' }, wellDone: { temp: 68, time: '1-2h' }, maxTime: '4h', tips: 'Saftigaste kycklingbröstet du smakat. 63°C är säkert efter 1h.', afterCare: 'Bryn snabbt skinnsidan ner för krispigt skinn. Eller servera direkt om skinlös.' },
+    { name: 'Kycklinglår', rare: null, medium: null, wellDone: { temp: 74, time: '2-4h' }, maxTime: '8h', tips: 'Högre temp pga bindväv. Ger otrolig mörhet.', afterCare: 'Bryn skinnsidan för krispighet eller gratinierera i ugn.' },
+    { name: 'Ankbröst', rare: { temp: 54, time: '2-3h' }, medium: { temp: 58, time: '2-3h' }, wellDone: { temp: 65, time: '2-3h' }, maxTime: '6h', tips: 'Rosa anka är säkert. Bryn skinnet efteråt.', afterCare: 'Bryn skinnsidan i kall panna som värms långsamt för maximalt krispigt skinn.' },
+    { name: 'Anklår (Confit)', rare: null, medium: null, wellDone: { temp: 68, time: '8-12h' }, maxTime: '24h', tips: 'Ersätter traditionell confit. Lägg till ankfett i påsen.', afterCare: 'Bryn i ankfett eller gratinierera i ugn tills skinnet är krispigt.' },
+    { name: 'Kalkonbröst', rare: null, medium: { temp: 63, time: '2-4h' }, wellDone: { temp: 68, time: '2-4h' }, maxTime: '6h', tips: 'Aldrig torr kalkon igen!', afterCare: 'Bryn snabbt för färg eller servera direkt skivat.' },
+  ],
+  'Lamm': [
+    { name: 'Lammrack', rare: { temp: 54, time: '1-2h' }, medium: { temp: 58, time: '1-2h' }, wellDone: { temp: 65, time: '2h' }, maxTime: '4h', tips: 'Bryn med timjan och vitlök efteråt.', afterCare: 'Bryn snabbt i smör med timjan, vitlök och rosmarin.' },
+    { name: 'Lammfilé', rare: { temp: 54, time: '45min-1h' }, medium: { temp: 58, time: '1h' }, wellDone: { temp: 65, time: '1-2h' }, maxTime: '3h', tips: 'Kort tid pga liten diameter.', afterCare: 'Bryn snabbt runt om för jämn, fin yta.' },
+    { name: 'Lammstek', rare: { temp: 54, time: '4-8h' }, medium: { temp: 58, time: '4-8h' }, wellDone: { temp: 65, time: '6-10h' }, maxTime: '12h', tips: 'Perfekt för stora stycken.', afterCare: 'Bryn på alla sidor. Vila 10-15 min före skivning.' },
+    { name: 'Lammlägg', rare: null, medium: null, wellDone: { temp: 68, time: '12-24h' }, maxTime: '36h', tips: 'Faller från benet. Traditionell brässering på modern tid.', afterCare: 'Servera direkt med sky eller bryn försiktigt för lite yta.' },
+    { name: 'Lammbog', rare: null, medium: null, wellDone: { temp: 68, time: '18-24h' }, maxTime: '36h', tips: 'Pull-apart mörhet.', afterCare: 'Shreddas eller servera hel med reducerad sky.' },
+  ],
+  'Fisk': [
+    { name: 'Lax', rare: { temp: 45, time: '30-45min' }, medium: { temp: 52, time: '30-45min' }, wellDone: { temp: 60, time: '30-45min' }, maxTime: '1h', tips: '45°C = glasig, 52°C = medium. Otroligt resultat!', afterCare: 'Servera direkt. Om önskat: bryn skinnsidan snabbt eller flambera med gasbrännare.' },
+    { name: 'Torsk', rare: null, medium: { temp: 50, time: '20-30min' }, wellDone: { temp: 55, time: '20-30min' }, maxTime: '45min', tips: 'Flakig och saftig. Servera direkt.', afterCare: 'Servera direkt – torsk behöver ingen efterbehandling. Toppa med brynt smör.' },
+    { name: 'Hälleflundra', rare: null, medium: { temp: 50, time: '30-45min' }, wellDone: { temp: 55, time: '30-45min' }, maxTime: '1h', tips: 'Fast vitt kött. Premium resultat.', afterCare: 'Servera direkt med sås. Behöver ingen bryning.' },
+    { name: 'Tonfisk', rare: { temp: 40, time: '20-30min' }, medium: { temp: 50, time: '20-30min' }, wellDone: { temp: 60, time: '30min' }, maxTime: '45min', tips: 'Sashimi-kvalitet vid 40°C.', afterCare: 'Servera direkt eller bryn blixtnabbt (5 sek) på ytan för tataki-stil.' },
+    { name: 'Sej/Kolja', rare: null, medium: { temp: 50, time: '20-30min' }, wellDone: { temp: 55, time: '20-30min' }, maxTime: '45min', tips: 'Vardagsfisk blir restaurangklass.', afterCare: 'Servera direkt med sås eller brynt smör. Ingen extra tillagning behövs.' },
+  ],
+  'Skaldjur': [
+    { name: 'Räkor (stora)', rare: null, medium: null, wellDone: { temp: 60, time: '15-20min' }, maxTime: '30min', tips: 'Rosa och snärtiga. Översteks lätt!', afterCare: 'Servera direkt – räkor är klara som de är. Kan kylas för räkcocktail.' },
+    { name: 'Hummer', rare: null, medium: { temp: 60, time: '30-45min' }, wellDone: { temp: 63, time: '30-45min' }, maxTime: '1h', tips: 'Smörmjukt hummerkött. Fantastiskt!', afterCare: 'Servera direkt med smält smör. Kan gratineras kort om önskat.' },
+    { name: 'Pilgrimsmusslor', rare: null, medium: { temp: 52, time: '20-30min' }, wellDone: { temp: 58, time: '25-35min' }, maxTime: '45min', tips: 'Bryn snabbt efteråt för yta.', afterCare: 'Bryn snabbt (15-20 sek per sida) på hög värme för karamelliserad yta.' },
+    { name: 'Bläckfisk', rare: null, medium: null, wellDone: { temp: 77, time: '4-6h' }, maxTime: '8h', tips: 'Mjuk som smör efter lång tid. Revolutionerande!', afterCare: 'Kan serveras direkt eller grillas snabbt för smoky smak. Skär i skivor.' },
+  ],
+  'Ägg': [
+    { name: 'Onsen-ägg (63°C ägg)', rare: null, medium: { temp: 63, time: '45-60min' }, wellDone: null, maxTime: '2h', tips: 'Krämig gula, just-set vita. Ikoniskt!', afterCare: 'Knäck försiktigt i skål. Servera på toast, ramen, sallad eller rice bowl.' },
+    { name: 'Pocherat ägg-textur', rare: null, medium: { temp: 65, time: '45min' }, wellDone: null, maxTime: '1.5h', tips: 'Fastare vita, fortfarande flytande gula.', afterCare: 'Knäck försiktigt ur skalet. Perfekt för Eggs Benedict eller sallader.' },
+    { name: 'Hårdkokt textur', rare: null, medium: null, wellDone: { temp: 75, time: '1h' }, maxTime: '2h', tips: 'Perfekt hårdkokt utan grön ring.', afterCare: 'Kyl i isbad för enklare skalning. Perfekt för ägghalvor eller äggröra.' },
+  ],
+};
+
+// Sous vide säkerhetsinformation (baserat på Modernist Cuisine)
+const sousVideSafety = {
+  title: 'Livsmedelssäkerhet vid Sous Vide',
+  zones: [
+    { range: '4-54°C', name: 'Farozonen', description: 'Bakterier växer snabbt. Max 2 timmar totalt.' },
+    { range: '54-60°C', name: 'Pastöriseringszon', description: 'Bakterier dör över tid. Säkert efter 1-4h beroende på tjocklek.' },
+    { range: '60°C+', name: 'Säker zon', description: 'Bakterier dör snabbt. Traditionellt "säker" temperatur.' },
+  ],
+  rules: [
+    'Mat ska från kylskåp till vattenbad på under 1 timme',
+    'Kyl snabbt i isbad om du inte serverar direkt',
+    'Sous vide-mat innehåller sovande sporer - ät inom 2h eller kyl till <4°C',
+    'Frys inte sous vide-mat som redan legat i kylskåp',
+    'Återvärm till samma temperatur, inte högre',
+  ],
+  sporeWarning: 'Clostridium-sporer överlever sous vide. Kyl alltid snabbt efter tillagning om maten inte äts direkt.'
+};
+
+// ========================================
+// HÄLSOMÅL-KOPPLINGAR (baserat på How Not to Die, Blue Zones)
+// ========================================
+const healthGoals = {
+  'Hjärthälsa': {
+    description: 'Mat som stödjer ett friskt hjärta och blodkärl',
+    goodIngredients: ['Lax', 'Makrill', 'Sardiner', 'Valnötter', 'Linfrö', 'Havregryn', 'Bönor', 'Olivolja', 'Avokado', 'Blåbär', 'Spenat', 'Grönkål'],
+    avoidIngredients: ['Bacon', 'Korv', 'Processat kött', 'Smör i stora mängder', 'Friterat'],
+    nutrients: { prioritize: ['omega-3', 'fiber', 'kalium'], limit: ['mättat fett', 'natrium'] },
+    science: 'Omega-3 fettsyror minskar inflammation och triglycerider. Fiber sänker LDL-kolesterol.'
+  },
+  'Energi & Fokus': {
+    description: 'Mat för stabil energi och mental skärpa',
+    goodIngredients: ['Ägg', 'Havregryn', 'Blåbär', 'Nötter', 'Fullkornsbröd', 'Bananer', 'Quinoa', 'Lax', 'Mörk choklad', 'Grönt te'],
+    avoidIngredients: ['Sockerdrycker', 'Vitt bröd', 'Godis', 'Energidrycker'],
+    nutrients: { prioritize: ['protein', 'komplexa kolhydrater', 'B-vitaminer'], limit: ['socker', 'raffinerade kolhydrater'] },
+    science: 'Stabilt blodsocker = stabil energi. Protein och fiber bromsar glukosupptaget.'
+  },
+  'Bättre sömn': {
+    description: 'Mat som främjar avslappning och sömnkvalitet',
+    goodIngredients: ['Körsbär', 'Valnötter', 'Mandel', 'Kalkon', 'Kyckling', 'Banan', 'Honung', 'Kamomillte', 'Varm mjölk', 'Havregryn'],
+    avoidIngredients: ['Kaffe', 'Te (svart/grönt)', 'Choklad', 'Alkohol', 'Kryddstark mat', 'Energidrycker'],
+    nutrients: { prioritize: ['tryptofan', 'magnesium', 'melatonin'], limit: ['koffein'] },
+    science: 'Tryptofan omvandlas till serotonin och sedan melatonin. Körsbär innehåller naturligt melatonin.'
+  },
+  'Muskelbyggande': {
+    description: 'Mat för muskelåterhämtning och tillväxt',
+    goodIngredients: ['Kycklingbröst', 'Ägg', 'Kvarg', 'Cottage cheese', 'Lax', 'Nötfärs (mager)', 'Linser', 'Quinoa', 'Tofu', 'Grekisk yoghurt'],
+    avoidIngredients: [],
+    nutrients: { prioritize: ['protein', 'leucin', 'omega-3'], limit: [] },
+    science: 'Protein bygger muskler. 1.6-2.2g protein per kg kroppsvikt för optimal tillväxt.'
+  },
+  'Immunförsvar': {
+    description: 'Mat som stärker kroppens försvar',
+    goodIngredients: ['Citrusfrukter', 'Paprika', 'Broccoli', 'Vitlök', 'Ingefära', 'Spenat', 'Mandel', 'Gurkmeja', 'Yoghurt', 'Grön te', 'Honung'],
+    avoidIngredients: ['Socker i överskott', 'Alkohol', 'Processat kött'],
+    nutrients: { prioritize: ['C-vitamin', 'D-vitamin', 'zink', 'probiotika'], limit: ['socker'] },
+    science: 'C-vitamin stödjer vita blodkroppar. Probiotika stärker tarmfloran där 70% av immunförsvaret sitter.'
+  },
+  'Viktkontroll': {
+    description: 'Mat som mättar länge utan för många kalorier',
+    goodIngredients: ['Ägg', 'Kvarg', 'Kyckling', 'Fisk', 'Bönor', 'Linser', 'Grönsaker', 'Bär', 'Havregryn', 'Popcorn'],
+    avoidIngredients: ['Sockerdrycker', 'Chips', 'Godis', 'Friterat', 'Vitt bröd'],
+    nutrients: { prioritize: ['protein', 'fiber'], limit: ['socker', 'raffinerade kolhydrater'] },
+    science: 'Protein och fiber ökar mättnadskänslan. Högre termisk effekt vid proteinmetabolism.'
+  },
+  'Tarmhälsa': {
+    description: 'Mat för en frisk tarmflora',
+    goodIngredients: ['Yoghurt', 'Kefir', 'Surkål', 'Kimchi', 'Miso', 'Kombucha', 'Bönor', 'Linser', 'Fullkorn', 'Bananer', 'Lök', 'Vitlök', 'Havregryn'],
+    avoidIngredients: ['Artificiella sötningsmedel', 'Processat kött', 'Friterat'],
+    nutrients: { prioritize: ['fiber', 'probiotika', 'prebiotika'], limit: [] },
+    science: 'Probiotika tillför goda bakterier. Prebiotika (fiber) matar dem. Mångfald i kosten = mångfald i tarmen.'
+  },
+  'Ledhälsa': {
+    description: 'Mat som stödjer leder och minskar inflammation',
+    goodIngredients: ['Lax', 'Makrill', 'Sardiner', 'Valnötter', 'Olivolja', 'Körsbär', 'Broccoli', 'Spenat', 'Gurkmeja', 'Ingefära'],
+    avoidIngredients: ['Socker', 'Vitt mjöl', 'Friterat', 'Processat kött'],
+    nutrients: { prioritize: ['omega-3', 'vitamin D', 'kollagen'], limit: ['omega-6 i överskott', 'socker'] },
+    science: 'Omega-3 är antiinflammatoriskt. Gurkmeja (curcumin) har dokumenterad effekt på ledsmärta.'
+  }
+};
+
 // Vila-tider för kött (baserat på The Food Lab)
 const restingTimes = {
   'Biff (tunn, 2cm)': { time: '5 min', tempRise: '2-3°C' },
@@ -2114,6 +2295,79 @@ export default function App() {
     return [];
   });
 
+  // Sous Vide state
+  const [showSousVide, setShowSousVide] = useState(false);
+  const [selectedSousVideItem, setSelectedSousVideItem] = useState(null);
+  const [sousVideCategory, setSousVideCategory] = useState('Nötkött');
+  const [sousVideDoneness, setSousVideDoneness] = useState('medium');
+  const [sousVideThicknessValue, setSousVideThicknessValue] = useState(3); // cm
+
+  // Beräkna sous vide-tid baserat på tjocklek
+  const calculateSousVideTime = (item, doneness, thickness) => {
+    if (!item || !doneness) return null;
+    const setting = item[doneness];
+    if (!setting) return null;
+
+    const temp = setting.temp;
+
+    // Hitta närmaste tjocklek i tabellen
+    const thicknesses = Object.keys(sousVideThickness.heating).map(Number).sort((a, b) => a - b);
+    let heatingTime = 0;
+
+    if (thickness <= thicknesses[0]) {
+      heatingTime = sousVideThickness.heating[thicknesses[0]];
+    } else if (thickness >= thicknesses[thicknesses.length - 1]) {
+      heatingTime = sousVideThickness.heating[thicknesses[thicknesses.length - 1]];
+    } else {
+      // Interpolera mellan värden
+      for (let i = 0; i < thicknesses.length - 1; i++) {
+        if (thickness >= thicknesses[i] && thickness <= thicknesses[i + 1]) {
+          const t1 = thicknesses[i];
+          const t2 = thicknesses[i + 1];
+          const time1 = sousVideThickness.heating[t1];
+          const time2 = sousVideThickness.heating[t2];
+          const ratio = (thickness - t1) / (t2 - t1);
+          heatingTime = Math.round(time1 + ratio * (time2 - time1));
+          break;
+        }
+      }
+    }
+
+    // Lägg till pastöriseringstid
+    const pastTemps = Object.keys(sousVideThickness.pasteurization).map(Number).sort((a, b) => a - b);
+    let pastTime = 0;
+    for (let i = pastTemps.length - 1; i >= 0; i--) {
+      if (temp <= pastTemps[i]) {
+        pastTime = sousVideThickness.pasteurization[pastTemps[i]];
+      }
+    }
+
+    // Kolla om det är en tuff styckningsdel som behöver extra tid
+    const tenderTime = sousVideThickness.tenderizing[item.name] || 0;
+
+    const totalMinutes = heatingTime + pastTime;
+    const totalWithTender = Math.max(totalMinutes, tenderTime * 60);
+
+    // Formatera till timmar och minuter
+    const hours = Math.floor(totalWithTender / 60);
+    const mins = totalWithTender % 60;
+
+    if (hours === 0) {
+      return `${mins} min`;
+    } else if (mins === 0) {
+      return `${hours}h`;
+    } else {
+      return `${hours}h ${mins}min`;
+    }
+  };
+
+  // Category filter state (collapsed by default)
+  const [showCategoryFilter, setShowCategoryFilter] = useState(false);
+
+  // Percentage-based scaling state
+  const [usePercentScaling, setUsePercentScaling] = useState(false);
+  const [mainIngredientId, setMainIngredientId] = useState(null);
+
   // Spara recept till localStorage
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -2319,10 +2573,10 @@ export default function App() {
     setIsSearching(true);
     const searchTermLower = term.toLowerCase();
     
-    // Hitta synonymer
+    // Hitta synonymer (exakt matchning för att undvika att "mjölk" matchar "mjöl")
     let searchTerms = [searchTermLower];
     Object.entries(synonyms).forEach(([key, values]) => {
-      if (searchTermLower.includes(key)) {
+      if (searchTermLower === key) {
         searchTerms = [...searchTerms, ...values];
       }
     });
@@ -2432,7 +2686,7 @@ export default function App() {
       
       <div className="menu-card" role="button" tabIndex="0" onClick={() => setActiveView('temperatures')} onKeyDown={(e) => e.key === 'Enter' && setActiveView('temperatures')}>
         <h2>Temperaturer</h2>
-        <p>Tillaga perfekt kött, fågel och fisk</p>
+        <p>Rätt temperatur för alla råvaror</p>
         <span className="menu-arrow">→</span>
       </div>
       
@@ -3175,6 +3429,225 @@ export default function App() {
       );
     }
 
+    // Sous Vide detaljvy
+    if (showSousVide && selectedSousVideItem) {
+      const item = selectedSousVideItem;
+      const doneness = sousVideDoneness;
+      const setting = item[doneness];
+
+      return (
+        <div className="detail-view sousvide-detail">
+          <button className="back-btn" onClick={() => setSelectedSousVideItem(null)}>
+            ← Tillbaka
+          </button>
+
+          <div className="detail-header">
+            <h2>{item.name}</h2>
+            <span className="sousvide-badge">Sous Vide</span>
+          </div>
+
+          {/* Doneness selector */}
+          <div className="doneness-selector">
+            {item.rare && (
+              <button
+                className={`doneness-btn ${doneness === 'rare' ? 'active rare' : ''}`}
+                onClick={() => setSousVideDoneness('rare')}
+              >
+                Rare
+              </button>
+            )}
+            {item.medium && (
+              <button
+                className={`doneness-btn ${doneness === 'medium' ? 'active medium' : ''}`}
+                onClick={() => setSousVideDoneness('medium')}
+              >
+                Medium
+              </button>
+            )}
+            {item.wellDone && (
+              <button
+                className={`doneness-btn ${doneness === 'wellDone' ? 'active welldone' : ''}`}
+                onClick={() => setSousVideDoneness('wellDone')}
+              >
+                Genomstekt
+              </button>
+            )}
+          </div>
+
+          {/* Thickness selector - dölj för ägg och skaldjur */}
+          {sousVideCategory !== 'Ägg' && sousVideCategory !== 'Skaldjur' && (
+            <div className="thickness-selector">
+              <label className="thickness-label">Tjocklek: <strong>{sousVideThicknessValue} cm</strong></label>
+              <input
+                type="range"
+                min="1"
+                max="8"
+                step="0.5"
+                value={sousVideThicknessValue}
+                onChange={(e) => setSousVideThicknessValue(parseFloat(e.target.value))}
+                className="thickness-slider"
+              />
+              <div className="thickness-marks">
+                <span>1 cm</span>
+                <span>4 cm</span>
+                <span>8 cm</span>
+              </div>
+            </div>
+          )}
+
+          {setting ? (
+            <>
+              {/* Använd samma temp-grid som vanliga temperaturguiden */}
+              <div className="temp-grid" style={{gridTemplateColumns: '1fr 1fr'}}>
+                <div className={`temp-card ${doneness === 'rare' ? 'rare' : doneness === 'medium' ? 'medium' : 'welldone'}`}>
+                  <span className="temp-label">Temperatur</span>
+                  <span className="temp-value">{setting.temp}°C</span>
+                </div>
+                <div className={`temp-card ${doneness === 'rare' ? 'rare' : doneness === 'medium' ? 'medium' : 'welldone'}`}>
+                  <span className="temp-label">{(sousVideCategory === 'Ägg' || sousVideCategory === 'Skaldjur') ? 'Tid' : 'Beräknad tid'}</span>
+                  <span className="temp-value">
+                    {(sousVideCategory === 'Ägg' || sousVideCategory === 'Skaldjur')
+                      ? setting.time
+                      : calculateSousVideTime(item, doneness, sousVideThicknessValue)}
+                  </span>
+                </div>
+              </div>
+
+              {sousVideCategory !== 'Ägg' && sousVideCategory !== 'Skaldjur' && (
+                <p className="thickness-note">
+                  Tid beräknad för {sousVideThicknessValue} cm tjocklek från kylskåpstemperatur.
+                  Inkluderar uppvärmningstid + pastöriseringsmarginal.
+                </p>
+              )}
+
+              <div className="info-box">
+                <h3>Max tid i vattenbad</h3>
+                <p>{item.maxTime}</p>
+                <p className="rest-time-note">Efter denna tid kan texturen försämras.</p>
+              </div>
+
+              <div className="info-box">
+                <h3>Tips</h3>
+                <p>{item.tips}</p>
+              </div>
+
+              <div className="info-box warning">
+                <h3>Efter sous vide</h3>
+                <p>{item.afterCare}</p>
+              </div>
+            </>
+          ) : (
+            <div className="info-box warning">
+              <p>Denna stekgrad rekommenderas inte för {item.name} med sous vide.</p>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // Sous Vide listvy
+    if (showSousVide && title === 'Temperaturer') {
+      const svCategories = Object.keys(sousVideData);
+
+      return (
+        <div className="list-view sousvide-view">
+          <button className="back-btn" onClick={() => {
+            setActiveView('home');
+            setShowSousVide(false);
+            setSearchTerm('');
+          }}>
+            ← Tillbaka
+          </button>
+          <h1>Temperaturer</h1>
+
+          {/* Toggle mellan traditionell och sous vide */}
+          <div className="temp-mode-tabs">
+            <button
+              className={`mode-tab ${!showSousVide ? 'active' : ''}`}
+              onClick={() => setShowSousVide(false)}
+            >
+              Traditionell
+            </button>
+            <button
+              className={`mode-tab ${showSousVide ? 'active' : ''}`}
+              onClick={() => setShowSousVide(true)}
+            >
+              Sous Vide
+            </button>
+          </div>
+
+          {/* Säkerhetsinformation */}
+          <details className="sousvide-safety">
+            <summary className="safety-summary">
+              {sousVideSafety.title}
+            </summary>
+            <div className="safety-content">
+              <div className="safety-zones">
+                {sousVideSafety.zones.map((zone, idx) => (
+                  <div key={idx} className={`safety-zone zone-${idx}`}>
+                    <span className="zone-range">{zone.range}</span>
+                    <span className="zone-name">{zone.name}</span>
+                    <span className="zone-desc">{zone.description}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="safety-rules">
+                <h4>Viktiga regler:</h4>
+                <ul>
+                  {sousVideSafety.rules.map((rule, idx) => (
+                    <li key={idx}>{rule}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </details>
+
+          <div className="search-box">
+            <input
+              type="text"
+              placeholder="Sök..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            {searchTerm && (
+              <button className="clear-search" onClick={() => setSearchTerm('')}>×</button>
+            )}
+          </div>
+
+          {svCategories.map(category => {
+            const items = sousVideData[category].filter(item =>
+              !searchTerm || item.name.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+            if (items.length === 0) return null;
+
+            return (
+              <div key={category} className="category-section">
+                <h3 className="category-title">{category}</h3>
+                <div className="items-list">
+                  {items.map((item, idx) => (
+                    <div
+                      key={idx}
+                      className="item-row sousvide-item"
+                      onClick={() => {
+                        setSelectedSousVideItem(item);
+                        setSousVideDoneness(item.medium ? 'medium' : item.wellDone ? 'wellDone' : 'rare');
+                      }}
+                    >
+                      <span className="item-name">{item.name}</span>
+                      <span className="sousvide-quick-info">
+                        {item.medium ? `${item.medium.temp}°C` : item.wellDone ? `${item.wellDone.temp}°C` : `${item.rare.temp}°C`}
+                      </span>
+                      <span className="item-arrow">›</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      );
+    }
+
     return (
       <div className="list-view">
         <button className="back-btn" aria-label="Gå tillbaka" onClick={() => {
@@ -3184,11 +3657,29 @@ export default function App() {
           ← Tillbaka
         </button>
         <h1>{title}</h1>
-        
+
+        {/* Toggle mellan traditionell och sous vide - endast för Temperaturer */}
+        {title === 'Temperaturer' && (
+          <div className="temp-mode-tabs">
+            <button
+              className={`mode-tab ${!showSousVide ? 'active' : ''}`}
+              onClick={() => setShowSousVide(false)}
+            >
+              Traditionell
+            </button>
+            <button
+              className={`mode-tab ${showSousVide ? 'active' : ''}`}
+              onClick={() => setShowSousVide(true)}
+            >
+              Sous Vide
+            </button>
+          </div>
+        )}
+
         <div className="search-box">
           <input
             type="text"
-            aria-label="Sök" 
+            aria-label="Sök"
             placeholder="Sök..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -3197,7 +3688,7 @@ export default function App() {
             <button className="clear-search" aria-label="Rensa sökning" onClick={() => setSearchTerm('')}>×</button>
           )}
         </div>
-        
+
         {searchTerm && (
           <div className="search-results-count">
             {totalFiltered} träffar
@@ -3285,20 +3776,42 @@ export default function App() {
         </div>
 
         <div className="category-filter-wrapper">
-          <div className="category-filter">
-            {foodCategories.map(cat => (
-              <button
-                key={cat.id}
-                className={`category-chip ${selectedCategory === cat.id ? 'active' : ''}`}
-                onClick={() => {
-                  setSelectedCategory(cat.id);
-                  if (foodSearch) handleFoodSearch(foodSearch);
-                }}
-              >
-                {cat.label}
-              </button>
-            ))}
-          </div>
+          <button
+            className="category-filter-toggle"
+            onClick={() => setShowCategoryFilter(!showCategoryFilter)}
+          >
+            <span>{selectedCategory ? `Kategori: ${foodCategories.find(c => c.id === selectedCategory)?.label || selectedCategory}` : 'Filtrera på kategori'}</span>
+            <span style={{marginLeft: 'auto'}}>{showCategoryFilter ? '▲' : '▼'}</span>
+          </button>
+
+          {showCategoryFilter && (
+            <div className="category-filter">
+              {foodCategories.map(cat => (
+                <button
+                  key={cat.id}
+                  className={`category-chip ${selectedCategory === cat.id ? 'active' : ''}`}
+                  onClick={() => {
+                    setSelectedCategory(cat.id);
+                    setShowCategoryFilter(false);
+                    if (foodSearch) handleFoodSearch(foodSearch);
+                  }}
+                >
+                  {cat.label}
+                </button>
+              ))}
+              {selectedCategory && (
+                <button
+                  className="category-chip clear"
+                  onClick={() => {
+                    setSelectedCategory('');
+                    setShowCategoryFilter(false);
+                  }}
+                >
+                  Rensa filter
+                </button>
+              )}
+            </div>
+          )}
         </div>
 
         {selectedFood ? (
@@ -3339,7 +3852,50 @@ export default function App() {
               </div>
             </div>
 
-            <button 
+            {/* Hälsomål-matchning för detta livsmedel */}
+            {(() => {
+              const foodName = selectedFood.product_name.toLowerCase();
+              const matchingGoals = Object.entries(healthGoals).filter(([_, goal]) =>
+                goal.goodIngredients.some(ing => foodName.includes(ing.toLowerCase()))
+              );
+              const avoidGoals = Object.entries(healthGoals).filter(([_, goal]) =>
+                goal.avoidIngredients.some(ing => foodName.includes(ing.toLowerCase()))
+              );
+
+              if (matchingGoals.length > 0 || avoidGoals.length > 0) {
+                return (
+                  <div className="food-health-goals">
+                    {matchingGoals.length > 0 && (
+                      <div className="health-match-section good">
+                        <h4>Bra för:</h4>
+                        <div className="health-match-tags">
+                          {matchingGoals.map(([goalName]) => (
+                            <span key={goalName} className="health-match-tag good">
+                              {goalName}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {avoidGoals.length > 0 && (
+                      <div className="health-match-section avoid">
+                        <h4>Begränsa vid:</h4>
+                        <div className="health-match-tags">
+                          {avoidGoals.map(([goalName]) => (
+                            <span key={goalName} className="health-match-tag avoid">
+                              {goalName}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+              return null;
+            })()}
+
+            <button
               className="add-to-meal-btn"
               onClick={() => {
                 setMealList([...mealList, { food: selectedFood, portion: portionSize }]);
@@ -4139,17 +4695,79 @@ export default function App() {
           {/* Lista över tillagda ingredienser */}
           {newRecipe.ingredients.length > 0 && (
             <div className="recipe-ingredients-list">
-              <label>Ingredienser ({newRecipe.ingredients.length})</label>
-              {newRecipe.ingredients.map(ing => (
-                <div key={ing.id} className="recipe-ingredient-item">
-                  <span className="ing-amount">{ing.amount} {ing.unit}</span>
-                  <span className="ing-name">{ing.food.product_name}</span>
-                  <button
-                    className="remove-btn"
-                    onClick={() => removeIngredient(ing.id)}
-                  >×</button>
+              <div className="ingredients-header">
+                <label>Ingredienser ({newRecipe.ingredients.length})</label>
+
+                {/* Toggle för procentuell skalning */}
+                <div className="scaling-toggle">
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={usePercentScaling}
+                      onChange={(e) => {
+                        setUsePercentScaling(e.target.checked);
+                        if (e.target.checked && !mainIngredientId && newRecipe.ingredients.length > 0) {
+                          // Sätt första ingrediensen som huvudingrediens om ingen är vald
+                          setMainIngredientId(newRecipe.ingredients[0].id);
+                        }
+                      }}
+                    />
+                    <span>%-skalning</span>
+                  </label>
                 </div>
-              ))}
+              </div>
+
+              {usePercentScaling && (
+                <p className="scaling-hint">
+                  💡 Klicka "100%" för att välja huvudingrediens. Alla andra ingredienser visas som procent av denna.
+                </p>
+              )}
+
+              {newRecipe.ingredients.map(ing => {
+                // Beräkna procent baserat på huvudingrediens (i gram)
+                const mainIng = newRecipe.ingredients.find(i => i.id === mainIngredientId);
+                const mainGrams = mainIng ? convertToGrams(mainIng.amount, mainIng.unit, mainIng.food.product_name) : 0;
+                const thisGrams = convertToGrams(ing.amount, ing.unit, ing.food.product_name);
+                const percent = mainGrams > 0 ? Math.round((thisGrams / mainGrams) * 100) : 0;
+                const isMain = ing.id === mainIngredientId;
+
+                return (
+                  <div key={ing.id} className={`recipe-ingredient-item ${isMain ? 'is-main' : ''}`}>
+                    <span className="ing-amount">{ing.amount} {ing.unit}</span>
+                    <span className="ing-name">
+                      {ing.food.product_name}
+                      {usePercentScaling && isMain && <span className="main-ingredient-badge">100%</span>}
+                    </span>
+
+                    {usePercentScaling && (
+                      <>
+                        {!isMain && <span className="percent-display">{percent}%</span>}
+                        {!isMain && (
+                          <button
+                            className="set-main-btn"
+                            onClick={() => setMainIngredientId(ing.id)}
+                            title="Sätt som huvudingrediens (100%)"
+                          >
+                            100%
+                          </button>
+                        )}
+                      </>
+                    )}
+
+                    <button
+                      className="remove-btn"
+                      onClick={() => {
+                        removeIngredient(ing.id);
+                        if (ing.id === mainIngredientId) {
+                          // Om vi tar bort huvudingrediensen, välj nästa
+                          const remaining = newRecipe.ingredients.filter(i => i.id !== ing.id);
+                          setMainIngredientId(remaining.length > 0 ? remaining[0].id : null);
+                        }
+                      }}
+                    >×</button>
+                  </div>
+                );
+              })}
             </div>
           )}
 
@@ -4516,7 +5134,7 @@ export default function App() {
           border-radius: 50%;
           cursor: pointer;
           font-size: 1rem;
-          color: #6b3a55;
+          color: #5C4A3D;
         }
 
         /* Category Section */
@@ -4676,8 +5294,8 @@ export default function App() {
         }
 
         .info-box.nutrition-info {
-          background: #F5F9F5;
-          border: 1px solid #C8E0C8;
+          background: #FEFBF7;
+          border: 1px solid #F5A576;
         }
 
         .info-box.nutrition-info .nutrition-grid {
@@ -4692,14 +5310,14 @@ export default function App() {
           padding: 0.75rem 0.5rem;
           text-align: center;
           border-radius: 4px;
-          border: 1px solid #E0EEE0;
+          border: 1px solid #E8E0D8;
         }
 
         .info-box.nutrition-info .nutrition-value {
           display: block;
           font-size: 1.2rem;
           font-weight: 600;
-          color: #3D5A3D;
+          color: #5C4A3D;
         }
 
         .info-box.nutrition-info .nutrition-label {
@@ -4863,7 +5481,7 @@ export default function App() {
         /* Common Conversions */
         .common-conversions h3 {
           font-family: 'Playfair Display', serif;
-          color: #6b3a55;
+          color: #5C4A3D;
           margin-bottom: 1rem;
         }
 
@@ -5320,33 +5938,67 @@ export default function App() {
         }
 
         .category-filter-wrapper {
-          max-height: 120px;
-          overflow-y: auto;
           margin-bottom: 1rem;
-          padding: 0.5rem;
-          background: #F5EFE8;
-          border-radius: 4px;
+        }
+
+        .category-filter-toggle {
+          display: flex;
+          align-items: center;
+          width: 100%;
+          padding: 0.75rem 1rem;
+          background: #FFF5EE;
+          border: 1px solid #F5A576;
+          border-radius: 8px;
+          cursor: pointer;
+          font-size: 0.9rem;
+          color: #5C4A3D;
+        }
+
+        .category-filter-toggle:hover {
+          background: #FEF0E5;
         }
 
         .category-filter {
           display: flex;
           flex-wrap: wrap;
           gap: 0.5rem;
+          padding: 0.75rem;
+          background: #F5EFE8;
+          border-radius: 0 0 8px 8px;
+          margin-top: -1px;
+          border: 1px solid #F5A576;
+          border-top: none;
         }
 
         .category-chip {
           padding: 0.4rem 0.75rem;
           background: white;
           border: 1px solid #E8E0D8;
+          border-radius: 16px;
           font-size: 0.8rem;
           cursor: pointer;
           transition: all 0.15s;
+        }
+
+        .category-chip:hover {
+          border-color: #E87D48;
         }
 
         .category-chip.active {
           background: #D35F2D;
           border-color: #D35F2D;
           color: white;
+        }
+
+        .category-chip.clear {
+          background: transparent;
+          border-style: dashed;
+          color: #999;
+        }
+
+        .category-chip.clear:hover {
+          border-color: #D35F2D;
+          color: #D35F2D;
         }
 
         .food-results h3 {
@@ -5929,20 +6581,20 @@ export default function App() {
 
         /* === SALTNING BOX === */
         .saltning-box {
-          background: linear-gradient(135deg, #F0F8FF, #E6F3FF);
-          border-left: 4px solid #4A90D9;
+          background: linear-gradient(135deg, #FFF5EE, #FFEEE5);
+          border-left: 4px solid #E87D48;
         }
 
         .saltning-value {
           font-size: 1.5rem;
           font-weight: 700;
-          color: #2D5A8A;
+          color: #D35F2D;
           margin: 0.5rem 0;
         }
 
         .saltning-note {
           font-size: 0.85rem;
-          color: #4A6A8A;
+          color: #5C4A3D;
           margin-top: 0.5rem;
         }
 
@@ -6237,10 +6889,10 @@ export default function App() {
 
         /* Technique Card (Blanchering etc.) */
         .technique-card {
-          background: #E8F5E8;
+          background: #FFF5EE;
           padding: 1rem 1.25rem;
           margin-bottom: 1.5rem;
-          border-left: 4px solid #4CAF50;
+          border-left: 4px solid #E87D48;
           cursor: pointer;
           transition: all 0.2s ease;
           display: flex;
@@ -6249,7 +6901,7 @@ export default function App() {
         }
 
         .technique-card:hover {
-          background: #D4EED4;
+          background: #FFEEE5;
         }
 
         .technique-icon {
@@ -6269,7 +6921,7 @@ export default function App() {
 
         .technique-content p {
           font-size: 0.85rem;
-          color: #3D5A3D;
+          color: #5C4A3D;
           margin: 0;
         }
 
@@ -6294,10 +6946,10 @@ export default function App() {
         }
 
         .blanchering-key-card {
-          background: #E8F5E8;
+          background: #FFF5EE;
           padding: 1rem;
           margin-bottom: 0.5rem;
-          border-left: 3px solid #4CAF50;
+          border-left: 3px solid #E87D48;
         }
 
         .blanchering-key-card h4 {
@@ -6308,7 +6960,7 @@ export default function App() {
 
         .blanchering-key-card p {
           font-size: 0.9rem;
-          color: #3D5A3D;
+          color: #5C4A3D;
           margin: 0;
           line-height: 1.4;
         }
@@ -6333,7 +6985,7 @@ export default function App() {
 
         .blanchering-item {
           padding: 0.75rem 1rem;
-          border-bottom: 1px solid #E0EEE0;
+          border-bottom: 1px solid #E8E0D8;
         }
 
         .blanchering-item:last-child {
@@ -6353,8 +7005,8 @@ export default function App() {
 
         .blanchering-time {
           font-weight: 600;
-          color: #4CAF50;
-          background: #E8F5E8;
+          color: #E87D48;
+          background: #FFF5EE;
           padding: 0.25rem 0.5rem;
           font-size: 0.9rem;
         }
@@ -6512,10 +7164,10 @@ export default function App() {
           width: 100%;
           padding: 1rem;
           margin-top: 1rem;
-          background: #E8F5E8;
+          background: #FFF5EE;
           border: none;
-          border-left: 3px solid #4CAF50;
-          color: #2D5A2D;
+          border-left: 3px solid #E87D48;
+          color: #D35F2D;
           font-size: 0.95rem;
           font-weight: 500;
           text-align: left;
@@ -6524,7 +7176,7 @@ export default function App() {
         }
 
         .guide-link-btn:hover {
-          background: #D4EED4;
+          background: #FFEEE5;
         }
 
         .guide-link-btn.brassering-link {
@@ -6545,10 +7197,10 @@ export default function App() {
         }
 
         .time-card {
-          background: #E8F5E8;
+          background: #FFF5EE;
           padding: 1.5rem 2rem;
           text-align: center;
-          border-left: 4px solid #4CAF50;
+          border-left: 4px solid #E87D48;
         }
 
         .time-label {
@@ -6556,7 +7208,7 @@ export default function App() {
           font-size: 0.8rem;
           text-transform: uppercase;
           letter-spacing: 0.1em;
-          color: #3D5A3D;
+          color: #5C4A3D;
           margin-bottom: 0.5rem;
         }
 
@@ -6564,12 +7216,12 @@ export default function App() {
           display: block;
           font-size: 1.75rem;
           font-weight: 600;
-          color: #2D5A2D;
+          color: #D35F2D;
         }
 
         .blanchering-method {
-          background: #F5FBF5;
-          border: 1px solid #D4EED4;
+          background: #FEFBF7;
+          border: 1px solid #FFEEE5;
         }
 
         .blanchering-method ol {
@@ -6907,13 +7559,13 @@ export default function App() {
           width: 100%;
           padding: 0.75rem;
           margin-top: 1rem;
-          background: #F5F9F5;
-          border: 1px solid #C8E0C8;
+          background: #FEFBF7;
+          border: 1px solid #F5A576;
           font-size: 0.85rem;
           cursor: pointer;
           transition: all 0.2s;
           font-family: inherit;
-          color: #3D5A3D;
+          color: #5C4A3D;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -6921,12 +7573,12 @@ export default function App() {
         }
 
         .nutrition-toggle:hover {
-          background: #E8F5E8;
+          background: #FFF5EE;
         }
 
         .recipe-nutrition {
-          background: #F5F9F5;
-          border: 1px solid #C8E0C8;
+          background: #FEFBF7;
+          border: 1px solid #F5A576;
           border-top: none;
           padding: 1rem;
         }
@@ -6935,7 +7587,7 @@ export default function App() {
           display: flex;
           justify-content: space-between;
           padding: 0.5rem 0;
-          border-bottom: 1px solid #E0EEE0;
+          border-bottom: 1px solid #E8E0D8;
         }
 
         .nutrition-row:last-child {
@@ -6948,20 +7600,20 @@ export default function App() {
 
         .nutrition-row .value {
           font-weight: 600;
-          color: #3D5A3D;
+          color: #5C4A3D;
         }
 
         .per-portion {
           margin-top: 1rem;
           padding-top: 1rem;
-          border-top: 2px solid #C8E0C8;
+          border-top: 2px solid #F5A576;
         }
 
         .per-portion h4 {
           font-size: 0.75rem;
           letter-spacing: 0.1em;
           text-transform: uppercase;
-          color: #3D5A3D;
+          color: #5C4A3D;
           margin-bottom: 0.75rem;
         }
 
@@ -7028,6 +7680,492 @@ export default function App() {
           padding: 0.25rem 0.5rem;
           font-size: 0.8rem;
           color: #D35F2D;
+        }
+
+        /* ========================================
+           SOUS VIDE STYLES
+           ======================================== */
+        .temp-mode-tabs {
+          display: flex;
+          gap: 0.5rem;
+          margin-bottom: 1rem;
+          background: #F5F5F5;
+          padding: 0.25rem;
+          border-radius: 8px;
+        }
+
+        .mode-tab {
+          flex: 1;
+          padding: 0.75rem 1rem;
+          border: none;
+          background: transparent;
+          font-size: 0.9rem;
+          font-weight: 500;
+          cursor: pointer;
+          border-radius: 6px;
+          transition: all 0.2s;
+          color: #666;
+        }
+
+        .mode-tab.active {
+          background: white;
+          color: #2D2A26;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .mode-tab:hover:not(.active) {
+          background: rgba(255,255,255,0.5);
+        }
+
+        .sousvide-badge {
+          background: #E87D48;
+          color: white;
+          padding: 0.25rem 0.75rem;
+          border-radius: 4px;
+          font-size: 0.75rem;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+        }
+
+        .doneness-selector {
+          display: flex;
+          gap: 0.5rem;
+          margin: 1rem 0;
+        }
+
+        .doneness-btn {
+          flex: 1;
+          padding: 0.75rem;
+          border: 2px solid #E0E0E0;
+          background: white;
+          border-radius: 8px;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+
+        .doneness-btn:hover {
+          border-color: #999;
+        }
+
+        .doneness-btn.active {
+          color: white;
+          border-color: transparent;
+        }
+
+        .doneness-btn.active.rare {
+          background: #FFF5EE;
+          color: #2D2A26;
+          border-color: #E87D48;
+        }
+
+        .doneness-btn.active.medium {
+          background: #F5A576;
+          color: white;
+          border-color: #F5A576;
+        }
+
+        .doneness-btn.active.welldone {
+          background: #5C4A3D;
+          color: white;
+          border-color: #5C4A3D;
+        }
+
+        .thickness-selector {
+          background: #FFF5EE;
+          padding: 1rem;
+          border-radius: 8px;
+          margin-bottom: 1rem;
+        }
+
+        .thickness-label {
+          display: block;
+          font-size: 0.9rem;
+          color: #5C4A3D;
+          margin-bottom: 0.5rem;
+        }
+
+        .thickness-slider {
+          width: 100%;
+          height: 8px;
+          border-radius: 4px;
+          background: #E8E0D8;
+          outline: none;
+          -webkit-appearance: none;
+          appearance: none;
+        }
+
+        .thickness-slider::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          appearance: none;
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          background: #E87D48;
+          cursor: pointer;
+          border: 3px solid white;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .thickness-slider::-moz-range-thumb {
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          background: #E87D48;
+          cursor: pointer;
+          border: 3px solid white;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .thickness-marks {
+          display: flex;
+          justify-content: space-between;
+          font-size: 0.75rem;
+          color: #8B7355;
+          margin-top: 0.25rem;
+        }
+
+        .thickness-note {
+          font-size: 0.8rem;
+          color: #5C4A3D;
+          text-align: center;
+          margin: 0.5rem 0 1rem;
+          font-style: italic;
+        }
+
+        .sousvide-quick-info {
+          background: #FFF5EE;
+          padding: 0.25rem 0.5rem;
+          border-radius: 4px;
+          font-size: 0.8rem;
+          color: #D35F2D;
+          font-weight: 600;
+        }
+
+        .sousvide-safety {
+          background: #FFF8E7;
+          border: 1px solid #FFE0B2;
+          border-radius: 8px;
+          margin-bottom: 1rem;
+        }
+
+        .safety-summary {
+          padding: 0.75rem 1rem;
+          cursor: pointer;
+          font-weight: 500;
+          color: #E65100;
+        }
+
+        .safety-content {
+          padding: 0 1rem 1rem;
+        }
+
+        .safety-zones {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+          margin-bottom: 1rem;
+        }
+
+        .safety-zone {
+          display: grid;
+          grid-template-columns: 80px 120px 1fr;
+          gap: 0.5rem;
+          padding: 0.5rem;
+          border-radius: 6px;
+          font-size: 0.85rem;
+        }
+
+        .zone-0 { background: #FFEBEE; }
+        .zone-1 { background: #FFF3E0; }
+        .zone-2 { background: #E8F5E9; }
+
+        .zone-range { font-weight: 600; }
+        .zone-name { font-weight: 500; }
+        .zone-desc { color: #666; }
+
+        .safety-rules ul {
+          margin: 0;
+          padding-left: 1.25rem;
+        }
+
+        .safety-rules li {
+          margin-bottom: 0.5rem;
+          font-size: 0.85rem;
+        }
+
+        /* ========================================
+           HEALTH GOALS STYLES
+           ======================================== */
+        .health-goals-section {
+          margin-bottom: 1rem;
+        }
+
+        .health-goals-toggle {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.75rem 1rem;
+          background: #FFF5EE;
+          border: 1px solid #F5A576;
+          border-radius: 8px;
+          cursor: pointer;
+          margin-bottom: 0.5rem;
+        }
+
+        .health-goals-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 0.5rem;
+        }
+
+        .health-goal-chip {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.5rem 0.75rem;
+          background: white;
+          border: 1px solid #E0E0E0;
+          border-radius: 20px;
+          cursor: pointer;
+          font-size: 0.85rem;
+          transition: all 0.2s;
+        }
+
+        .health-goal-chip:hover {
+          border-color: #E87D48;
+        }
+
+        .health-goal-chip.selected {
+          background: #E87D48;
+          color: white;
+          border-color: #E87D48;
+        }
+
+        .health-goal-icon {
+          font-size: 1.1rem;
+        }
+
+        .health-goal-detail {
+          background: #FFF5EE;
+          border: 1px solid #F5A576;
+          border-radius: 8px;
+          padding: 1rem;
+          margin-bottom: 1rem;
+        }
+
+        .health-goal-header {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          margin-bottom: 0.75rem;
+        }
+
+        .health-goal-header h3 {
+          margin: 0;
+          font-size: 1.1rem;
+        }
+
+        .health-goal-description {
+          color: #666;
+          font-size: 0.9rem;
+          margin-bottom: 0.75rem;
+        }
+
+        .health-good-ingredients, .health-avoid-ingredients {
+          margin-bottom: 0.75rem;
+        }
+
+        .health-good-ingredients h4 {
+          color: #D35F2D;
+          font-size: 0.85rem;
+          margin-bottom: 0.25rem;
+        }
+
+        .health-avoid-ingredients h4 {
+          color: #5C4A3D;
+          font-size: 0.85rem;
+          margin-bottom: 0.25rem;
+        }
+
+        .ingredient-tags {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.25rem;
+        }
+
+        .ingredient-tag {
+          padding: 0.2rem 0.5rem;
+          border-radius: 4px;
+          font-size: 0.75rem;
+        }
+
+        .ingredient-tag.good {
+          background: #FFF5EE;
+          color: #D35F2D;
+        }
+
+        .ingredient-tag.avoid {
+          background: #F5F0EB;
+          color: #5C4A3D;
+        }
+
+        .health-science {
+          background: white;
+          padding: 0.75rem;
+          border-radius: 6px;
+          font-size: 0.85rem;
+          color: #555;
+          border-left: 3px solid #E87D48;
+        }
+
+        .food-health-match {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          margin-top: 0.5rem;
+          padding: 0.5rem;
+          background: #FFF5EE;
+          border-radius: 6px;
+          font-size: 0.85rem;
+          color: #D35F2D;
+        }
+
+        /* ========================================
+           PERCENTAGE SCALING STYLES
+           ======================================== */
+        .scaling-toggle {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          padding: 0.75rem;
+          background: #F5F5F5;
+          border-radius: 8px;
+          margin-bottom: 1rem;
+        }
+
+        .scaling-toggle label {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          cursor: pointer;
+          font-size: 0.9rem;
+        }
+
+        .scaling-toggle input[type="checkbox"] {
+          width: 18px;
+          height: 18px;
+          cursor: pointer;
+        }
+
+        .main-ingredient-badge {
+          background: #E87D48;
+          color: white;
+          padding: 0.15rem 0.4rem;
+          border-radius: 4px;
+          font-size: 0.7rem;
+          font-weight: 600;
+          margin-left: 0.5rem;
+        }
+
+        .percent-display {
+          color: #666;
+          font-size: 0.8rem;
+          margin-left: auto;
+          padding-right: 0.5rem;
+        }
+
+        .set-main-btn {
+          padding: 0.25rem 0.5rem;
+          background: #E87D48;
+          border: none;
+          border-radius: 4px;
+          font-size: 0.75rem;
+          cursor: pointer;
+          opacity: 0.6;
+          transition: opacity 0.2s;
+        }
+
+        .set-main-btn:hover {
+          opacity: 1;
+        }
+
+        /* Food Health Goals Match */
+        .food-health-goals {
+          margin: 1rem 0;
+          padding: 1rem;
+          background: #F9F9F9;
+          border-radius: 8px;
+        }
+
+        .health-match-section {
+          margin-bottom: 0.75rem;
+        }
+
+        .health-match-section:last-child {
+          margin-bottom: 0;
+        }
+
+        .health-match-section h4 {
+          font-size: 0.85rem;
+          margin: 0 0 0.5rem 0;
+        }
+
+        .health-match-section.good h4 {
+          color: #D35F2D;
+        }
+
+        .health-match-section.avoid h4 {
+          color: #5C4A3D;
+        }
+
+        .health-match-tags {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.5rem;
+        }
+
+        .health-match-tag {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.25rem;
+          padding: 0.35rem 0.65rem;
+          border-radius: 16px;
+          font-size: 0.8rem;
+          font-weight: 500;
+        }
+
+        .health-match-tag.good {
+          background: #FFF5EE;
+          color: #D35F2D;
+        }
+
+        .health-match-tag.avoid {
+          background: #F5F0EB;
+          color: #5C4A3D;
+        }
+
+        /* Ingredients header with scaling toggle */
+        .ingredients-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 0.5rem;
+        }
+
+        .scaling-hint {
+          font-size: 0.8rem;
+          color: #666;
+          background: #FFF8E1;
+          padding: 0.5rem;
+          border-radius: 6px;
+          margin-bottom: 0.5rem;
+        }
+
+        .recipe-ingredient-item.is-main {
+          background: #FFFDE7;
+          border-left: 3px solid #E87D48;
         }
       `}</style>
     </div>
