@@ -3520,11 +3520,32 @@ export default function App() {
                 </p>
               )}
 
-              <div className="info-box">
-                <h3>Max tid i vattenbad</h3>
-                <p>{item.maxTime}</p>
-                <p className="rest-time-note">Efter denna tid kan texturen försämras.</p>
-              </div>
+              {/* Visa maxTime endast om den är längre än beräknad tid */}
+              {(() => {
+                const parseTimeToMinutes = (timeStr) => {
+                  if (!timeStr) return 0;
+                  const hours = timeStr.match(/(\d+)h/);
+                  const mins = timeStr.match(/(\d+)\s*min/);
+                  return (hours ? parseInt(hours[1]) * 60 : 0) + (mins ? parseInt(mins[1]) : 0);
+                };
+                const calculatedTime = (sousVideCategory === 'Ägg' || sousVideCategory === 'Skaldjur')
+                  ? setting.time
+                  : calculateSousVideTime(item, doneness, sousVideThicknessValue);
+                const calcMinutes = parseTimeToMinutes(calculatedTime);
+                const maxMinutes = parseTimeToMinutes(item.maxTime);
+
+                // Visa bara om maxTime är längre än beräknad tid
+                if (maxMinutes > calcMinutes) {
+                  return (
+                    <div className="info-box">
+                      <h3>Max tid i vattenbad</h3>
+                      <p>{item.maxTime}</p>
+                      <p className="rest-time-note">Efter denna tid kan texturen försämras.</p>
+                    </div>
+                  );
+                }
+                return null;
+              })()}
 
               <div className="info-box">
                 <h3>Tips</h3>
