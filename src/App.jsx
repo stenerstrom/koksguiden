@@ -2318,6 +2318,23 @@ export default function App() {
     }
   }, [sousVideCategory]);
 
+  // URL-routing: läs recept från URL vid sidladdning
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash.startsWith('#recept=')) {
+      const recipeId = decodeURIComponent(hash.replace('#recept=', ''));
+      // Sök i basicRecipesData efter receptet
+      for (const category of Object.keys(basicRecipesData)) {
+        const recipe = basicRecipesData[category].find(r => r.id === recipeId || r.name === recipeId);
+        if (recipe) {
+          setActiveView('recipes');
+          setSelectedBasicRecipe(recipe);
+          break;
+        }
+      }
+    }
+  }, []);
+
   // Beräkna sous vide-tid baserat på tjocklek
   const calculateSousVideTime = (item, doneness, thickness) => {
     if (!item || !doneness) return null;
@@ -4296,6 +4313,7 @@ export default function App() {
             setRecipeScale(1);
             setShowRecipeNutrition(false);
             setSelectedRecipeIngredient(null);
+            window.history.pushState(null, '', window.location.pathname);
           }}>
             ← Tillbaka
           </button>
@@ -4482,10 +4500,10 @@ export default function App() {
             {/* QR-kod visas endast vid utskrift */}
             <div className="print-qr-section">
               <img
-                src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https%3A%2F%2Fstenerstrom.github.io%2Fkoksguiden%2F"
-                alt="QR-kod till Köksguiden"
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(`https://stenerstrom.github.io/koksguiden/#recept=${encodeURIComponent(recipe.id)}`)}`}
+                alt={`QR-kod till ${recipe.name}`}
               />
-              <span>Skanna för att öppna i Köksguiden</span>
+              <span>Skanna för att öppna receptet i Köksguiden</span>
             </div>
           </div>
         </div>
@@ -4522,6 +4540,7 @@ export default function App() {
                     onClick={() => {
                       setSelectedBasicRecipe(recipe);
                       setRecipeScale(1);
+                      window.history.pushState(null, '', `#recept=${encodeURIComponent(recipe.id)}`);
                     }}
                   >
                     <span className="item-name">{recipe.name}</span>
