@@ -555,6 +555,476 @@ const brasseringData = {
   }
 };
 
+// Fermenteringsguide (baserat på Noma Guide to Fermentation & The Art of Fermentation)
+const fermentationData = {
+  intro: {
+    title: 'Fermentering',
+    description: 'Fermentering är en av de äldsta matteknikerna i världen. Genom att låta bakterier, jäst eller mögel omvandla råvaror skapar vi nya smaker, förlänger hållbarheten och ökar näringsvärdet.',
+    principle: 'Det finns en tunn linje mellan röta och fermentering. Vid fermentering tar du rollen som dörrvakt - du släpper bara in de mikrober som skapar önskat resultat. Salt, temperatur och syrefria miljöer är dina verktyg för att kontrollera processen.'
+  },
+  categories: {
+    lacto: {
+      title: 'Mjölksyrejäsning',
+            description: 'Lactobacillus-bakterier omvandlar socker till mjölksyra. Resultatet blir syrligt, krispigt och hållbart.',
+      basics: {
+        salt: '2-3% av grönsakernas vikt',
+        temp: '18-22°C (rumstemperatur)',
+        time: '3-14 dagar beroende på smak',
+        signs: 'Bubblor, sur doft, grönsakerna sjunker'
+      },
+      recipes: [
+        {
+          name: 'Surkål',
+          time: '2-4 veckor',
+          salt: '2%',
+          description: 'Klassikern. Finstrimlad vitkål med salt.',
+          ingredients: [
+            '1 kg vitkål',
+            '20 g salt (2% av kålens vikt)'
+          ],
+          steps: [
+            'Strimla vitkålen fint (ca 3mm)',
+            'Väg kålen och beräkna 2% salt (20g per kg)',
+            'Blanda kål och salt, massera i 5-10 min tills lagen rinner',
+            'Packa hårt i en burk, pressa ner så lagen täcker',
+            'Täck med vikter, fermentera vid rumstemperatur (18-22°C)',
+            'Smaka efter 1 vecka - fortsätt tills önskad surhet'
+          ],
+          tips: ['Spara några ytterblad att lägga överst', 'Skölj inte kålen - bakterierna sitter på bladen']
+        },
+        {
+          name: 'Kimchi',
+          time: '1-2 veckor',
+          salt: '2.5%',
+          description: 'Koreansk fermenterad kål med chili och vitlök.',
+          ingredients: [
+            '1 kg salladskål (kinakål)',
+            '50 g salt',
+            '3 msk gochugaru (koreansk chiliflingor)',
+            '4 vitlöksklyftor, rivna',
+            '2 tsk riven ingefära',
+            '2 msk fisksås',
+            '1 tsk socker',
+            '4 salladslökar, skivade'
+          ],
+          steps: [
+            'Dela kålen i bitar, strö över salt och låt vila 2 timmar',
+            'Blanda kimchipasta: gochugaru, vitlök, ingefära, fisksås, socker',
+            'Skölj kålen lätt, krama ur vätskan',
+            'Blanda kål, salladslök och pasta',
+            'Packa i burk, pressa ner ordentligt',
+            'Fermentera 2-5 dagar vid rumstemperatur',
+            'Flytta till kylskåp när önskad surhet nåtts'
+          ],
+          tips: ['Använd handskar - chili färgar!', 'Traditionellt används räkpasta för extra umami']
+        },
+        {
+          name: 'Lacto-tomater',
+          time: '5-7 dagar',
+          salt: '2%',
+          description: 'Fermenterade tomater med koncentrerad umami.',
+          ingredients: [
+            '500 g körsbärstomater',
+            '10 g salt (2%)',
+            '2 vitlöksklyftor',
+            'Några kvistar timjan eller basilika'
+          ],
+          steps: [
+            'Dela tomaterna på mitten',
+            'Blanda med salt, vitlök och örter',
+            'Lägg i burk, pressa ner så lagen täcker',
+            'Fermentera 5-7 dagar vid rumstemperatur',
+            'Förvara kallt - håller månader'
+          ],
+          tips: ['Lagen blir en fantastisk smakförstärkare', 'Funkar med de flesta grönsaker']
+        },
+        {
+          name: 'Lacto-chili',
+          time: '1-2 veckor',
+          salt: '3%',
+          description: 'Bas för fermenterad chilisås (sriracha-stil).',
+          ingredients: [
+            '500 g färsk röd chili (jalapeño, fresno eller liknande)',
+            '4 vitlöksklyftor',
+            '15 g salt (3%)',
+            '2 msk äppelcidervinäger (vid mixning)'
+          ],
+          steps: [
+            'Mixa chili och vitlök grovt',
+            'Blanda med salt',
+            'Häll i burk med lock som släpper gas',
+            'Fermentera 1-2 veckor tills aktiv jäsning avtar',
+            'Mixa slät med vinäger',
+            'Sila för slät sås eller behåll texturen'
+          ],
+          tips: ['Röd jalapeño eller fresno fungerar bra', 'Längre fermentering = komplexare smak']
+        }
+      ]
+    },
+    kombucha: {
+      title: 'Kombucha & Drycker',
+            description: 'Fermenterade drycker med probiotika och unika smaker.',
+      basics: {
+        sugar: '5-10% socker i basen',
+        temp: '22-28°C',
+        time: '7-14 dagar för primär jäsning',
+        signs: 'SCOBY växer, syrlig smak, bubblor'
+      },
+      recipes: [
+        {
+          name: 'Kombucha',
+          time: '7-14 dagar',
+          temp: '22-28°C',
+          description: 'Fermenterat te med sötsyrlig smak och naturlig kolsyra.',
+          ingredients: [
+            '1 liter vatten',
+            '80 g socker',
+            '2 tsk svart eller grönt te (löst eller påsar)',
+            '1 st SCOBY (tesvamp, ca 10 cm diameter)',
+            '100 ml starterkombucha (från tidigare batch)'
+          ],
+          steps: [
+            'Koka vattnet, lös upp sockret',
+            'Tillsätt te, låt dra 10-15 min, sila',
+            'Låt svalna till rumstemperatur (under 30°C)',
+            'Häll i glasburk, lägg i SCOBY och starter',
+            'Täck med tygbit och gummiband',
+            'Fermentera vid 22-28°C i 7-14 dagar tills önskad surhet',
+            'Buteljera med ev. frukt för kolsyra (2-3 dagar)'
+          ],
+          tips: ['SCOBY = Symbiotic Culture of Bacteria and Yeast', 'Undvik metallkärl - använd glas']
+        },
+        {
+          name: 'Vattenkefir',
+          time: '24-48 timmar',
+          temp: '20-25°C',
+          description: 'Snabb, lätt fermenterad läsk.',
+          ingredients: [
+            '1 liter vatten (ej klorerat)',
+            '50 g socker',
+            '3 msk vattenkefirkorn',
+            '2-3 torkade fikon eller 1 citronskiva'
+          ],
+          steps: [
+            'Lös upp sockret i vattnet (rumstemperatur)',
+            'Tillsätt vattenkefirkorn och fikon/citron',
+            'Täck med tyg, fermentera vid 20-25°C i 24-48 timmar',
+            'Sila bort korn och frukt',
+            'Buteljera med färsk frukt för kolsyra (1-2 dagar)'
+          ],
+          tips: ['Kefirkornen växer - ge bort överskottet!', 'Undvik kranvatten med klor']
+        },
+        {
+          name: 'Tepache',
+          time: '3-5 dagar',
+          temp: '20-25°C',
+          description: 'Mexikansk fermenterad ananasdryck.',
+          ingredients: [
+            'Skal och kärna från 1 ananas',
+            '200 g piloncillo eller råsocker',
+            '2 liter vatten',
+            '1 kanelstång'
+          ],
+          steps: [
+            'Lägg ananasskalen i en stor burk',
+            'Tillsätt socker, kanel och vatten',
+            'Täck med tyg, fermentera vid rumstemperatur (20-25°C) i 3-5 dagar',
+            'Sila och servera kallt',
+            'Smaksätt ev. med chili och lime'
+          ],
+          tips: ['Ska smaka sött-syrligt med hint av jäst', 'Perfekt sätt att använda ananasskalet']
+        }
+      ]
+    },
+    dairy: {
+      title: 'Mejeri',
+      description: 'Fermenterade mejeriprodukter - yoghurt, kefir och filmjölk.',
+      basics: {
+        temp: '22-44°C beroende på kultur',
+        time: '6-24 timmar',
+        milk: 'Opastöriserad ger bäst resultat, men pastöriserad fungerar'
+      },
+      recipes: [
+        {
+          name: 'Yoghurt',
+          time: '6-12 timmar',
+          temp: '42-44°C',
+          description: 'Krämig, mild yoghurt med levande kulturer.',
+          ingredients: [
+            '1 liter mjölk (hel eller mellan)',
+            '2 msk naturell yoghurt med levande kulturer'
+          ],
+          steps: [
+            'Värm mjölken till 82°C (dödar konkurrerande bakterier)',
+            'Kyl ner till 42-44°C',
+            'Rör i yoghurten',
+            'Häll i termos eller burk insvept i handduk',
+            'Håll varmt i 6-12 timmar',
+            'Kyl - yoghurten tjocknar mer när den kyls'
+          ],
+          tips: ['Längre tid = surare yoghurt', 'Grekisk yoghurt: sila i silduk i 2-4 timmar']
+        },
+        {
+          name: 'Mjölkkefir',
+          time: '24 timmar',
+          temp: '20-25°C',
+          description: 'Probiotisk, syrlig mjölkdryck.',
+          ingredients: [
+            '500 ml mjölk',
+            '1-2 msk mjölkkefirkorn'
+          ],
+          steps: [
+            'Lägg kefirkornen i en glasburk',
+            'Häll på mjölken',
+            'Täck med tyg eller löst lock',
+            'Låt stå i rumstemperatur 24 timmar',
+            'Sila bort kornen (återanvänd)',
+            'Förvara kefiren i kylskåp'
+          ],
+          tips: ['Kefirkorn är annorlunda än vattenkefir', 'Överfermenterad kefir separerar - skaka ihop']
+        },
+        {
+          name: 'Crème fraîche',
+          time: '12-24 timmar',
+          temp: '20-25°C',
+          description: 'Hemmagjord crème fraîche med mild syra.',
+          ingredients: [
+            '500 ml vispgrädde (minst 35% fett)',
+            '2 msk kärnmjölk eller crème fraîche'
+          ],
+          steps: [
+            'Blanda grädde och kärnmjölk i en burk',
+            'Täck och låt stå i rumstemperatur 12-24 timmar',
+            'Rör om när den tjocknat',
+            'Förvara i kylskåp - tjocknar mer när den kyls'
+          ],
+          tips: ['Ju fetare grädde, desto tjockare resultat', 'Håller 2-3 veckor i kylskåp']
+        }
+      ]
+    },
+    miso: {
+      title: 'Miso & Koji',
+      description: 'Japanska fermenteringstekniker som skapar djup umami.',
+      basics: {
+        koji: 'Aspergillus oryzae-sporer på ris eller korn',
+        time: 'Miso: 3-12+ månader',
+        temp: '25-30°C för koji, rumstemperatur för miso',
+        salt: '10-13% för miso'
+      },
+      recipes: [
+        {
+          name: 'Shio Koji',
+          time: '7-10 dagar',
+          description: 'Flytande marinering som mörar kött och förstärker umami.',
+          ingredients: [
+            '200 g koji-ris (färdigt eller hemmagjort)',
+            '60 g salt',
+            '300 ml vatten'
+          ],
+          steps: [
+            'Blanda koji-ris, salt och vatten i en burk',
+            'Rör om ordentligt',
+            'Täck med tyg eller löst lock',
+            'Låt stå i rumstemperatur, rör om dagligen',
+            'Klart när kojikornen är mjuka (7-10 dagar)',
+            'Förvara i kylskåp upp till 6 månader'
+          ],
+          tips: ['Fantastisk marinad för kyckling och fisk', 'Ersätter salt i många recept']
+        },
+        {
+          name: 'Miso (snabbversion)',
+          time: '3-6 månader',
+          temp: '18-22°C',
+          salt: '12%',
+          description: 'Söt vit miso - snabbaste varianten.',
+          ingredients: [
+            '500 g torkade sojabönor',
+            '500 g koji (ris- eller kornkoji)',
+            '125 g salt'
+          ],
+          steps: [
+            'Blötlägg bönorna över natten',
+            'Koka tills helt mjuka (3-4 timmar)',
+            'Mosa grovt, låt svalna till under 35°C',
+            'Blanda med koji och salt',
+            'Packa hårt i burk, tryck ut luftfickor',
+            'Täck ytan med plastfilm och lägg på vikt',
+            'Fermentera mörkt vid rumstemperatur (18-22°C) i 3-6 månader'
+          ],
+          tips: ['Vit miso är mildast och snabbast', 'Röd/mörk miso tar 1-3 år']
+        },
+        {
+          name: 'Ärtmiso (Peaso)',
+          time: '2-3 månader',
+          temp: '18-22°C',
+          description: 'Nordisk miso på gula ärter - Nomas innovation.',
+          ingredients: [
+            '500 g gula ärter (torkade)',
+            '500 g kornkoji',
+            '120 g salt'
+          ],
+          steps: [
+            'Blötlägg ärterna över natten, koka tills mjuka',
+            'Mosa grovt, låt svalna till under 35°C',
+            'Blanda med kornkoji och salt',
+            'Packa hårt i burk, tryck ut luftfickor',
+            'Täck ytan med plastfilm, lägg på vikt',
+            'Fermentera mörkt vid rumstemperatur (18-22°C) i 2-3 månader'
+          ],
+          tips: ['Perfekt för nordiskt klimat', 'Prova även med bönor, linser']
+        }
+      ]
+    },
+    vinegar: {
+      title: 'Vinäger',
+      description: 'Tvåstegsprocess: först alkohol, sedan ättiksyra.',
+      basics: {
+        alcohol: 'Starta med 5-10% alkohol (vin, cider, öl)',
+        temp: '25-30°C',
+        time: '2-3 månader',
+        mother: 'Vinägermoder innehåller Acetobacter-bakterier'
+      },
+      recipes: [
+        {
+          name: 'Äppelcidervinäger',
+          time: '2-3 månader',
+          description: 'Hemmagjord vinäger med levande kulturer.',
+          ingredients: [
+            '1 liter färsk äppeljuice (opastöriserad)',
+            '100 ml opastöriserad äppelcidervinäger (eller vinägermoder)'
+          ],
+          steps: [
+            'Häll äppeljuicen i en vid glasburk',
+            'Täck med tyg, låt jäsa till cider (1-2 veckor)',
+            'Tillsätt vinägern/modern',
+            'Låt stå på varm plats (25-30°C) i 2-3 månader',
+            'En hinna bildas på ytan - det är modern',
+            'Sila och buteljera när tillräckligt sur'
+          ],
+          tips: ['Behåll modern för nästa batch', 'Smaka var 2:a vecka']
+        },
+        {
+          name: 'Kombucha-vinäger',
+          time: '4-6 veckor',
+          description: 'Låt kombuchan fermentera vidare till vinäger.',
+          ingredients: [
+            '1 liter färdig kombucha'
+          ],
+          steps: [
+            'Häll kombuchan i en vid burk utan SCOBY',
+            'Täck med tyg',
+            'Låt stå varmt i 4-6 veckor',
+            'Smaka regelbundet - ska bli riktigt sur',
+            'Sila och använd i dressingar'
+          ],
+          tips: ['Perfekt sätt att rädda överfermenterad kombucha', 'Mildare än vanlig vinäger']
+        },
+        {
+          name: 'Shrub (fruktvinäger)',
+          time: '1-2 veckor',
+          description: 'Gammaldags fruktkoncentrat med vinäger.',
+          ingredients: [
+            '500 g bär eller frukt',
+            '500 g socker',
+            '500 ml äppelcidervinäger'
+          ],
+          steps: [
+            'Blanda frukt och socker i en burk',
+            'Låt stå i kylskåp 1-2 dagar tills sockret lösts',
+            'Sila bort frukten',
+            'Blanda saften med vinägern',
+            'Låt mogna i kylskåp 1-2 veckor',
+            'Blanda med sodavatten för läsk'
+          ],
+          tips: ['Fantastiskt med hallon, persika eller rabarber', 'Håller flera månader i kylskåp']
+        }
+      ]
+    },
+    bread: {
+      title: 'Surdeg',
+      description: 'Naturligt jäst bröd med komplex smak och bättre hållbarhet.',
+      basics: {
+        starter: 'Blandning av mjöl och vatten som fångar vild jäst',
+        hydration: '100% hydration = lika delar mjöl och vatten (vikt)',
+        temp: '24-28°C för aktiv jäsning',
+        feeding: 'Mata dagligen i rumstemperatur, veckovis i kylskåp'
+      },
+      recipes: [
+        {
+          name: 'Surdegsstarter',
+          time: '5-7 dagar',
+          description: 'Grunden till allt surdegsbak.',
+          ingredients: [
+            '50 g fullkornsmjöl (råg eller vete) per dag',
+            '50 g ljummet vatten per dag'
+          ],
+          steps: [
+            'Dag 1: Blanda 50g mjöl + 50g vatten i burk, täck med tyg',
+            'Dag 2: Vänta och observera - leta efter bubblor',
+            'Dag 3-4: Släng hälften, mata med 50g mjöl + 50g vatten',
+            'Dag 5-7: Fortsätt mata dagligen',
+            'Klar när den fördubblas på 4-6 timmar efter matning'
+          ],
+          tips: ['Fullkorn startar snabbare än vitt mjöl', 'Förvara i kylskåp och mata 1 gång/vecka']
+        },
+        {
+          name: 'Enkelt surdegsbröd',
+          time: '24+ timmar',
+          description: 'Rustikt bröd med knaprig skorpa.',
+          ingredients: [
+            '100 g aktiv surdegsstarter',
+            '350 g vatten',
+            '500 g vetemjöl (eller 400g vete + 100g fullkorn)',
+            '10 g salt'
+          ],
+          steps: [
+            'Kvällen före: Blanda starter, vatten och mjöl. Vila 30 min, tillsätt salt',
+            'Vik och vänd degen var 30:e minut i 2 timmar',
+            'Kall jäsning i kylskåp över natten (8-12 timmar)',
+            'Forma försiktigt och slutjäs i jäskorg 2-4 timmar',
+            'Stjälp upp på bakplåt, skåra toppen',
+            'Grädda i het gryta med lock: 250°C i 30 min, utan lock 220°C i 15-20 min'
+          ],
+          tips: ['Kall jäsning utvecklar smak', 'Använd gjutjärnsgryta för bästa skorpa']
+        }
+      ]
+    }
+  },
+  troubleshooting: [
+    {
+      problem: 'Mögel på ytan',
+      solution: 'Släng alltid om du ser mögel (luddigt, färgat). Skilj från kahm-jäst (vit, slät hinna) som är ofarlig men smakar illa.'
+    },
+    {
+      problem: 'Luktar ruttet',
+      solution: 'Fermentering ska lukta surt/jästigt, inte ruttet. Rutten lukt = kontaminering, släng.'
+    },
+    {
+      problem: 'Ingen aktivitet',
+      solution: 'För kallt? Flytta till varmare plats. För salt? Bakterier jobbar långsammare. Vänta några dagar till.'
+    },
+    {
+      problem: 'För sur/stark smak',
+      solution: 'Fermenterat för länge. Flytta till kylskåp för att bromsa. Nästa gång: smaka oftare, kyl tidigare.'
+    },
+    {
+      problem: 'Mjuka grönsaker',
+      solution: 'Grönsakerna var inte fräscha nog, eller temperaturen för hög. Garvsyra (te, vinbärsblad) kan hjälpa krispigheten.'
+    }
+  ],
+  science: {
+    title: 'Vetenskapen bakom fermentering',
+    facts: [
+      { label: 'Mjölksyrabakterier trivs vid', value: '18-22°C' },
+      { label: 'pH för säker lacto-fermentering', value: '< 4.6' },
+      { label: 'Salt som hämmar patogener', value: '> 2%' },
+      { label: 'Koji-tillväxt optimal vid', value: '28-32°C' },
+      { label: 'Vinägerbakterier kräver', value: 'Syre (aerob)' }
+    ],
+    explanation: 'Fermentering är kontrollerad nedbrytning. Mjölksyrabakterier (Lactobacillus) äter socker och producerar mjölksyra som sänker pH och konserverar. Jäst (Saccharomyces) omvandlar socker till alkohol och koldioxid. Mögelsvampar som Aspergillus producerar enzymer som bryter ner proteiner och stärkelse till aminosyror och socker - grunden för umami. Genom att kontrollera salt, temperatur och syre styr vi vilka mikrober som får jobba.'
+  }
+};
+
 // Grundrecept data
 const basicRecipesData = {
   'Modersåser': [
@@ -2297,6 +2767,11 @@ export default function App() {
   // Temperaturvy-läge: 'traditional', 'sousvide', eller 'egg'
   const [tempViewMode, setTempViewMode] = useState('traditional');
   const [eggGuideTab, setEggGuideTab] = useState('boiling');
+
+  // Fermentering
+  const [fermentationCategory, setFermentationCategory] = useState('lacto');
+  const [selectedFermentRecipe, setSelectedFermentRecipe] = useState(null);
+
   const [selectedSousVideItem, setSelectedSousVideItem] = useState(null);
   const [sousVideCategory, setSousVideCategory] = useState('Nötkött');
   const [sousVideDoneness, setSousVideDoneness] = useState('medium');
@@ -2732,6 +3207,12 @@ export default function App() {
       <div className="menu-card" role="button" tabIndex="0" onClick={() => setActiveView('basics')} onKeyDown={(e) => e.key === 'Enter' && setActiveView('basics')}>
         <h2>Grundrecept</h2>
         <p>Såser, buljonger, marinader och smör</p>
+        <span className="menu-arrow">→</span>
+      </div>
+
+      <div className="menu-card" role="button" tabIndex="0" onClick={() => setActiveView('fermentation')} onKeyDown={(e) => e.key === 'Enter' && setActiveView('fermentation')}>
+        <h2>Fermentering</h2>
+        <p>Surkål, kombucha, miso & mer</p>
         <span className="menu-arrow">→</span>
       </div>
 
@@ -4516,6 +4997,176 @@ export default function App() {
     );
   };
 
+  // Fermenterings-vy
+  const renderFermentation = () => {
+    const categories = Object.keys(fermentationData.categories);
+    const currentCategory = fermentationData.categories[fermentationCategory];
+
+    return (
+      <div className="fermentation-view">
+        <button className="back-btn" onClick={() => { setActiveView('home'); setSelectedFermentRecipe(null); }}>
+          ← Tillbaka
+        </button>
+
+        <h1>Fermentering</h1>
+        <p className="fermentation-intro">{fermentationData.intro.description}</p>
+
+        {/* Kategori-flikar */}
+        <div className="fermentation-tabs">
+          {categories.map(cat => (
+            <button
+              key={cat}
+              className={`ferment-tab ${fermentationCategory === cat ? 'active' : ''}`}
+              onClick={() => { setFermentationCategory(cat); setSelectedFermentRecipe(null); }}
+            >
+              {fermentationData.categories[cat].title}
+            </button>
+          ))}
+        </div>
+
+        {/* Valt recept-detaljvy */}
+        {selectedFermentRecipe ? (
+          <div className="ferment-recipe-detail">
+            <button className="back-link" onClick={() => setSelectedFermentRecipe(null)}>
+              ← Tillbaka till {currentCategory.title}
+            </button>
+
+            <h2>{selectedFermentRecipe.name}</h2>
+            <p className="recipe-description">{selectedFermentRecipe.description}</p>
+
+            <div className="recipe-meta">
+              {selectedFermentRecipe.time && (
+                <span className="meta-item">Tid: {selectedFermentRecipe.time}</span>
+              )}
+              {selectedFermentRecipe.salt && (
+                <span className="meta-item">Salt: {selectedFermentRecipe.salt}</span>
+              )}
+              {selectedFermentRecipe.temp && (
+                <span className="meta-item">Temp: {selectedFermentRecipe.temp}</span>
+              )}
+            </div>
+
+            {selectedFermentRecipe.ingredients && (
+              <div className="recipe-ingredients">
+                <h3>Ingredienser</h3>
+                <ul>
+                  {selectedFermentRecipe.ingredients.map((ing, idx) => (
+                    <li key={idx}>{ing}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            <div className="recipe-steps">
+              <h3>Gör så här</h3>
+              <ol>
+                {selectedFermentRecipe.steps.map((step, idx) => (
+                  <li key={idx}>{step}</li>
+                ))}
+              </ol>
+            </div>
+
+            {selectedFermentRecipe.tips && (
+              <div className="recipe-tips">
+                <h3>Tips</h3>
+                <ul>
+                  {selectedFermentRecipe.tips.map((tip, idx) => (
+                    <li key={idx}>{tip}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        ) : (
+          <>
+            {/* Kategori-info */}
+            <div className="ferment-category-header">
+              <h2>{currentCategory.title}</h2>
+              <p>{currentCategory.description}</p>
+            </div>
+
+            {/* Grundläggande info */}
+            {currentCategory.basics && (
+              <div className="ferment-basics">
+                <h3>Grunderna</h3>
+                <div className="basics-grid">
+                  {Object.entries(currentCategory.basics).map(([key, value]) => (
+                    <div key={key} className="basic-item">
+                      <span className="basic-label">
+                        {key === 'salt' && 'Salt'}
+                        {key === 'temp' && 'Temperatur'}
+                        {key === 'time' && 'Tid'}
+                        {key === 'signs' && 'Tecken'}
+                        {key === 'sugar' && 'Socker'}
+                        {key === 'koji' && 'Koji'}
+                        {key === 'milk' && 'Mjölk'}
+                        {key === 'alcohol' && 'Alkohol'}
+                        {key === 'mother' && 'Moder'}
+                        {key === 'starter' && 'Starter'}
+                        {key === 'hydration' && 'Hydrering'}
+                        {key === 'feeding' && 'Matning'}
+                      </span>
+                      <span className="basic-value">{value}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Recept-lista */}
+            <div className="ferment-recipes">
+              <h3>Recept</h3>
+              <div className="recipes-grid">
+                {currentCategory.recipes.map((recipe, idx) => (
+                  <div
+                    key={idx}
+                    className="ferment-recipe-card"
+                    onClick={() => setSelectedFermentRecipe(recipe)}
+                  >
+                    <h4>{recipe.name}</h4>
+                    <p>{recipe.description}</p>
+                    <div className="recipe-card-meta">
+                      {recipe.time && <span>{recipe.time}</span>}
+                      {recipe.salt && <span>{recipe.salt} salt</span>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* Felsökning och vetenskap - bara på huvudvyn */}
+        {!selectedFermentRecipe && fermentationCategory === 'lacto' && (
+          <>
+            <div className="ferment-troubleshooting">
+              <h3>Vanliga problem</h3>
+              {fermentationData.troubleshooting.map((item, idx) => (
+                <div key={idx} className="trouble-item">
+                  <strong>{item.problem}</strong>
+                  <p>{item.solution}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="ferment-science">
+              <h3>{fermentationData.science.title}</h3>
+              <div className="science-facts-grid">
+                {fermentationData.science.facts.map((fact, idx) => (
+                  <div key={idx} className="science-fact-card">
+                    <span className="fact-label">{fact.label}</span>
+                    <span className="fact-value">{fact.value}</span>
+                  </div>
+                ))}
+              </div>
+              <p className="science-explanation">{fermentationData.science.explanation}</p>
+            </div>
+          </>
+        )}
+      </div>
+    );
+  };
+
   // Skapa recept-vy (förenklad)
   const renderCreate = () => {
     // Sök ingredienser i databasen
@@ -5085,6 +5736,7 @@ export default function App() {
         {activeView === 'conversion' && renderConversion()}
         {activeView === 'calories' && renderCalories()}
         {activeView === 'basics' && renderBasics()}
+        {activeView === 'fermentation' && renderFermentation()}
         {activeView === 'create' && renderCreate()}
       </main>
 
@@ -6982,6 +7634,320 @@ export default function App() {
           border-radius: 6px;
           font-size: 0.95rem;
           line-height: 1.6;
+        }
+
+        /* Fermentation View */
+        .fermentation-view {
+          padding-bottom: 2rem;
+        }
+
+        .fermentation-intro {
+          color: #5C4A3D;
+          line-height: 1.6;
+          margin-bottom: 1.5rem;
+        }
+
+        .fermentation-tabs {
+          display: flex;
+          gap: 0.5rem;
+          overflow-x: auto;
+          padding-bottom: 0.5rem;
+          margin-bottom: 1.5rem;
+          -webkit-overflow-scrolling: touch;
+        }
+
+        .ferment-tab {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 0.25rem;
+          padding: 0.75rem 1rem;
+          border: 1px solid #E8E0D8;
+          background: white;
+          border-radius: 8px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          min-width: 80px;
+          flex-shrink: 0;
+        }
+
+        .ferment-tab:hover {
+          border-color: #D35F2D;
+        }
+
+        .ferment-tab.active {
+          background: #FFF5EE;
+          border-color: #D35F2D;
+          color: #D35F2D;
+        }
+
+        .tab-icon {
+          font-size: 1.5rem;
+        }
+
+        .tab-name {
+          font-size: 0.75rem;
+          font-weight: 500;
+          text-align: center;
+        }
+
+        .ferment-category-header {
+          margin-bottom: 1.5rem;
+        }
+
+        .ferment-category-header h2 {
+          font-size: 1.3rem;
+          margin-bottom: 0.5rem;
+        }
+
+        .ferment-category-header p {
+          color: #5C4A3D;
+          line-height: 1.5;
+        }
+
+        .ferment-basics {
+          background: #F5EFE8;
+          padding: 1rem;
+          border-radius: 8px;
+          margin-bottom: 1.5rem;
+        }
+
+        .ferment-basics h3 {
+          font-size: 0.9rem;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          margin-bottom: 0.75rem;
+          color: #5C4A3D;
+        }
+
+        .basics-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 0.75rem;
+        }
+
+        .basic-item {
+          background: white;
+          padding: 0.75rem;
+          border-radius: 6px;
+        }
+
+        .basic-label {
+          display: block;
+          font-size: 0.8rem;
+          color: #8B7355;
+          margin-bottom: 0.25rem;
+        }
+
+        .basic-value {
+          font-size: 0.9rem;
+          font-weight: 500;
+          color: #2D2A26;
+        }
+
+        .ferment-recipes h3 {
+          font-size: 0.9rem;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          margin-bottom: 0.75rem;
+          color: #5C4A3D;
+        }
+
+        .recipes-grid {
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+        }
+
+        .ferment-recipe-card {
+          background: white;
+          border: 1px solid #E8E0D8;
+          border-left: 4px solid #D35F2D;
+          padding: 1rem;
+          border-radius: 0 8px 8px 0;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+
+        .ferment-recipe-card:hover {
+          background: #FFF9F5;
+          border-left-color: #E87D48;
+        }
+
+        .ferment-recipe-card h4 {
+          font-size: 1rem;
+          margin-bottom: 0.25rem;
+          color: #2D2A26;
+        }
+
+        .ferment-recipe-card p {
+          font-size: 0.85rem;
+          color: #5C4A3D;
+          margin-bottom: 0.5rem;
+        }
+
+        .recipe-card-meta {
+          display: flex;
+          gap: 1rem;
+          font-size: 0.8rem;
+          color: #8B7355;
+        }
+
+        /* Recipe Detail View */
+        .ferment-recipe-detail {
+          animation: fadeIn 0.2s ease;
+        }
+
+        .back-link {
+          background: none;
+          border: none;
+          color: #D35F2D;
+          cursor: pointer;
+          padding: 0;
+          font-size: 0.9rem;
+          margin-bottom: 1rem;
+          display: block;
+        }
+
+        .ferment-recipe-detail h2 {
+          font-size: 1.5rem;
+          margin-bottom: 0.5rem;
+        }
+
+        .recipe-description {
+          color: #5C4A3D;
+          margin-bottom: 1rem;
+          line-height: 1.5;
+        }
+
+        .recipe-meta {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 1rem;
+          margin-bottom: 1.5rem;
+        }
+
+        .meta-item {
+          background: #F5EFE8;
+          padding: 0.5rem 0.75rem;
+          border-radius: 20px;
+          font-size: 0.85rem;
+        }
+
+        .recipe-steps {
+          margin-bottom: 1.5rem;
+        }
+
+        .recipe-ingredients,
+        .recipe-steps {
+          margin-bottom: 1.5rem;
+        }
+
+        .recipe-ingredients h3,
+        .recipe-steps h3,
+        .recipe-tips h3 {
+          font-size: 1rem;
+          margin-bottom: 0.75rem;
+          color: #2D2A26;
+        }
+
+        .recipe-ingredients ul {
+          padding-left: 1.25rem;
+          margin: 0;
+        }
+
+        .recipe-ingredients li {
+          margin-bottom: 0.4rem;
+          line-height: 1.4;
+        }
+
+        .recipe-steps ol {
+          padding-left: 1.25rem;
+        }
+
+        .recipe-steps li {
+          margin-bottom: 0.75rem;
+          line-height: 1.5;
+          padding-left: 0.5rem;
+        }
+
+        .recipe-tips {
+          background: #FFF5EE;
+          padding: 1rem;
+          border-radius: 8px;
+          border-left: 4px solid #E87D48;
+        }
+
+        .recipe-tips ul {
+          padding-left: 1.25rem;
+          margin: 0;
+        }
+
+        .recipe-tips li {
+          margin-bottom: 0.5rem;
+          line-height: 1.4;
+        }
+
+        /* Troubleshooting */
+        .ferment-troubleshooting {
+          margin-top: 2rem;
+          padding-top: 1.5rem;
+          border-top: 1px solid #E8E0D8;
+        }
+
+        .ferment-troubleshooting h3 {
+          font-size: 1rem;
+          margin-bottom: 1rem;
+        }
+
+        .trouble-item {
+          background: white;
+          border: 1px solid #E8E0D8;
+          padding: 1rem;
+          border-radius: 8px;
+          margin-bottom: 0.75rem;
+        }
+
+        .trouble-item strong {
+          color: #D35F2D;
+          display: block;
+          margin-bottom: 0.25rem;
+        }
+
+        .trouble-item p {
+          font-size: 0.9rem;
+          color: #5C4A3D;
+          margin: 0;
+          line-height: 1.4;
+        }
+
+        /* Fermentation Science */
+        .ferment-science {
+          margin-top: 1.5rem;
+          padding-top: 1.5rem;
+          border-top: 1px solid #E8E0D8;
+        }
+
+        .ferment-science h3 {
+          font-size: 1rem;
+          margin-bottom: 1rem;
+        }
+
+        .science-facts-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 0.5rem;
+          margin-bottom: 1rem;
+        }
+
+        @media (min-width: 480px) {
+          .science-facts-grid {
+            grid-template-columns: repeat(3, 1fr);
+          }
+
+          .basics-grid {
+            grid-template-columns: repeat(3, 1fr);
+          }
         }
 
         /* Technique Card (Blanchering etc.) */
