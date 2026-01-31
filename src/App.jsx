@@ -4440,6 +4440,54 @@ export default function App() {
               ))}
             </ol>
           </div>
+
+          {/* Dela/Skriv ut/QR */}
+          <div className="recipe-share-section">
+            <h3>Dela recept</h3>
+            <div className="share-buttons">
+              <button
+                className="share-btn"
+                onClick={() => {
+                  const text = `${recipe.name}\n${'='.repeat(recipe.name.length)}\n\n` +
+                    (hasStructuredIngredients ? `${scaledPortions} ${recipe.portionUnit}\n\n` : '') +
+                    `INGREDIENSER:\n` +
+                    (hasStructuredIngredients
+                      ? recipe.structuredIngredients.map(ing => {
+                          const amt = formatAmount(ing.amount, ing.unit, recipeScale);
+                          return `• ${amt} ${ing.name}${ing.note ? ` (${ing.note})` : ''}`;
+                        }).join('\n')
+                      : recipe.ingredients.join('\n')) + '\n\n' +
+                    `INSTRUKTIONER:\n` +
+                    recipe.steps.map((step, i) => `${i + 1}. ${step}`).join('\n') + '\n\n' +
+                    `— Köksguiden`;
+
+                  if (navigator.share) {
+                    navigator.share({ title: recipe.name, text: text });
+                  } else {
+                    navigator.clipboard.writeText(text).then(() => {
+                      alert('Receptet kopierat till urklipp!');
+                    });
+                  }
+                }}
+              >
+                Dela
+              </button>
+              <button
+                className="share-btn"
+                onClick={() => window.print()}
+              >
+                Skriv ut
+              </button>
+            </div>
+            {/* QR-kod visas endast vid utskrift */}
+            <div className="print-qr-section">
+              <img
+                src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https%3A%2F%2Fstenerstrom.github.io%2Fkoksguiden%2F"
+                alt="QR-kod till Köksguiden"
+              />
+              <span>Skanna för att öppna i Köksguiden</span>
+            </div>
+          </div>
         </div>
       );
     }
@@ -4886,9 +4934,9 @@ export default function App() {
                   fat: ((recipe.nutrition?.fat || 0) * scale / currentPortions).toFixed(1)
                 };
 
-                // Exportera recept som text
-                const exportRecipeAsText = () => {
-                  const text = `${recipe.name}\n${'='.repeat(recipe.name.length)}\n\n` +
+                // Generera recepttext
+                const getRecipeText = () => {
+                  return `${recipe.name}\n${'='.repeat(recipe.name.length)}\n\n` +
                     `Portioner: ${currentPortions}\n\n` +
                     `INGREDIENSER:\n` +
                     recipe.ingredients?.map(ing => {
@@ -4900,10 +4948,6 @@ export default function App() {
                     `Näring per portion: ${scaledNutrition.kcal} kcal, ${scaledNutrition.protein}g protein, ` +
                     `${scaledNutrition.carbs}g kolhydrater, ${scaledNutrition.fat}g fett\n\n` +
                     `— Skapat med Köksguiden`;
-
-                  navigator.clipboard.writeText(text).then(() => {
-                    alert('Receptet kopierat till urklipp!');
-                  });
                 };
 
                 return (
@@ -4995,9 +5039,42 @@ export default function App() {
                         </div>
 
                         <div className="recipe-actions">
-                          <button onClick={() => editRecipe(recipe)}>✏️ Redigera</button>
-                          <button onClick={exportRecipeAsText}>📋 Kopiera</button>
-                          <button onClick={() => deleteRecipe(recipe.id)}>🗑️ Ta bort</button>
+                          <button onClick={() => editRecipe(recipe)}>Redigera</button>
+                          <button onClick={() => deleteRecipe(recipe.id)}>Ta bort</button>
+                        </div>
+
+                        <div className="recipe-share-section">
+                          <div className="share-buttons">
+                            <button
+                              className="share-btn"
+                              onClick={() => {
+                                const text = getRecipeText();
+                                if (navigator.share) {
+                                  navigator.share({ title: recipe.name, text: text });
+                                } else {
+                                  navigator.clipboard.writeText(text).then(() => {
+                                    alert('Receptet kopierat till urklipp!');
+                                  });
+                                }
+                              }}
+                            >
+                              Dela
+                            </button>
+                            <button
+                              className="share-btn"
+                              onClick={() => window.print()}
+                            >
+                              Skriv ut
+                            </button>
+                          </div>
+                          {/* QR-kod visas endast vid utskrift */}
+                          <div className="print-qr-section">
+                            <img
+                              src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https%3A%2F%2Fstenerstrom.github.io%2Fkoksguiden%2F"
+                              alt="QR-kod till Köksguiden"
+                            />
+                            <span>Skanna för att öppna i Köksguiden</span>
+                          </div>
                         </div>
                       </div>
                     )}
@@ -8214,6 +8291,105 @@ export default function App() {
         .recipe-ingredient-item.is-main {
           background: #FFFDE7;
           border-left: 3px solid #E87D48;
+        }
+
+        /* ========================================
+           DELA/SKRIV UT STILAR
+           ======================================== */
+        .recipe-share-section {
+          margin-top: 1.5rem;
+          padding-top: 1rem;
+          border-top: 1px solid #E8E0D8;
+        }
+
+        .recipe-share-section h3 {
+          font-size: 0.9rem;
+          color: #5C4A3D;
+          margin-bottom: 0.75rem;
+        }
+
+        .share-buttons {
+          display: flex;
+          gap: 0.5rem;
+          flex-wrap: wrap;
+        }
+
+        .share-btn {
+          padding: 0.6rem 1rem;
+          background: #FFF5EE;
+          border: 1px solid #F5A576;
+          border-radius: 6px;
+          color: #5C4A3D;
+          font-size: 0.85rem;
+          cursor: pointer;
+          transition: all 0.15s;
+        }
+
+        .share-btn:hover {
+          background: #E87D48;
+          color: white;
+          border-color: #E87D48;
+        }
+
+        /* QR-kod sektion - dold normalt, visas vid utskrift */
+        .print-qr-section {
+          display: none;
+        }
+
+        /* ========================================
+           UTSKRIFTSSTILAR
+           ======================================== */
+        @media print {
+          /* Dölj navigering och knappar */
+          .app-header,
+          .back-btn,
+          .nav-tabs,
+          .share-buttons,
+          .recipe-actions,
+          .scaler-controls,
+          .scaler-presets,
+          .portion-scaler,
+          .recipe-scaler {
+            display: none !important;
+          }
+
+          /* Visa QR-koden */
+          .print-qr-section {
+            display: flex !important;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #ccc;
+          }
+
+          .print-qr-section img {
+            width: 80px;
+            height: 80px;
+          }
+
+          .print-qr-section span {
+            font-size: 0.8rem;
+            color: #666;
+          }
+
+          /* Generella utskriftsanpassningar */
+          body {
+            font-size: 12pt;
+          }
+
+          .app-container {
+            padding: 0;
+          }
+
+          .detail-view,
+          .recipe-detail {
+            padding: 0;
+          }
+
+          .recipe-section {
+            break-inside: avoid;
+          }
         }
       `}</style>
     </div>
