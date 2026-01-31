@@ -2210,7 +2210,6 @@ export default function App() {
   const [activeView, setActiveView] = useState('home');
   const [selectedItem, setSelectedItem] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [activeEggSection, setActiveEggSection] = useState('boiling');
   const [showBlanchering, setShowBlanchering] = useState(false);
   const [showBrassering, setShowBrassering] = useState(false);
   const [recipeScale, setRecipeScale] = useState(1);
@@ -2295,8 +2294,9 @@ export default function App() {
     return [];
   });
 
-  // Sous Vide state
-  const [showSousVide, setShowSousVide] = useState(false);
+  // Temperaturvy-läge: 'traditional', 'sousvide', eller 'egg'
+  const [tempViewMode, setTempViewMode] = useState('traditional');
+  const [eggGuideTab, setEggGuideTab] = useState('boiling');
   const [selectedSousVideItem, setSelectedSousVideItem] = useState(null);
   const [sousVideCategory, setSousVideCategory] = useState('Nötkött');
   const [sousVideDoneness, setSousVideDoneness] = useState('medium');
@@ -2729,12 +2729,6 @@ export default function App() {
         <span className="menu-arrow">→</span>
       </div>
       
-      <div className="menu-card" role="button" tabIndex="0" onClick={() => setActiveView('eggguide')} onKeyDown={(e) => e.key === 'Enter' && setActiveView('eggguide')}>
-        <h2>Äggguiden</h2>
-        <p>Koktider, tekniker och vetenskap</p>
-        <span className="menu-arrow">→</span>
-      </div>
-
       <div className="menu-card" role="button" tabIndex="0" onClick={() => setActiveView('basics')} onKeyDown={(e) => e.key === 'Enter' && setActiveView('basics')}>
         <h2>Grundrecept</h2>
         <p>Såser, buljonger, marinader och smör</p>
@@ -3463,7 +3457,7 @@ export default function App() {
     }
 
     // Sous Vide detaljvy
-    if (showSousVide && selectedSousVideItem) {
+    if (tempViewMode === 'sousvide' && selectedSousVideItem) {
       const item = selectedSousVideItem;
       const doneness = sousVideDoneness;
       const setting = item[doneness];
@@ -3605,14 +3599,14 @@ export default function App() {
     }
 
     // Sous Vide listvy
-    if (showSousVide && title === 'Temperaturer') {
+    if (tempViewMode === 'sousvide' && title === 'Temperaturer') {
       const svCategories = Object.keys(sousVideData);
 
       return (
         <div className="list-view sousvide-view">
           <button className="back-btn" onClick={() => {
             setActiveView('home');
-            setShowSousVide(false);
+            setTempViewMode('traditional');
             setSearchTerm('');
           }}>
             ← Tillbaka
@@ -3622,14 +3616,14 @@ export default function App() {
           {/* Toggle mellan traditionell och sous vide */}
           <div className="temp-mode-tabs">
             <button
-              className={`mode-tab ${!showSousVide ? 'active' : ''}`}
-              onClick={() => setShowSousVide(false)}
+              className={`mode-tab ${tempViewMode === 'traditional' ? 'active' : ''}`}
+              onClick={() => setTempViewMode('traditional')}
             >
               Traditionell
             </button>
             <button
-              className={`mode-tab ${showSousVide ? 'active' : ''}`}
-              onClick={() => setShowSousVide(true)}
+              className={`mode-tab ${tempViewMode === 'sousvide' ? 'active' : ''}`}
+              onClick={() => setTempViewMode('sousvide')}
             >
               Sous Vide
             </button>
@@ -3717,44 +3711,179 @@ export default function App() {
         </button>
         <h1>{title}</h1>
 
-        {/* Toggle mellan traditionell och sous vide - endast för Temperaturer */}
+        {/* Toggle mellan traditionell, sous vide och ägg - endast för Temperaturer */}
         {title === 'Temperaturer' && (
           <div className="temp-mode-tabs">
             <button
-              className={`mode-tab ${!showSousVide ? 'active' : ''}`}
-              onClick={() => setShowSousVide(false)}
+              className={`mode-tab ${tempViewMode === 'traditional' ? 'active' : ''}`}
+              onClick={() => setTempViewMode('traditional')}
             >
               Traditionell
             </button>
             <button
-              className={`mode-tab ${showSousVide ? 'active' : ''}`}
-              onClick={() => setShowSousVide(true)}
+              className={`mode-tab ${tempViewMode === 'sousvide' ? 'active' : ''}`}
+              onClick={() => setTempViewMode('sousvide')}
             >
               Sous Vide
+            </button>
+            <button
+              className={`mode-tab ${tempViewMode === 'egg' ? 'active' : ''}`}
+              onClick={() => setTempViewMode('egg')}
+            >
+              Ägg
             </button>
           </div>
         )}
 
-        <div className="search-box">
-          <input
-            type="text"
-            aria-label="Sök"
-            placeholder="Sök..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          {searchTerm && (
-            <button className="clear-search" aria-label="Rensa sökning" onClick={() => setSearchTerm('')}>×</button>
-          )}
-        </div>
+        {/* Visa äggguiden om vald */}
+        {title === 'Temperaturer' && tempViewMode === 'egg' && (
+          <div className="egg-guide-content">
+            <p className="subtitle">Allt om ägg - kokning, pochering, stekt och röra</p>
 
-        {searchTerm && (
-          <div className="search-results-count">
-            {totalFiltered} träffar
+            <div className="egg-guide-tabs">
+              <button className={eggGuideTab === 'boiling' ? 'active' : ''} onClick={() => setEggGuideTab('boiling')}>Kokning</button>
+              <button className={eggGuideTab === 'poaching' ? 'active' : ''} onClick={() => setEggGuideTab('poaching')}>Pochering</button>
+              <button className={eggGuideTab === 'scrambled' ? 'active' : ''} onClick={() => setEggGuideTab('scrambled')}>Äggröra</button>
+              <button className={eggGuideTab === 'frying' ? 'active' : ''} onClick={() => setEggGuideTab('frying')}>Stekt</button>
+              <button className={eggGuideTab === 'science' ? 'active' : ''} onClick={() => setEggGuideTab('science')}>Vetenskap</button>
+            </div>
+
+            {eggGuideTab === 'boiling' && (
+              <div className="egg-section">
+                <h2>{eggGuideData.boiling.title}</h2>
+                <p className="section-description">{eggGuideData.boiling.description}</p>
+                <div className="egg-time-cards">
+                  {eggGuideData.boiling.times.map((item, idx) => (
+                    <div key={idx} className={`egg-time-card ${item.name === 'Överkokt' ? 'warning' : ''}`}>
+                      <div className="egg-time-header">
+                        <span className="egg-time-name">{item.name}</span>
+                        <span className="egg-time-value">{item.time}</span>
+                      </div>
+                      <p className="egg-time-desc">{item.description}</p>
+                      <span className="egg-time-temp">{item.temp}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="egg-tips-section">
+                  <h3>Tips</h3>
+                  <ul>
+                    {eggGuideData.boiling.tips.map((tip, idx) => (
+                      <li key={idx}>{tip}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            )}
+
+            {eggGuideTab === 'poaching' && (
+              <div className="egg-section">
+                <h2>{eggGuideData.poaching.title}</h2>
+                <p className="section-description">{eggGuideData.poaching.description}</p>
+                <div className="steps-list-guide">
+                  <h3>Steg för steg</h3>
+                  <ol>
+                    {eggGuideData.poaching.steps.map((step, idx) => (
+                      <li key={idx}>{step}</li>
+                    ))}
+                  </ol>
+                </div>
+                <div className="egg-tips-section">
+                  <h3>Tips</h3>
+                  <ul>
+                    {eggGuideData.poaching.tips.map((tip, idx) => (
+                      <li key={idx}>{tip}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            )}
+
+            {eggGuideTab === 'scrambled' && (
+              <div className="egg-section">
+                <h2>{eggGuideData.scrambled.title}</h2>
+                <div className="scrambled-styles">
+                  {eggGuideData.scrambled.styles.map((style, idx) => (
+                    <div key={idx} className="scrambled-style-card">
+                      <h3>{style.name}</h3>
+                      <p className="style-method">{style.method}</p>
+                      <ul>
+                        {style.tips.map((tip, tipIdx) => (
+                          <li key={tipIdx}>{tip}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {eggGuideTab === 'frying' && (
+              <div className="egg-section">
+                <h2>{eggGuideData.frying.title}</h2>
+                <p className="section-description">{eggGuideData.frying.description}</p>
+                <div className="steps-list-guide">
+                  <h3>Steg för steg</h3>
+                  <ol>
+                    {eggGuideData.frying.steps.map((step, idx) => (
+                      <li key={idx}>{step}</li>
+                    ))}
+                  </ol>
+                </div>
+                <div className="egg-tips-section">
+                  <h3>Tips</h3>
+                  <ul>
+                    {eggGuideData.frying.tips.map((tip, idx) => (
+                      <li key={idx}>{tip}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            )}
+
+            {eggGuideTab === 'science' && (
+              <div className="egg-section">
+                <h2>{eggGuideData.science.title}</h2>
+                <div className="science-facts">
+                  {eggGuideData.science.facts.map((fact, idx) => (
+                    <div key={idx} className="science-fact-card">
+                      <span className="fact-label">{fact.label}</span>
+                      <span className="fact-value">{fact.value}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="science-explanation">
+                  <p>{eggGuideData.science.explanation}</p>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
-        {categories.map(category => {
+        {/* Dölj sök och kategorier om äggvyn är aktiv */}
+        {!(title === 'Temperaturer' && tempViewMode === 'egg') && (
+          <>
+            <div className="search-box">
+              <input
+                type="text"
+                aria-label="Sök"
+                placeholder="Sök..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              {searchTerm && (
+                <button className="clear-search" aria-label="Rensa sökning" onClick={() => setSearchTerm('')}>×</button>
+              )}
+            </div>
+
+            {searchTerm && (
+              <div className="search-results-count">
+                {totalFiltered} träffar
+              </div>
+            )}
+          </>
+        )}
+
+        {!(title === 'Temperaturer' && tempViewMode === 'egg') && categories.map(category => {
           const filteredItems = filterItems(data[category]);
           if (filteredItems.length === 0) return null;
           const science = categoryScience[category];
@@ -4013,175 +4142,6 @@ export default function App() {
               </div>
             )}
           </>
-        )}
-      </div>
-    );
-  };
-
-  // Äggguide-vy
-  const renderEggGuide = () => {
-    return (
-      <div className="egg-guide-view">
-        <button className="back-btn" aria-label="Gå tillbaka" onClick={() => setActiveView('home')}>
-          ← Tillbaka
-        </button>
-        <h1>Äggguiden</h1>
-
-        {/* Navigation tabs */}
-        <div className="egg-guide-tabs">
-          <button
-            className={activeEggSection === 'boiling' ? 'active' : ''}
-            onClick={() => setActiveEggSection('boiling')}
-          >
-            Koka
-          </button>
-          <button
-            className={activeEggSection === 'poaching' ? 'active' : ''}
-            onClick={() => setActiveEggSection('poaching')}
-          >
-            Pochera
-          </button>
-          <button
-            className={activeEggSection === 'scrambled' ? 'active' : ''}
-            onClick={() => setActiveEggSection('scrambled')}
-          >
-            Äggröra
-          </button>
-          <button
-            className={activeEggSection === 'frying' ? 'active' : ''}
-            onClick={() => setActiveEggSection('frying')}
-          >
-            Steka
-          </button>
-          <button
-            className={activeEggSection === 'science' ? 'active' : ''}
-            onClick={() => setActiveEggSection('science')}
-          >
-            Vetenskap
-          </button>
-        </div>
-
-        {/* Kokning */}
-        {activeEggSection === 'boiling' && (
-          <div className="egg-section">
-            <h2>{eggGuideData.boiling.title}</h2>
-            <p className="section-description">{eggGuideData.boiling.description}</p>
-
-            <div className="egg-time-cards">
-              {eggGuideData.boiling.times.map((item, idx) => (
-                <div key={idx} className={`egg-time-card ${item.name === 'Överkokt' ? 'warning' : ''}`}>
-                  <div className="egg-time-header">
-                    <span className="egg-time-name">{item.name}</span>
-                    <span className="egg-time-value">{item.time}</span>
-                  </div>
-                  <p className="egg-time-desc">{item.description}</p>
-                  <span className="egg-time-temp">{item.temp}</span>
-                </div>
-              ))}
-            </div>
-
-            <div className="egg-tips-section">
-              <h3>Tips</h3>
-              <ul>
-                {eggGuideData.boiling.tips.map((tip, idx) => (
-                  <li key={idx}>{tip}</li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        )}
-
-        {/* Pochering */}
-        {activeEggSection === 'poaching' && (
-          <div className="egg-section">
-            <h2>{eggGuideData.poaching.title}</h2>
-            <p className="section-description">{eggGuideData.poaching.description}</p>
-
-            <div className="steps-list-guide">
-              <h3>Steg för steg</h3>
-              <ol>
-                {eggGuideData.poaching.steps.map((step, idx) => (
-                  <li key={idx}>{step}</li>
-                ))}
-              </ol>
-            </div>
-
-            <div className="egg-tips-section">
-              <h3>Tips</h3>
-              <ul>
-                {eggGuideData.poaching.tips.map((tip, idx) => (
-                  <li key={idx}>{tip}</li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        )}
-
-        {/* Äggröra */}
-        {activeEggSection === 'scrambled' && (
-          <div className="egg-section">
-            <h2>{eggGuideData.scrambled.title}</h2>
-
-            <div className="scrambled-styles">
-              {eggGuideData.scrambled.styles.map((style, idx) => (
-                <div key={idx} className="scrambled-style-card">
-                  <h3>{style.name}</h3>
-                  <p className="style-method">{style.method}</p>
-                  <ul>
-                    {style.tips.map((tip, tipIdx) => (
-                      <li key={tipIdx}>{tip}</li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Stekning */}
-        {activeEggSection === 'frying' && (
-          <div className="egg-section">
-            <h2>{eggGuideData.frying.title}</h2>
-            <p className="section-description">{eggGuideData.frying.description}</p>
-
-            <div className="steps-list-guide">
-              <h3>Steg för steg</h3>
-              <ol>
-                {eggGuideData.frying.steps.map((step, idx) => (
-                  <li key={idx}>{step}</li>
-                ))}
-              </ol>
-            </div>
-
-            <div className="egg-tips-section">
-              <h3>Tips</h3>
-              <ul>
-                {eggGuideData.frying.tips.map((tip, idx) => (
-                  <li key={idx}>{tip}</li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        )}
-
-        {/* Vetenskap */}
-        {activeEggSection === 'science' && (
-          <div className="egg-section">
-            <h2>{eggGuideData.science.title}</h2>
-
-            <div className="science-facts">
-              {eggGuideData.science.facts.map((fact, idx) => (
-                <div key={idx} className="science-fact-card">
-                  <span className="fact-label">{fact.label}</span>
-                  <span className="fact-value">{fact.value}</span>
-                </div>
-              ))}
-            </div>
-
-            <div className="science-explanation">
-              <p>{eggGuideData.science.explanation}</p>
-            </div>
-          </div>
         )}
       </div>
     );
@@ -5125,7 +5085,6 @@ export default function App() {
         {activeView === 'conversion' && renderConversion()}
         {activeView === 'calories' && renderCalories()}
         {activeView === 'basics' && renderBasics()}
-        {activeView === 'eggguide' && renderEggGuide()}
         {activeView === 'create' && renderCreate()}
       </main>
 
