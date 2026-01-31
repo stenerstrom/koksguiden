@@ -7403,6 +7403,12 @@ export default function App() {
           border-bottom: 1px solid #F5EFE8;
           cursor: pointer;
           transition: background 0.15s;
+          -webkit-tap-highlight-color: transparent;
+          color: #2D2A26;
+        }
+
+        .structured-ingredient * {
+          -webkit-tap-highlight-color: transparent;
         }
 
         .structured-ingredient:last-child {
