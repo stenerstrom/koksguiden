@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
+import './theme.css';
 
 // ========================================
 // SOUS VIDE DATA (baserat på Modernist Cuisine)
@@ -3060,6 +3061,31 @@ export default function App() {
   // Percentage-based scaling state
   const [usePercentScaling, setUsePercentScaling] = useState(false);
   const [mainIngredientId, setMainIngredientId] = useState(null);
+
+  // Dark mode theme
+  const [theme, setTheme] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('koksguiden-theme');
+      if (saved) return saved;
+      // Respektera systempreferens
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        return 'dark';
+      }
+    }
+    return 'light';
+  });
+
+  // Applicera tema på document
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('koksguiden-theme', theme);
+    }
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'light' ? 'dark' : 'light');
+  };
 
   // Spara recept till localStorage
   useEffect(() => {
@@ -6252,6 +6278,20 @@ export default function App() {
         <span className="footer-credit">Köksguiden © 2025</span>
       </footer>
 
+      {/* Dark Mode Toggle */}
+      <button
+        className="theme-toggle"
+        onClick={toggleTheme}
+        aria-label={theme === 'light' ? 'Aktivera mörkt läge' : 'Aktivera ljust läge'}
+      >
+        <svg className="icon-moon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/>
+        </svg>
+        <svg className="icon-sun" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/>
+        </svg>
+      </button>
+
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
         
@@ -6263,18 +6303,20 @@ export default function App() {
 
         .app-container {
           min-height: 100vh;
-          background: #FEFBF7;
+          background: var(--color-bg-main);
           font-family: 'DM Sans', sans-serif;
-          color: #2D2A26;
+          color: var(--color-text-primary);
           display: flex;
           flex-direction: column;
+          transition: background 0.3s ease, color 0.3s ease;
         }
 
         .app-header {
-          background: #5C4A3D;
-          color: #FFFFFF;
+          background: var(--color-bg-header);
+          color: var(--color-text-inverse);
           padding: 1.5rem 1rem;
           text-align: center;
+          transition: background 0.3s ease;
         }
 
         .app-header h1 {
@@ -6294,33 +6336,34 @@ export default function App() {
         }
 
         .app-footer {
-          background: #5C4A3D;
+          background: var(--color-bg-header);
           padding: 1rem;
           text-align: center;
           font-size: 0.7rem;
           letter-spacing: 0.15em;
           text-transform: uppercase;
           color: rgba(255,255,255,0.7);
+          transition: background 0.3s ease;
         }
 
         /* Home Grid */
         .home-grid {
           display: flex;
           flex-direction: column;
-          gap: 0.5rem;
+          gap: var(--space-sm);
         }
 
         .menu-card {
-          background: #FFF5EE;
+          background: var(--color-bg-elevated);
           padding: 1.25rem 1.5rem;
           cursor: pointer;
           transition: all 0.2s ease;
-          border-left: 4px solid #E87D48;
+          border-left: 4px solid var(--color-primary);
           position: relative;
         }
 
         .menu-card:hover {
-          background: #FACBB0;
+          background: var(--color-primary-pale);
         }
 
         .menu-card h2 {
@@ -6328,13 +6371,13 @@ export default function App() {
           font-weight: 600;
           letter-spacing: 0.05em;
           text-transform: uppercase;
-          color: #2D2A26;
+          color: var(--color-text-primary);
           margin-bottom: 0.25rem;
         }
 
         .menu-card p {
           font-size: 0.85rem;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
         }
 
         .menu-arrow {
@@ -6342,19 +6385,98 @@ export default function App() {
           right: 1.5rem;
           top: 50%;
           transform: translateY(-50%);
-          color: #D35F2D;
+          color: var(--color-primary-dark);
           font-size: 1.5rem;
         }
 
-        /* Buttons */
+        /* ==========================================
+           UNIFIED BUTTON SYSTEM
+           ========================================== */
+
+        /* Base button reset */
+        button {
+          font-family: inherit;
+          cursor: pointer;
+          border: none;
+          transition: all var(--transition-fast);
+        }
+
+        /* Primary action buttons */
+        .btn-action {
+          background: var(--color-primary);
+          color: white;
+          padding: var(--space-sm) var(--space-md);
+          border-radius: var(--radius-md);
+          font-weight: 500;
+          font-size: 0.9rem;
+        }
+
+        .btn-action:hover {
+          background: var(--color-primary-dark);
+        }
+
+        /* Secondary/outline buttons */
+        .btn-outline {
+          background: transparent;
+          color: var(--color-primary-dark);
+          border: 2px solid var(--color-border);
+          padding: var(--space-sm) var(--space-md);
+          border-radius: var(--radius-md);
+          font-weight: 500;
+        }
+
+        .btn-outline:hover {
+          border-color: var(--color-primary-dark);
+          background: var(--color-primary-pale);
+        }
+
+        /* Tab buttons (for tab navigation) */
+        .btn-tab {
+          background: transparent;
+          color: var(--color-text-secondary);
+          padding: var(--space-sm) var(--space-md);
+          font-weight: 500;
+          font-size: 0.85rem;
+          border-radius: var(--radius-md);
+        }
+
+        .btn-tab:hover {
+          background: var(--color-bg-card);
+        }
+
+        .btn-tab.active {
+          background: var(--color-bg-card);
+          color: var(--color-primary-dark);
+          box-shadow: var(--shadow-sm);
+        }
+
+        /* Small icon buttons */
+        .btn-icon {
+          background: var(--color-border);
+          color: var(--color-text-secondary);
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0;
+        }
+
+        .btn-icon:hover {
+          background: var(--color-primary-pale);
+          color: var(--color-primary-dark);
+        }
+
+        /* Back button */
         .back-btn {
           background: none;
           border: none;
-          color: #D35F2D;
+          color: var(--color-primary-dark);
           font-size: 1rem;
           cursor: pointer;
-          padding: 0.5rem 0;
-          margin-bottom: 1rem;
+          padding: var(--space-sm) 0;
+          margin-bottom: var(--space-md);
           font-family: inherit;
           letter-spacing: 0.05em;
         }
@@ -6362,21 +6484,24 @@ export default function App() {
         /* Search Box */
         .search-box {
           position: relative;
-          margin-bottom: 1rem;
+          margin-bottom: var(--space-md);
         }
 
         .search-box input {
           width: 100%;
           padding: 0.875rem 1rem;
-          border: 2px solid #E8E0D8;
+          border: 2px solid var(--color-border);
           font-size: 1rem;
           font-family: inherit;
-          background: #FFFFFF;
+          background: var(--color-bg-card);
+          color: var(--color-text-primary);
+          border-radius: var(--radius-md);
+          transition: border-color 0.2s, background 0.3s;
         }
 
         .search-box input:focus {
           outline: none;
-          border-color: #D35F2D;
+          border-color: var(--color-primary-dark);
         }
 
         .clear-search {
@@ -6384,45 +6509,47 @@ export default function App() {
           right: 1rem;
           top: 50%;
           transform: translateY(-50%);
-          background: #E8E0D8;
+          background: var(--color-border);
           border: none;
           width: 24px;
           height: 24px;
           border-radius: 50%;
           cursor: pointer;
           font-size: 1rem;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
         }
 
         /* Category Section */
         .category-section {
-          margin-bottom: 1.5rem;
+          margin-bottom: var(--space-lg);
         }
 
         .category-title {
-          background: #FFF5EE;
+          background: var(--color-bg-elevated);
           padding: 0.75rem 1rem;
           font-size: 0.7rem;
           letter-spacing: 0.15em;
           text-transform: uppercase;
-          color: #2D2A26;
+          color: var(--color-text-primary);
           font-weight: 600;
-          border-left: 4px solid #E87D48;
+          border-left: 4px solid var(--color-primary);
           margin-bottom: 0;
+          transition: background 0.3s;
         }
 
         .items-list {
-          background: white;
+          background: var(--color-bg-card);
           overflow: hidden;
-          border: 1px solid #E8E0D8;
+          border: 1px solid var(--color-border);
           border-top: none;
+          transition: background 0.3s;
         }
 
         .item-row {
           display: flex;
           align-items: center;
-          padding: 1rem;
-          border-bottom: 1px solid #F5EFE8;
+          padding: var(--space-md);
+          border-bottom: 1px solid var(--color-border-light);
           cursor: pointer;
           transition: background 0.15s;
         }
@@ -6432,23 +6559,23 @@ export default function App() {
         }
 
         .item-row:hover {
-          background: #FFF5EE;
+          background: var(--color-bg-elevated);
         }
 
         .item-name {
           flex: 1;
           font-weight: 500;
-          color: #2D2A26;
+          color: var(--color-text-primary);
         }
 
         .item-meta {
-          color: #D35F2D;
+          color: var(--color-primary-dark);
           font-size: 0.875rem;
           margin-right: 0.5rem;
         }
 
         .item-arrow {
-          color: #D35F2D;
+          color: var(--color-primary-dark);
           font-size: 1.25rem;
         }
 
@@ -6458,33 +6585,33 @@ export default function App() {
           font-weight: 600;
           letter-spacing: 0.05em;
           text-transform: uppercase;
-          color: #2D2A26;
-          margin-bottom: 1rem;
+          color: var(--color-text-primary);
+          margin-bottom: var(--space-md);
         }
 
         .detail-header {
           display: flex;
           align-items: center;
-          gap: 1rem;
-          margin-bottom: 1.5rem;
+          gap: var(--space-md);
+          margin-bottom: var(--space-lg);
         }
 
         /* Temperature Grid */
         .temp-grid {
           display: grid;
           grid-template-columns: repeat(3, 1fr);
-          gap: 0.5rem;
-          margin-bottom: 1.5rem;
+          gap: var(--space-sm);
+          margin-bottom: var(--space-lg);
         }
 
         .temp-card {
-          background: white;
+          background: var(--color-bg-card);
           padding: 1rem;
           text-align: center;
         }
 
         .temp-card.rare {
-          background: #FFF5EE;
+          background: var(--color-bg-elevated);
         }
 
         .temp-card.medium {
@@ -6492,7 +6619,7 @@ export default function App() {
         }
 
         .temp-card.welldone {
-          background: #5C4A3D;
+          background: var(--color-bg-header);
         }
 
         .temp-label {
@@ -6505,7 +6632,7 @@ export default function App() {
 
         .temp-card.rare .temp-label,
         .temp-card.rare .temp-value {
-          color: #2D2A26;
+          color: var(--color-text-primary);
         }
 
         .temp-card.medium .temp-label {
@@ -6531,10 +6658,10 @@ export default function App() {
 
         /* Info Box */
         .info-box {
-          background: #FFFFFF;
+          background: var(--color-bg-card);
           padding: 1rem;
-          margin-bottom: 1rem;
-          border: 1px solid #E8E0D8;
+          margin-bottom: var(--space-md);
+          border: 1px solid var(--color-border);
         }
 
         .info-box h3 {
@@ -6542,39 +6669,39 @@ export default function App() {
           letter-spacing: 0.1em;
           text-transform: uppercase;
           margin-bottom: 0.5rem;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
         }
 
         .info-box.warning {
-          background: #FFF5EE;
+          background: var(--color-bg-elevated);
           border: 1px solid #FACBB0;
         }
 
         .info-box.nutrition-info {
-          background: #FEFBF7;
+          background: var(--color-bg-main);
           border: 1px solid #F5A576;
         }
 
         .info-box.nutrition-info .nutrition-grid {
           display: grid;
           grid-template-columns: repeat(4, 1fr);
-          gap: 0.5rem;
+          gap: var(--space-sm);
           margin-top: 0.5rem;
         }
 
         .info-box.nutrition-info .nutrition-card {
-          background: #FFFFFF;
+          background: var(--color-bg-card);
           padding: 0.75rem 0.5rem;
           text-align: center;
           border-radius: 4px;
-          border: 1px solid #E8E0D8;
+          border: 1px solid var(--color-border);
         }
 
         .info-box.nutrition-info .nutrition-value {
           display: block;
           font-size: 1.2rem;
           font-weight: 600;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
         }
 
         .info-box.nutrition-info .nutrition-label {
@@ -6595,9 +6722,9 @@ export default function App() {
         /* Conversion View */
         .conversion-tabs {
           display: flex;
-          background: #E8E0D8;
+          background: var(--color-border);
           padding: 2px;
-          margin-bottom: 1rem;
+          margin-bottom: var(--space-md);
         }
 
         .conversion-tabs.four-tabs {
@@ -6608,97 +6735,106 @@ export default function App() {
 
         .conversion-tabs button {
           flex: 1;
-          padding: 0.75rem;
+          padding: var(--space-sm) var(--space-sm);
           border: none;
           background: transparent;
           font-weight: 500;
           cursor: pointer;
-          transition: all 0.2s;
+          transition: all var(--transition-fast);
           font-family: inherit;
-          font-size: 0.8rem;
+          font-size: 0.85rem;
           letter-spacing: 0.05em;
           text-transform: uppercase;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
+          border-radius: var(--radius-md);
         }
 
         .conversion-tabs.four-tabs button {
-          padding: 0.6rem 0.25rem;
+          padding: var(--space-sm) var(--space-xs);
           font-size: 0.75rem;
         }
 
+        .conversion-tabs button:hover:not(.active) {
+          background: var(--color-bg-card);
+        }
+
         .conversion-tabs button.active {
-          background: #FFF5EE;
-          color: #D35F2D;
+          background: var(--color-bg-card);
+          color: var(--color-primary-dark);
+          box-shadow: var(--shadow-sm);
         }
 
         .foreign-toggle {
           display: flex;
           align-items: center;
           gap: 0.75rem;
-          margin-bottom: 1.5rem;
+          margin-bottom: var(--space-lg);
           cursor: pointer;
         }
 
         .foreign-toggle input {
           width: 20px;
           height: 20px;
-          accent-color: #D35F2D;
+          accent-color: var(--color-primary-dark);
         }
 
         .converter-box {
-          background: white;
+          background: var(--color-bg-card);
           padding: 1.5rem;
           margin-bottom: 2rem;
-          border: 1px solid #E8E0D8;
+          border: 1px solid var(--color-border);
         }
 
         .converter-row {
-          margin-bottom: 1rem;
+          margin-bottom: var(--space-md);
         }
 
         .value-input {
           width: 100%;
           padding: 1rem;
-          border: 2px solid #E8E0D8;
+          border: 2px solid var(--color-border);
           font-size: 1.5rem;
           font-weight: 600;
           text-align: center;
           font-family: inherit;
-          margin-bottom: 1rem;
-          background: #FEFBF7;
-          color: #2D2A26;
+          margin-bottom: var(--space-md);
+          background: var(--color-bg-main);
+          color: var(--color-text-primary);
         }
 
         .value-input:focus {
           outline: none;
-          border-color: #D35F2D;
+          border-color: var(--color-primary-dark);
         }
 
         .unit-selector {
           display: flex;
           flex-wrap: wrap;
-          gap: 0.5rem;
+          gap: var(--space-sm);
           justify-content: center;
         }
 
         .unit-selector button {
-          padding: 0.5rem 1rem;
-          border: 2px solid #E8E0D8;
-          background: white;
+          padding: var(--space-sm) var(--space-md);
+          border: 2px solid var(--color-border);
+          background: var(--color-bg-card);
           cursor: pointer;
           font-weight: 500;
           font-family: inherit;
-          transition: all 0.15s;
+          transition: all var(--transition-fast);
+          border-radius: var(--radius-md);
+          color: var(--color-text-primary);
         }
 
         .unit-selector button.active {
-          background: #D35F2D;
-          border-color: #D35F2D;
+          background: var(--color-primary);
+          border-color: var(--color-primary);
           color: white;
         }
 
         .unit-selector button:hover:not(.active) {
-          border-color: #D35F2D;
+          border-color: var(--color-primary-dark);
+          background: var(--color-primary-pale);
         }
 
         .converter-arrow {
@@ -6710,40 +6846,40 @@ export default function App() {
         }
 
         .result-box {
-          background: #FFF5EE;
+          background: var(--color-bg-elevated);
           padding: 1.25rem;
           display: flex;
           align-items: center;
           justify-content: center;
           gap: 0.75rem;
-          margin-top: 1rem;
+          margin-top: var(--space-md);
           flex-wrap: wrap;
         }
 
         .result-value {
           font-size: 1.25rem;
           font-weight: 600;
-          color: #2D2A26;
+          color: var(--color-text-primary);
         }
 
         .result-equals {
-          color: #D35F2D;
+          color: var(--color-primary-dark);
         }
 
         .result-value.highlight {
           font-size: 1.5rem;
-          color: #D35F2D;
+          color: var(--color-primary-dark);
         }
 
         /* Common Conversions */
         .common-conversions h3 {
           font-family: 'Playfair Display', serif;
-          color: #5C4A3D;
-          margin-bottom: 1rem;
+          color: var(--color-text-secondary);
+          margin-bottom: var(--space-md);
         }
 
         .conversion-list {
-          background: white;
+          background: var(--color-bg-card);
           border-radius: 12px;
           overflow: hidden;
           box-shadow: 0 2px 8px rgba(0,0,0,0.04);
@@ -6764,11 +6900,11 @@ export default function App() {
 
         .ingredient-name {
           font-weight: 500;
-          color: #2D2A26;
+          color: var(--color-text-primary);
         }
 
         .ingredient-value {
-          color: #D35F2D;
+          color: var(--color-primary-dark);
           font-weight: 600;
         }
 
@@ -6781,56 +6917,56 @@ export default function App() {
 
         .spoon-values {
           display: flex;
-          gap: 1rem;
+          gap: var(--space-md);
         }
 
         .spoon-value {
           font-size: 0.85rem;
-          color: #D35F2D;
-          background: #FFF5EE;
+          color: var(--color-primary-dark);
+          background: var(--color-bg-elevated);
           padding: 0.2rem 0.5rem;
         }
 
         /* Recent Conversions */
         .recent-conversions {
-          margin-bottom: 1rem;
+          margin-bottom: var(--space-md);
           padding: 1rem;
-          background: #FFF5EE;
+          background: var(--color-bg-elevated);
         }
 
         .recent-conversions h4 {
           font-size: 0.75rem;
           letter-spacing: 0.1em;
           text-transform: uppercase;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
           margin-bottom: 0.5rem;
         }
 
         .recent-tags {
           display: flex;
           flex-wrap: wrap;
-          gap: 0.5rem;
+          gap: var(--space-sm);
         }
 
         .recent-tag {
           padding: 0.4rem 0.75rem;
-          background: white;
-          border: 1px solid #E8E0D8;
+          background: var(--color-bg-card);
+          border: 1px solid var(--color-border);
           font-size: 0.875rem;
           cursor: pointer;
           transition: all 0.15s;
         }
 
         .recent-tag:hover {
-          border-color: #D35F2D;
-          background: #FEFBF7;
+          border-color: var(--color-primary-dark);
+          background: var(--color-bg-main);
         }
 
         /* Ingredient Converter */
         .ingredient-converter {
-          background: white;
+          background: var(--color-bg-card);
           padding: 1.5rem;
-          border: 1px solid #E8E0D8;
+          border: 1px solid var(--color-border);
         }
 
         .selected-ingredient-header {
@@ -6845,30 +6981,30 @@ export default function App() {
           font-weight: 600;
           letter-spacing: 0.05em;
           text-transform: uppercase;
-          color: #2D2A26;
+          color: var(--color-text-primary);
           margin: 0;
         }
 
         .change-ingredient-btn {
           padding: 0.4rem 0.75rem;
-          background: #FFF5EE;
+          background: var(--color-bg-elevated);
           border: none;
           font-size: 0.8rem;
-          color: #D35F2D;
+          color: var(--color-primary-dark);
           cursor: pointer;
         }
 
         .ingredient-info {
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
           font-size: 0.9rem;
-          margin-bottom: 1rem;
+          margin-bottom: var(--space-md);
         }
 
         .direction-selector {
           display: flex;
-          background: #E8E0D8;
+          background: var(--color-border);
           padding: 3px;
-          margin-bottom: 1rem;
+          margin-bottom: var(--space-md);
         }
 
         .direction-selector button {
@@ -6883,8 +7019,8 @@ export default function App() {
         }
 
         .direction-selector button.active {
-          background: #FFF5EE;
-          color: #D35F2D;
+          background: var(--color-bg-elevated);
+          color: var(--color-primary-dark);
           font-weight: 600;
         }
 
@@ -6892,7 +7028,7 @@ export default function App() {
           display: block;
           text-align: center;
           padding: 0.75rem;
-          color: #D35F2D;
+          color: var(--color-primary-dark);
           font-weight: 600;
         }
 
@@ -6903,9 +7039,9 @@ export default function App() {
         .save-recent-btn {
           width: 100%;
           padding: 0.75rem;
-          margin-top: 1rem;
-          background: #FFF5EE;
-          border: 1px solid #E8E0D8;
+          margin-top: var(--space-md);
+          background: var(--color-bg-elevated);
+          border: 1px solid var(--color-border);
           font-size: 0.9rem;
           cursor: pointer;
           transition: all 0.2s;
@@ -6913,7 +7049,7 @@ export default function App() {
         }
 
         .save-recent-btn:hover {
-          border-color: #D35F2D;
+          border-color: var(--color-primary-dark);
         }
 
         /* Ingredient List Grouped */
@@ -6924,14 +7060,14 @@ export default function App() {
         }
 
         .ingredient-category {
-          background: white;
+          background: var(--color-bg-card);
           padding: 1rem;
-          border: 1px solid #E8E0D8;
+          border: 1px solid var(--color-border);
         }
 
         .category-header {
           font-size: 0.7rem;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
           text-transform: uppercase;
           letter-spacing: 0.15em;
           margin-bottom: 0.75rem;
@@ -6941,7 +7077,7 @@ export default function App() {
         .ingredient-buttons {
           display: flex;
           flex-wrap: wrap;
-          gap: 0.5rem;
+          gap: var(--space-sm);
         }
 
         .ingredient-btn {
@@ -6949,37 +7085,37 @@ export default function App() {
           flex-direction: column;
           align-items: flex-start;
           padding: 0.6rem 0.9rem;
-          background: #FEFBF7;
-          border: 1px solid #E8E0D8;
+          background: var(--color-bg-main);
+          border: 1px solid var(--color-border);
           cursor: pointer;
           transition: all 0.15s;
         }
 
         .ingredient-btn:hover {
-          border-color: #D35F2D;
-          background: #FFF5EE;
+          border-color: var(--color-primary-dark);
+          background: var(--color-bg-elevated);
         }
 
         .ingredient-btn .ing-name {
           font-weight: 500;
           font-size: 0.9rem;
-          color: #2D2A26;
+          color: var(--color-text-primary);
         }
 
         .ingredient-btn .ing-gpdl {
           font-size: 0.75rem;
-          color: #D35F2D;
+          color: var(--color-primary-dark);
         }
 
         /* Egg Converter */
         .egg-converter {
           display: flex;
           flex-direction: column;
-          gap: 1rem;
+          gap: var(--space-md);
         }
 
         .egg-info-box {
-          background: #FFF5EE;
+          background: var(--color-bg-elevated);
           border: 1px solid #FACBB0;
           padding: 1rem;
         }
@@ -6987,27 +7123,27 @@ export default function App() {
         .egg-info-box p {
           margin: 0;
           font-size: 0.9rem;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
         }
 
         .egg-sizes-reference {
-          background: white;
+          background: var(--color-bg-card);
           padding: 1rem;
-          border: 1px solid #E8E0D8;
+          border: 1px solid var(--color-border);
         }
 
         .egg-sizes-reference h4 {
           font-size: 0.75rem;
           letter-spacing: 0.1em;
           text-transform: uppercase;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
           margin-bottom: 0.75rem;
         }
 
         .egg-size-cards {
           display: grid;
           grid-template-columns: repeat(4, 1fr);
-          gap: 0.5rem;
+          gap: var(--space-sm);
         }
 
         .egg-size-card {
@@ -7015,50 +7151,50 @@ export default function App() {
           flex-direction: column;
           align-items: center;
           padding: 0.75rem 0.5rem;
-          background: #FFF5EE;
+          background: var(--color-bg-elevated);
         }
 
         .egg-size-label {
           font-weight: 700;
           font-size: 1.25rem;
-          color: #2D2A26;
+          color: var(--color-text-primary);
         }
 
         .egg-size-weight {
           font-size: 0.8rem;
-          color: #D35F2D;
+          color: var(--color-primary-dark);
         }
 
         .egg-converter-box {
-          background: white;
+          background: var(--color-bg-card);
           padding: 1.5rem;
-          border: 1px solid #E8E0D8;
+          border: 1px solid var(--color-border);
         }
 
         .egg-input-row {
           display: flex;
           align-items: center;
-          gap: 1rem;
+          gap: var(--space-md);
           margin-bottom: 0.5rem;
           flex-wrap: wrap;
         }
 
         .egg-input-row label {
           font-weight: 500;
-          color: #2D2A26;
+          color: var(--color-text-primary);
           min-width: 100px;
         }
 
         .egg-input-group {
           display: flex;
           align-items: center;
-          gap: 0.5rem;
+          gap: var(--space-sm);
         }
 
         .egg-count-input {
           width: 60px;
           padding: 0.6rem;
-          border: 2px solid #E8E0D8;
+          border: 2px solid var(--color-border);
           font-size: 1.1rem;
           text-align: center;
           font-family: inherit;
@@ -7066,63 +7202,63 @@ export default function App() {
 
         .egg-count-input:focus {
           outline: none;
-          border-color: #D35F2D;
+          border-color: var(--color-primary-dark);
         }
 
         .egg-size-select {
           padding: 0.6rem 0.75rem;
-          border: 2px solid #E8E0D8;
+          border: 2px solid var(--color-border);
           font-size: 1rem;
-          background: white;
+          background: var(--color-bg-card);
           font-family: inherit;
           cursor: pointer;
         }
 
         .egg-size-select:focus {
           outline: none;
-          border-color: #D35F2D;
+          border-color: var(--color-primary-dark);
         }
 
         .egg-result {
           flex-direction: column;
-          gap: 0.5rem;
-          margin-top: 1rem;
+          gap: var(--space-sm);
+          margin-top: var(--space-md);
         }
 
         .egg-result-main {
           display: flex;
           align-items: center;
-          gap: 0.5rem;
+          gap: var(--space-sm);
         }
 
         .result-label {
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
         }
 
         .egg-result-detail {
           font-size: 0.875rem;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
         }
 
         .egg-tip {
           margin-top: 0.5rem;
           padding: 0.5rem 0.75rem;
-          background: #FFF5EE;
+          background: var(--color-bg-elevated);
           font-size: 0.85rem;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
         }
 
         .egg-tips {
-          background: white;
+          background: var(--color-bg-card);
           padding: 1rem;
-          border: 1px solid #E8E0D8;
+          border: 1px solid var(--color-border);
         }
 
         .egg-tips h4 {
           font-size: 0.75rem;
           letter-spacing: 0.1em;
           text-transform: uppercase;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
           margin-bottom: 0.75rem;
         }
 
@@ -7133,39 +7269,39 @@ export default function App() {
 
         .egg-tips li {
           font-size: 0.9rem;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
           margin-bottom: 0.4rem;
         }
 
         /* Recipe styles */
         .recipe-meta {
           display: flex;
-          gap: 1rem;
-          margin-bottom: 1rem;
+          gap: var(--space-md);
+          margin-bottom: var(--space-md);
         }
 
         .meta-item {
-          background: #FFF5EE;
+          background: var(--color-bg-elevated);
           padding: 0.4rem 0.75rem;
           font-size: 0.875rem;
-          color: #D35F2D;
+          color: var(--color-primary-dark);
         }
 
         .recipe-description {
-          color: #5C4A3D;
-          margin-bottom: 1.5rem;
+          color: var(--color-text-secondary);
+          margin-bottom: var(--space-lg);
           line-height: 1.5;
         }
 
         .recipe-section {
-          margin-bottom: 1.5rem;
+          margin-bottom: var(--space-lg);
         }
 
         .recipe-section h3 {
           font-size: 0.75rem;
           letter-spacing: 0.15em;
           text-transform: uppercase;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
           margin-bottom: 0.75rem;
         }
 
@@ -7184,18 +7320,18 @@ export default function App() {
           font-weight: 600;
           letter-spacing: 0.05em;
           text-transform: uppercase;
-          color: #2D2A26;
+          color: var(--color-text-primary);
           margin-bottom: 0.5rem;
         }
 
         .api-credit {
           font-size: 0.8rem;
-          color: #5C4A3D;
-          margin-bottom: 1rem;
+          color: var(--color-text-secondary);
+          margin-bottom: var(--space-md);
         }
 
         .category-filter-wrapper {
-          margin-bottom: 1rem;
+          margin-bottom: var(--space-md);
         }
 
         .category-filter-toggle {
@@ -7203,12 +7339,12 @@ export default function App() {
           align-items: center;
           width: 100%;
           padding: 0.75rem 1rem;
-          background: #FFF5EE;
+          background: var(--color-bg-elevated);
           border: 1px solid #F5A576;
           border-radius: 8px;
           cursor: pointer;
           font-size: 0.9rem;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
         }
 
         .category-filter-toggle:hover {
@@ -7218,7 +7354,7 @@ export default function App() {
         .category-filter {
           display: flex;
           flex-wrap: wrap;
-          gap: 0.5rem;
+          gap: var(--space-sm);
           padding: 0.75rem;
           background: #F5EFE8;
           border-radius: 0 0 8px 8px;
@@ -7229,8 +7365,8 @@ export default function App() {
 
         .category-chip {
           padding: 0.4rem 0.75rem;
-          background: white;
-          border: 1px solid #E8E0D8;
+          background: var(--color-bg-card);
+          border: 1px solid var(--color-border);
           border-radius: 16px;
           font-size: 0.8rem;
           cursor: pointer;
@@ -7238,12 +7374,12 @@ export default function App() {
         }
 
         .category-chip:hover {
-          border-color: #E87D48;
+          border-color: var(--color-primary);
         }
 
         .category-chip.active {
-          background: #D35F2D;
-          border-color: #D35F2D;
+          background: var(--color-primary-dark);
+          border-color: var(--color-primary-dark);
           color: white;
         }
 
@@ -7254,13 +7390,13 @@ export default function App() {
         }
 
         .category-chip.clear:hover {
-          border-color: #D35F2D;
-          color: #D35F2D;
+          border-color: var(--color-primary-dark);
+          color: var(--color-primary-dark);
         }
 
         .food-results h3 {
           font-size: 0.9rem;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
           margin-bottom: 0.75rem;
         }
 
@@ -7269,14 +7405,14 @@ export default function App() {
           justify-content: space-between;
           align-items: center;
           padding: 1rem;
-          background: white;
+          background: var(--color-bg-card);
           margin-bottom: 0.5rem;
           cursor: pointer;
-          border: 1px solid #E8E0D8;
+          border: 1px solid var(--color-border);
         }
 
         .food-result-item:hover {
-          background: #FFF5EE;
+          background: var(--color-bg-elevated);
         }
 
         .food-info {
@@ -7286,16 +7422,16 @@ export default function App() {
         .food-name {
           display: block;
           font-weight: 500;
-          color: #2D2A26;
+          color: var(--color-text-primary);
         }
 
         .food-brand {
           font-size: 0.8rem;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
         }
 
         .food-kcal {
-          color: #D35F2D;
+          color: var(--color-primary-dark);
           font-weight: 600;
         }
 
@@ -7304,25 +7440,25 @@ export default function App() {
           font-weight: 600;
           letter-spacing: 0.05em;
           text-transform: uppercase;
-          color: #2D2A26;
+          color: var(--color-text-primary);
         }
 
         .food-category {
-          color: #5C4A3D;
-          margin-bottom: 1rem;
+          color: var(--color-text-secondary);
+          margin-bottom: var(--space-md);
         }
 
         .portion-selector {
           display: flex;
           align-items: center;
-          gap: 0.5rem;
-          margin-bottom: 1.5rem;
+          gap: var(--space-sm);
+          margin-bottom: var(--space-lg);
         }
 
         .portion-selector input {
           width: 80px;
           padding: 0.5rem;
-          border: 2px solid #E8E0D8;
+          border: 2px solid var(--color-border);
           text-align: center;
           font-size: 1rem;
         }
@@ -7331,32 +7467,32 @@ export default function App() {
           display: grid;
           grid-template-columns: repeat(2, 1fr);
           gap: 0.75rem;
-          margin-bottom: 1.5rem;
+          margin-bottom: var(--space-lg);
         }
 
         .nutrition-card {
-          background: white;
+          background: var(--color-bg-card);
           padding: 1rem;
           text-align: center;
-          border: 1px solid #E8E0D8;
+          border: 1px solid var(--color-border);
         }
 
         .nutrition-value {
           display: block;
           font-size: 1.5rem;
           font-weight: 700;
-          color: #D35F2D;
+          color: var(--color-primary-dark);
         }
 
         .nutrition-label {
           font-size: 0.8rem;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
         }
 
         .add-to-meal-btn {
           width: 100%;
           padding: 1rem;
-          background: #D35F2D;
+          background: var(--color-primary-dark);
           color: white;
           border: none;
           font-size: 1rem;
@@ -7367,17 +7503,17 @@ export default function App() {
         }
 
         .meal-summary {
-          background: white;
+          background: var(--color-bg-card);
           padding: 1rem;
           margin-top: 1.5rem;
-          border: 1px solid #E8E0D8;
+          border: 1px solid var(--color-border);
         }
 
         .meal-summary h3 {
           font-size: 0.75rem;
           letter-spacing: 0.15em;
           text-transform: uppercase;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
           margin-bottom: 0.75rem;
         }
 
@@ -7386,13 +7522,13 @@ export default function App() {
           justify-content: space-between;
           align-items: center;
           padding: 0.5rem 0;
-          border-bottom: 1px solid #F5EFE8;
+          border-bottom: 1px solid var(--color-border-light);
         }
 
         .meal-item button {
           background: none;
           border: none;
-          color: #D35F2D;
+          color: var(--color-primary-dark);
           cursor: pointer;
           font-size: 1.25rem;
         }
@@ -7409,10 +7545,10 @@ export default function App() {
         .clear-meal-btn {
           width: 100%;
           padding: 0.75rem;
-          margin-top: 1rem;
-          background: #FFF5EE;
+          margin-top: var(--space-md);
+          background: var(--color-bg-elevated);
           border: none;
-          color: #D35F2D;
+          color: var(--color-primary-dark);
           cursor: pointer;
         }
 
@@ -7422,33 +7558,33 @@ export default function App() {
           font-weight: 600;
           letter-spacing: 0.05em;
           text-transform: uppercase;
-          color: #2D2A26;
-          margin-bottom: 1rem;
+          color: var(--color-text-primary);
+          margin-bottom: var(--space-md);
         }
 
         .create-form {
-          background: white;
+          background: var(--color-bg-card);
           padding: 1.5rem;
-          border: 1px solid #E8E0D8;
+          border: 1px solid var(--color-border);
         }
 
         .form-row {
           display: flex;
-          gap: 1rem;
+          gap: var(--space-md);
         }
 
         .form-row .flex-2 { flex: 2; }
         .form-row .flex-1 { flex: 1; }
 
         .form-group {
-          margin-bottom: 1rem;
+          margin-bottom: var(--space-md);
         }
 
         .form-group label {
           display: block;
           font-weight: 500;
           margin-bottom: 0.5rem;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
           font-size: 0.8rem;
           letter-spacing: 0.1em;
           text-transform: uppercase;
@@ -7457,14 +7593,14 @@ export default function App() {
         .form-group input, .form-group select {
           width: 100%;
           padding: 0.75rem;
-          border: 2px solid #E8E0D8;
+          border: 2px solid var(--color-border);
           font-size: 1rem;
           font-family: inherit;
         }
 
         .form-group input:focus, .form-group select:focus {
           outline: none;
-          border-color: #D35F2D;
+          border-color: var(--color-primary-dark);
         }
 
         .ingredient-search-row {
@@ -7476,7 +7612,7 @@ export default function App() {
           top: 100%;
           left: 0;
           right: 0;
-          background: white;
+          background: var(--color-bg-card);
           border: 2px solid #D35F2D;
           border-top: none;
           border-radius: 0 0 8px 8px;
@@ -7495,15 +7631,15 @@ export default function App() {
         }
 
         .ingredient-result-item:hover {
-          background: #FFF5EE;
+          background: var(--color-bg-elevated);
         }
 
         .ingredient-name { font-weight: 500; }
-        .ingredient-kcal { font-size: 0.85rem; color: #5C4A3D; }
+        .ingredient-kcal { font-size: 0.85rem; color: var(--color-text-secondary); }
 
         .ingredient-amount-row {
           display: flex;
-          gap: 0.5rem;
+          gap: var(--space-sm);
           margin-top: 0.5rem;
         }
 
@@ -7519,7 +7655,7 @@ export default function App() {
 
         .add-ingredient-btn {
           flex: 1;
-          background: #D35F2D;
+          background: var(--color-primary-dark);
           color: white;
           border: none;
           padding: 0.75rem;
@@ -7530,7 +7666,7 @@ export default function App() {
         .recipe-ingredients-list {
           background: #F5EFE8;
           padding: 1rem;
-          margin-bottom: 1rem;
+          margin-bottom: var(--space-md);
           border-radius: 4px;
         }
 
@@ -7548,7 +7684,7 @@ export default function App() {
         .ing-amount {
           min-width: 80px;
           font-weight: 600;
-          color: #D35F2D;
+          color: var(--color-primary-dark);
         }
 
         .ing-name {
@@ -7558,7 +7694,7 @@ export default function App() {
         .remove-btn {
           background: none;
           border: none;
-          color: #D35F2D;
+          color: var(--color-primary-dark);
           font-size: 1.25rem;
           cursor: pointer;
           padding: 0 0.5rem;
@@ -7566,7 +7702,7 @@ export default function App() {
 
         .step-input-row {
           display: flex;
-          gap: 0.5rem;
+          gap: var(--space-sm);
         }
 
         .step-input-row input {
@@ -7575,7 +7711,7 @@ export default function App() {
 
         .add-step-btn {
           width: 44px;
-          background: #D35F2D;
+          background: var(--color-primary-dark);
           color: white;
           border: none;
           font-size: 1.5rem;
@@ -7599,7 +7735,7 @@ export default function App() {
         }
 
         .recipe-nutrition-summary {
-          background: #FFF5EE;
+          background: var(--color-bg-elevated);
           padding: 1rem;
           margin: 1rem 0;
           border-left: 4px solid #D35F2D;
@@ -7608,39 +7744,51 @@ export default function App() {
         .nutrition-mini-grid {
           display: grid;
           grid-template-columns: repeat(4, 1fr);
-          gap: 0.5rem;
+          gap: var(--space-sm);
           margin-top: 0.5rem;
           text-align: center;
           font-size: 0.9rem;
         }
 
         .nutrition-mini-grid strong {
-          color: #D35F2D;
+          color: var(--color-primary-dark);
         }
 
         .form-actions {
           display: flex;
-          gap: 0.5rem;
-          margin-top: 1rem;
+          gap: var(--space-sm);
+          margin-top: var(--space-md);
         }
 
         .save-recipe-btn {
           flex: 1;
-          padding: 1rem;
-          background: #5C4A3D;
+          padding: var(--space-md);
+          background: var(--color-primary);
           color: white;
           border: none;
           font-size: 1rem;
           font-weight: 600;
           cursor: pointer;
+          border-radius: var(--radius-md);
+          transition: background var(--transition-fast);
+        }
+
+        .save-recipe-btn:hover {
+          background: var(--color-primary-dark);
         }
 
         .cancel-edit-btn {
-          padding: 1rem;
-          background: #E8E0D8;
-          color: #5C4A3D;
+          padding: var(--space-md);
+          background: var(--color-border);
+          color: var(--color-text-secondary);
           border: none;
           cursor: pointer;
+          border-radius: var(--radius-md);
+          transition: background var(--transition-fast);
+        }
+
+        .cancel-edit-btn:hover {
+          background: var(--color-primary-pale);
         }
 
         .saved-recipes {
@@ -7651,14 +7799,14 @@ export default function App() {
           font-size: 0.75rem;
           letter-spacing: 0.15em;
           text-transform: uppercase;
-          color: #5C4A3D;
-          margin-bottom: 1rem;
+          color: var(--color-text-secondary);
+          margin-bottom: var(--space-md);
         }
 
         .saved-recipe-card {
-          background: white;
+          background: var(--color-bg-card);
           margin-bottom: 0.75rem;
-          border: 1px solid #E8E0D8;
+          border: 1px solid var(--color-border);
         }
 
         .recipe-header {
@@ -7670,23 +7818,23 @@ export default function App() {
         }
 
         .recipe-header:hover {
-          background: #FFF5EE;
+          background: var(--color-bg-elevated);
         }
 
         .saved-recipe-card h3 {
           font-size: 1rem;
           font-weight: 600;
-          color: #2D2A26;
+          color: var(--color-text-primary);
           margin-bottom: 0.25rem;
         }
 
         .saved-recipe-card p {
           font-size: 0.85rem;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
         }
 
         .expand-arrow {
-          color: #D35F2D;
+          color: var(--color-primary-dark);
         }
 
         .recipe-details {
@@ -7705,28 +7853,28 @@ export default function App() {
 
         .recipe-actions {
           display: flex;
-          gap: 0.5rem;
-          margin-top: 1rem;
+          gap: var(--space-sm);
+          margin-top: var(--space-md);
         }
 
         .recipe-actions button {
           flex: 1;
           padding: 0.75rem;
-          border: 1px solid #E8E0D8;
-          background: white;
+          border: 1px solid var(--color-border);
+          background: var(--color-bg-card);
           cursor: pointer;
           font-size: 0.9rem;
         }
 
         .recipe-actions button:hover {
-          background: #FFF5EE;
+          background: var(--color-bg-elevated);
         }
 
         /* Portionsskalning */
         .portion-scaler {
           background: #F5EFE8;
           padding: 0.75rem 1rem;
-          margin-bottom: 1rem;
+          margin-bottom: var(--space-md);
           display: flex;
           align-items: center;
           gap: 0.75rem;
@@ -7741,22 +7889,22 @@ export default function App() {
         .scaler-controls {
           display: flex;
           align-items: center;
-          gap: 0.5rem;
+          gap: var(--space-sm);
         }
 
         .scaler-controls button {
           width: 32px;
           height: 32px;
           border: 1px solid #D35F2D;
-          background: white;
-          color: #D35F2D;
+          background: var(--color-bg-card);
+          color: var(--color-primary-dark);
           font-size: 1.25rem;
           cursor: pointer;
           border-radius: 4px;
         }
 
         .scaler-controls button:hover {
-          background: #FFF5EE;
+          background: var(--color-bg-elevated);
         }
 
         .portion-count {
@@ -7764,7 +7912,7 @@ export default function App() {
           font-weight: 700;
           min-width: 2rem;
           text-align: center;
-          color: #D35F2D;
+          color: var(--color-primary-dark);
         }
 
         .reset-btn {
@@ -7776,7 +7924,7 @@ export default function App() {
 
         .scaled-amount {
           font-weight: 600;
-          color: #D35F2D;
+          color: var(--color-primary-dark);
         }
 
         .gram-equiv {
@@ -7786,7 +7934,7 @@ export default function App() {
         }
 
         .recipe-nutrition-scaled {
-          background: #FFF5EE;
+          background: var(--color-bg-elevated);
           padding: 0.75rem 1rem;
           margin: 1rem 0;
           border-left: 3px solid #D35F2D;
@@ -7804,7 +7952,7 @@ export default function App() {
 
         .measure-hint {
           font-size: 0.85rem;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
           margin-top: 0.5rem;
           padding: 0.5rem;
           background: #F5EFE8;
@@ -7813,45 +7961,45 @@ export default function App() {
 
         .search-results-count {
           font-size: 0.875rem;
-          color: #5C4A3D;
-          margin-bottom: 1rem;
+          color: var(--color-text-secondary);
+          margin-bottom: var(--space-md);
         }
 
         /* === VILA-TID BOX === */
         .rest-time-box {
           background: linear-gradient(135deg, #FFF5EE, #FFEEE5);
-          border-left: 4px solid #E87D48;
+          border-left: 4px solid var(--color-primary);
         }
 
         .rest-time-value {
           font-size: 1.5rem;
           font-weight: 700;
-          color: #D35F2D;
+          color: var(--color-primary-dark);
           margin: 0.5rem 0;
         }
 
         .rest-time-note {
           font-size: 0.85rem;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
           margin-top: 0.5rem;
         }
 
         /* === SALTNING BOX === */
         .saltning-box {
           background: linear-gradient(135deg, #FFF5EE, #FFEEE5);
-          border-left: 4px solid #E87D48;
+          border-left: 4px solid var(--color-primary);
         }
 
         .saltning-value {
           font-size: 1.5rem;
           font-weight: 700;
-          color: #D35F2D;
+          color: var(--color-primary-dark);
           margin: 0.5rem 0;
         }
 
         .saltning-note {
           font-size: 0.85rem;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
           margin-top: 0.5rem;
         }
 
@@ -7868,10 +8016,10 @@ export default function App() {
           cursor: pointer;
           display: flex;
           align-items: center;
-          gap: 0.5rem;
+          gap: var(--space-sm);
           font-size: 0.9rem;
           font-weight: 500;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
           list-style: none;
         }
 
@@ -7883,7 +8031,7 @@ export default function App() {
           content: '+';
           margin-left: auto;
           font-size: 1.2rem;
-          color: #D35F2D;
+          color: var(--color-primary-dark);
         }
 
         details[open] .science-summary::after {
@@ -7898,7 +8046,7 @@ export default function App() {
           padding: 0 1rem 1rem;
           font-size: 0.9rem;
           line-height: 1.6;
-          color: #2D2A26;
+          color: var(--color-text-primary);
         }
 
         .science-content p {
@@ -7906,7 +8054,7 @@ export default function App() {
         }
 
         .science-tip {
-          background: white;
+          background: var(--color-bg-card);
           padding: 0.75rem;
           border-radius: 4px;
           font-size: 0.85rem;
@@ -7920,13 +8068,13 @@ export default function App() {
         .egg-guide-view .subtitle {
           font-size: 0.85rem;
           color: #8B7355;
-          margin-bottom: 1.5rem;
+          margin-bottom: var(--space-lg);
         }
 
         .egg-guide-tabs {
           display: flex;
           gap: 0.25rem;
-          margin-bottom: 1.5rem;
+          margin-bottom: var(--space-lg);
           flex-wrap: wrap;
         }
 
@@ -7934,12 +8082,12 @@ export default function App() {
           flex: 1;
           min-width: 60px;
           padding: 0.75rem 0.5rem;
-          background: #E8E0D8;
+          background: var(--color-border);
           border: none;
           cursor: pointer;
           font-size: 0.85rem;
           font-weight: 500;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
           transition: all 0.2s;
         }
 
@@ -7952,32 +8100,32 @@ export default function App() {
         }
 
         .egg-guide-tabs button.active {
-          background: #D35F2D;
+          background: var(--color-primary-dark);
           color: white;
         }
 
         /* Rice guide specific tabs - 3 even buttons */
         .rice-tab-row {
           display: flex;
-          gap: 0.5rem;
-          margin-bottom: 1.5rem;
+          gap: var(--space-sm);
+          margin-bottom: var(--space-lg);
         }
 
         .rice-tab-row button {
           flex: 1;
           padding: 0.875rem 1rem;
-          background: #E8E0D8;
+          background: var(--color-border);
           border: none;
           cursor: pointer;
           font-size: 0.95rem;
           font-weight: 500;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
           transition: all 0.2s;
           border-radius: 8px;
         }
 
         .rice-tab-row button.active {
-          background: #D35F2D;
+          background: var(--color-primary-dark);
           color: white;
         }
 
@@ -7987,18 +8135,18 @@ export default function App() {
 
         /* Rice Calculator */
         .rice-calculator {
-          background: white;
-          border: 1px solid #E8E0D8;
+          background: var(--color-bg-card);
+          border: 1px solid var(--color-border);
           border-radius: 12px;
           padding: 1.25rem;
-          margin-bottom: 1.5rem;
+          margin-bottom: var(--space-lg);
         }
 
         .rice-calc-row {
           display: flex;
           flex-direction: column;
-          gap: 0.5rem;
-          margin-bottom: 1rem;
+          gap: var(--space-sm);
+          margin-bottom: var(--space-md);
         }
 
         .rice-calc-row:last-child {
@@ -8007,13 +8155,13 @@ export default function App() {
 
         .rice-calc-row label {
           font-weight: 600;
-          color: #2D2A26;
+          color: var(--color-text-primary);
           font-size: 0.9rem;
         }
 
         .rice-calc-input-group {
           display: flex;
-          gap: 0.5rem;
+          gap: var(--space-sm);
         }
 
         .rice-calc-input {
@@ -8028,7 +8176,7 @@ export default function App() {
 
         .rice-calc-input:focus {
           outline: none;
-          border-color: #E87D48;
+          border-color: var(--color-primary);
         }
 
         .rice-calc-select {
@@ -8036,7 +8184,7 @@ export default function App() {
           border: 1px solid #D5CEC5;
           border-radius: 8px;
           font-size: 0.95rem;
-          background: white;
+          background: var(--color-bg-card);
           min-width: 90px;
         }
 
@@ -8046,7 +8194,7 @@ export default function App() {
           border: 1px solid #D5CEC5;
           border-radius: 8px;
           font-size: 0.95rem;
-          background: white;
+          background: var(--color-bg-card);
         }
 
         /* Rice Result Card */
@@ -8055,12 +8203,12 @@ export default function App() {
           border: 2px solid #E87D48;
           border-radius: 12px;
           padding: 1.25rem;
-          margin-bottom: 1.5rem;
+          margin-bottom: var(--space-lg);
         }
 
         .rice-result-card h3 {
-          color: #D35F2D;
-          margin-bottom: 1rem;
+          color: var(--color-primary-dark);
+          margin-bottom: var(--space-md);
           font-size: 1.1rem;
         }
 
@@ -8083,7 +8231,7 @@ export default function App() {
         }
 
         .rice-result-item.highlight {
-          background: #E87D48;
+          background: var(--color-primary);
           margin: 0 -0.75rem;
           padding: 0.875rem 0.75rem;
           border-radius: 8px;
@@ -8105,12 +8253,12 @@ export default function App() {
         }
 
         .rice-result-label {
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
           font-weight: 500;
         }
 
         .rice-result-value {
-          color: #2D2A26;
+          color: var(--color-text-primary);
           font-weight: 700;
           font-size: 1.1rem;
         }
@@ -8121,14 +8269,14 @@ export default function App() {
 
         .egg-section h2 {
           font-size: 1.25rem;
-          color: #2D2A26;
+          color: var(--color-text-primary);
           margin-bottom: 0.5rem;
         }
 
         .section-description {
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
           font-size: 0.95rem;
-          margin-bottom: 1.5rem;
+          margin-bottom: var(--space-lg);
           line-height: 1.5;
         }
 
@@ -8136,13 +8284,13 @@ export default function App() {
           display: flex;
           flex-direction: column;
           gap: 0.75rem;
-          margin-bottom: 1.5rem;
+          margin-bottom: var(--space-lg);
         }
 
         .egg-time-card {
-          background: white;
-          border: 1px solid #E8E0D8;
-          border-left: 4px solid #E87D48;
+          background: var(--color-bg-card);
+          border: 1px solid var(--color-border);
+          border-left: 4px solid var(--color-primary);
           padding: 1rem;
           border-radius: 0 6px 6px 0;
         }
@@ -8161,13 +8309,13 @@ export default function App() {
 
         .egg-time-name {
           font-weight: 600;
-          color: #2D2A26;
+          color: var(--color-text-primary);
         }
 
         .egg-time-value {
           font-size: 1.25rem;
           font-weight: 700;
-          color: #D35F2D;
+          color: var(--color-primary-dark);
         }
 
         .egg-time-card.warning .egg-time-value {
@@ -8176,7 +8324,7 @@ export default function App() {
 
         .egg-time-desc {
           font-size: 0.9rem;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
           margin-bottom: 0.25rem;
         }
 
@@ -8195,7 +8343,7 @@ export default function App() {
           font-size: 0.9rem;
           text-transform: uppercase;
           letter-spacing: 0.05em;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
           margin-bottom: 0.75rem;
         }
 
@@ -8211,14 +8359,14 @@ export default function App() {
         }
 
         .steps-list-guide {
-          margin-bottom: 1.5rem;
+          margin-bottom: var(--space-lg);
         }
 
         .steps-list-guide h3 {
           font-size: 0.9rem;
           text-transform: uppercase;
           letter-spacing: 0.05em;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
           margin-bottom: 0.75rem;
         }
 
@@ -8237,24 +8385,24 @@ export default function App() {
         .scrambled-styles {
           display: flex;
           flex-direction: column;
-          gap: 1rem;
+          gap: var(--space-md);
         }
 
         .scrambled-style-card {
-          background: white;
-          border: 1px solid #E8E0D8;
+          background: var(--color-bg-card);
+          border: 1px solid var(--color-border);
           padding: 1rem;
           border-radius: 6px;
         }
 
         .scrambled-style-card h3 {
           font-size: 1rem;
-          color: #2D2A26;
+          color: var(--color-text-primary);
           margin-bottom: 0.5rem;
         }
 
         .style-method {
-          color: #D35F2D;
+          color: var(--color-primary-dark);
           font-weight: 500;
           margin-bottom: 0.75rem;
           font-size: 0.95rem;
@@ -8274,12 +8422,12 @@ export default function App() {
           display: grid;
           grid-template-columns: repeat(2, 1fr);
           gap: 0.75rem;
-          margin-bottom: 1.5rem;
+          margin-bottom: var(--space-lg);
         }
 
         .science-fact-card {
-          background: white;
-          border: 1px solid #E8E0D8;
+          background: var(--color-bg-card);
+          border: 1px solid var(--color-border);
           padding: 0.75rem;
           text-align: center;
           border-radius: 6px;
@@ -8288,7 +8436,7 @@ export default function App() {
         .fact-label {
           display: block;
           font-size: 0.8rem;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
           margin-bottom: 0.25rem;
         }
 
@@ -8296,7 +8444,7 @@ export default function App() {
           display: block;
           font-size: 1.1rem;
           font-weight: 700;
-          color: #D35F2D;
+          color: var(--color-primary-dark);
         }
 
         .science-explanation {
@@ -8313,17 +8461,17 @@ export default function App() {
         }
 
         .fermentation-intro {
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
           line-height: 1.6;
-          margin-bottom: 1.5rem;
+          margin-bottom: var(--space-lg);
         }
 
         .fermentation-tabs {
           display: flex;
-          gap: 0.5rem;
+          gap: var(--space-sm);
           overflow-x: auto;
           padding-bottom: 0.5rem;
-          margin-bottom: 1.5rem;
+          margin-bottom: var(--space-lg);
           -webkit-overflow-scrolling: touch;
         }
 
@@ -8333,8 +8481,8 @@ export default function App() {
           align-items: center;
           gap: 0.25rem;
           padding: 0.75rem 1rem;
-          border: 1px solid #E8E0D8;
-          background: white;
+          border: 1px solid var(--color-border);
+          background: var(--color-bg-card);
           border-radius: 8px;
           cursor: pointer;
           transition: all 0.2s ease;
@@ -8343,13 +8491,13 @@ export default function App() {
         }
 
         .ferment-tab:hover {
-          border-color: #D35F2D;
+          border-color: var(--color-primary-dark);
         }
 
         .ferment-tab.active {
-          background: #FFF5EE;
-          border-color: #D35F2D;
-          color: #D35F2D;
+          background: var(--color-bg-elevated);
+          border-color: var(--color-primary-dark);
+          color: var(--color-primary-dark);
         }
 
         .tab-icon {
@@ -8363,7 +8511,7 @@ export default function App() {
         }
 
         .ferment-category-header {
-          margin-bottom: 1.5rem;
+          margin-bottom: var(--space-lg);
         }
 
         .ferment-category-header h2 {
@@ -8372,7 +8520,7 @@ export default function App() {
         }
 
         .ferment-category-header p {
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
           line-height: 1.5;
         }
 
@@ -8380,7 +8528,7 @@ export default function App() {
           background: #F5EFE8;
           padding: 1rem;
           border-radius: 8px;
-          margin-bottom: 1.5rem;
+          margin-bottom: var(--space-lg);
         }
 
         .ferment-basics h3 {
@@ -8388,7 +8536,7 @@ export default function App() {
           text-transform: uppercase;
           letter-spacing: 0.05em;
           margin-bottom: 0.75rem;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
         }
 
         .basics-grid {
@@ -8398,7 +8546,7 @@ export default function App() {
         }
 
         .basic-item {
-          background: white;
+          background: var(--color-bg-card);
           padding: 0.75rem;
           border-radius: 6px;
         }
@@ -8413,7 +8561,7 @@ export default function App() {
         .basic-value {
           font-size: 0.9rem;
           font-weight: 500;
-          color: #2D2A26;
+          color: var(--color-text-primary);
         }
 
         .ferment-recipes h3 {
@@ -8421,7 +8569,7 @@ export default function App() {
           text-transform: uppercase;
           letter-spacing: 0.05em;
           margin-bottom: 0.75rem;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
         }
 
         .recipes-grid {
@@ -8431,8 +8579,8 @@ export default function App() {
         }
 
         .ferment-recipe-card {
-          background: white;
-          border: 1px solid #E8E0D8;
+          background: var(--color-bg-card);
+          border: 1px solid var(--color-border);
           border-left: 4px solid #D35F2D;
           padding: 1rem;
           border-radius: 0 8px 8px 0;
@@ -8442,24 +8590,24 @@ export default function App() {
 
         .ferment-recipe-card:hover {
           background: #FFF9F5;
-          border-left-color: #E87D48;
+          border-left-color: var(--color-primary);
         }
 
         .ferment-recipe-card h4 {
           font-size: 1rem;
           margin-bottom: 0.25rem;
-          color: #2D2A26;
+          color: var(--color-text-primary);
         }
 
         .ferment-recipe-card p {
           font-size: 0.85rem;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
           margin-bottom: 0.5rem;
         }
 
         .recipe-card-meta {
           display: flex;
-          gap: 1rem;
+          gap: var(--space-md);
           font-size: 0.8rem;
           color: #8B7355;
         }
@@ -8472,11 +8620,11 @@ export default function App() {
         .back-link {
           background: none;
           border: none;
-          color: #D35F2D;
+          color: var(--color-primary-dark);
           cursor: pointer;
           padding: 0;
           font-size: 0.9rem;
-          margin-bottom: 1rem;
+          margin-bottom: var(--space-md);
           display: block;
         }
 
@@ -8486,16 +8634,16 @@ export default function App() {
         }
 
         .recipe-description {
-          color: #5C4A3D;
-          margin-bottom: 1rem;
+          color: var(--color-text-secondary);
+          margin-bottom: var(--space-md);
           line-height: 1.5;
         }
 
         .recipe-meta {
           display: flex;
           flex-wrap: wrap;
-          gap: 1rem;
-          margin-bottom: 1.5rem;
+          gap: var(--space-md);
+          margin-bottom: var(--space-lg);
         }
 
         .meta-item {
@@ -8506,12 +8654,12 @@ export default function App() {
         }
 
         .recipe-steps {
-          margin-bottom: 1.5rem;
+          margin-bottom: var(--space-lg);
         }
 
         .recipe-ingredients,
         .recipe-steps {
-          margin-bottom: 1.5rem;
+          margin-bottom: var(--space-lg);
         }
 
         .recipe-ingredients h3,
@@ -8519,7 +8667,7 @@ export default function App() {
         .recipe-tips h3 {
           font-size: 1rem;
           margin-bottom: 0.75rem;
-          color: #2D2A26;
+          color: var(--color-text-primary);
         }
 
         .recipe-ingredients ul {
@@ -8543,10 +8691,10 @@ export default function App() {
         }
 
         .recipe-tips {
-          background: #FFF5EE;
+          background: var(--color-bg-elevated);
           padding: 1rem;
           border-radius: 8px;
-          border-left: 4px solid #E87D48;
+          border-left: 4px solid var(--color-primary);
         }
 
         .recipe-tips ul {
@@ -8568,26 +8716,26 @@ export default function App() {
 
         .ferment-troubleshooting h3 {
           font-size: 1rem;
-          margin-bottom: 1rem;
+          margin-bottom: var(--space-md);
         }
 
         .trouble-item {
-          background: white;
-          border: 1px solid #E8E0D8;
+          background: var(--color-bg-card);
+          border: 1px solid var(--color-border);
           padding: 1rem;
           border-radius: 8px;
           margin-bottom: 0.75rem;
         }
 
         .trouble-item strong {
-          color: #D35F2D;
+          color: var(--color-primary-dark);
           display: block;
           margin-bottom: 0.25rem;
         }
 
         .trouble-item p {
           font-size: 0.9rem;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
           margin: 0;
           line-height: 1.4;
         }
@@ -8601,14 +8749,14 @@ export default function App() {
 
         .ferment-science h3 {
           font-size: 1rem;
-          margin-bottom: 1rem;
+          margin-bottom: var(--space-md);
         }
 
         .science-facts-grid {
           display: grid;
           grid-template-columns: repeat(2, 1fr);
-          gap: 0.5rem;
-          margin-bottom: 1rem;
+          gap: var(--space-sm);
+          margin-bottom: var(--space-md);
         }
 
         @media (min-width: 480px) {
@@ -8623,15 +8771,15 @@ export default function App() {
 
         /* Technique Card (Blanchering etc.) */
         .technique-card {
-          background: #FFF5EE;
+          background: var(--color-bg-elevated);
           padding: 1rem 1.25rem;
-          margin-bottom: 1.5rem;
-          border-left: 4px solid #E87D48;
+          margin-bottom: var(--space-lg);
+          border-left: 4px solid var(--color-primary);
           cursor: pointer;
           transition: all 0.2s ease;
           display: flex;
           align-items: center;
-          gap: 1rem;
+          gap: var(--space-md);
         }
 
         .technique-card:hover {
@@ -8649,38 +8797,38 @@ export default function App() {
         .technique-content h3 {
           font-size: 1rem;
           font-weight: 600;
-          color: #2D2A26;
+          color: var(--color-text-primary);
           margin: 0 0 0.25rem 0;
         }
 
         .technique-content p {
           font-size: 0.85rem;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
           margin: 0;
         }
 
         /* Blancheringsguide */
         .blanchering-view .subtitle {
           font-size: 0.9rem;
-          color: #5C4A3D;
-          margin-bottom: 1rem;
+          color: var(--color-text-secondary);
+          margin-bottom: var(--space-md);
           font-style: italic;
         }
 
         .blanchering-keys {
-          margin-bottom: 1.5rem;
+          margin-bottom: var(--space-lg);
         }
 
         .blanchering-keys h3 {
           font-size: 0.85rem;
           text-transform: uppercase;
           letter-spacing: 0.1em;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
           margin-bottom: 0.75rem;
         }
 
         .blanchering-key-card {
-          background: #FFF5EE;
+          background: var(--color-bg-elevated);
           padding: 1rem;
           margin-bottom: 0.5rem;
           border-left: 3px solid #E87D48;
@@ -8688,26 +8836,26 @@ export default function App() {
 
         .blanchering-key-card h4 {
           font-size: 0.95rem;
-          color: #2D2A26;
+          color: var(--color-text-primary);
           margin: 0 0 0.5rem 0;
         }
 
         .blanchering-key-card p {
           font-size: 0.9rem;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
           margin: 0;
           line-height: 1.4;
         }
 
         .blanchering-times {
-          margin-bottom: 1.5rem;
+          margin-bottom: var(--space-lg);
         }
 
         .blanchering-times h3 {
           font-size: 0.85rem;
           text-transform: uppercase;
           letter-spacing: 0.1em;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
           margin-bottom: 0.5rem;
         }
 
@@ -8734,20 +8882,20 @@ export default function App() {
 
         .blanchering-item .item-name {
           font-weight: 500;
-          color: #2D2A26;
+          color: var(--color-text-primary);
         }
 
         .blanchering-time {
           font-weight: 600;
-          color: #E87D48;
-          background: #FFF5EE;
+          color: var(--color-primary);
+          background: var(--color-bg-elevated);
           padding: 0.25rem 0.5rem;
           font-size: 0.9rem;
         }
 
         .blanchering-tips {
           font-size: 0.8rem;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
           margin: 0.25rem 0 0 0;
           font-style: italic;
         }
@@ -8756,18 +8904,18 @@ export default function App() {
         .technique-guides {
           display: flex;
           flex-direction: column;
-          gap: 0.5rem;
-          margin-bottom: 1.5rem;
+          gap: var(--space-sm);
+          margin-bottom: var(--space-lg);
         }
 
         /* Brässeringsguide */
         .brassering-card {
-          background: #FFF5EE;
-          border-left-color: #D35F2D;
+          background: var(--color-bg-elevated);
+          border-left-color: var(--color-primary-dark);
         }
 
         .brassering-card:hover {
-          background: #FACBB0;
+          background: var(--color-primary-pale);
         }
 
         .brassering-card .technique-content p {
@@ -8776,19 +8924,19 @@ export default function App() {
 
         .brassering-view .subtitle {
           font-size: 0.9rem;
-          color: #5C4A3D;
-          margin-bottom: 1rem;
+          color: var(--color-text-secondary);
+          margin-bottom: var(--space-md);
           font-style: italic;
         }
 
         .quote-box {
-          background: #FFF5EE;
+          background: var(--color-bg-elevated);
           border-left: 3px solid #D35F2D;
         }
 
         .quote-box .quote {
           font-style: italic;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
           line-height: 1.6;
           margin-bottom: 0.5rem;
         }
@@ -8801,59 +8949,59 @@ export default function App() {
         }
 
         .brassering-steps {
-          margin-bottom: 1.5rem;
+          margin-bottom: var(--space-lg);
         }
 
         .brassering-steps h3 {
           font-size: 0.85rem;
           text-transform: uppercase;
           letter-spacing: 0.1em;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
           margin-bottom: 0.75rem;
         }
 
         .brassering-step-card {
-          background: white;
+          background: var(--color-bg-card);
           padding: 1rem;
           margin-bottom: 0.5rem;
-          border: 1px solid #E8E0D8;
+          border: 1px solid var(--color-border);
           border-left: 3px solid #D35F2D;
         }
 
         .brassering-step-card h4 {
           font-size: 0.95rem;
-          color: #D35F2D;
+          color: var(--color-primary-dark);
           margin: 0 0 0.5rem 0;
         }
 
         .brassering-step-card p {
           font-size: 0.9rem;
-          color: #2D2A26;
+          color: var(--color-text-primary);
           margin: 0 0 0.5rem 0;
           line-height: 1.4;
         }
 
         .brassering-step-card .step-tip {
           font-size: 0.85rem;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
           margin: 0;
         }
 
         .brassering-cuts {
-          margin-bottom: 1.5rem;
+          margin-bottom: var(--space-lg);
         }
 
         .brassering-cuts h3 {
           font-size: 0.85rem;
           text-transform: uppercase;
           letter-spacing: 0.1em;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
           margin-bottom: 0.75rem;
         }
 
         .brassering-cut-item {
           padding: 0.75rem 1rem;
-          border-bottom: 1px solid #F5EFE8;
+          border-bottom: 1px solid var(--color-border-light);
         }
 
         .brassering-cut-item:last-child {
@@ -8873,15 +9021,15 @@ export default function App() {
 
         .cut-time {
           font-weight: 600;
-          color: #D35F2D;
-          background: #FFF5EE;
+          color: var(--color-primary-dark);
+          background: var(--color-bg-elevated);
           padding: 0.2rem 0.5rem;
           font-size: 0.85rem;
         }
 
         .cut-temp {
           font-weight: 500;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
           font-size: 0.85rem;
         }
 
@@ -8897,11 +9045,11 @@ export default function App() {
           display: block;
           width: 100%;
           padding: 1rem;
-          margin-top: 1rem;
-          background: #FFF5EE;
+          margin-top: var(--space-md);
+          background: var(--color-bg-elevated);
           border: none;
           border-left: 3px solid #E87D48;
-          color: #D35F2D;
+          color: var(--color-primary-dark);
           font-size: 0.95rem;
           font-weight: 500;
           text-align: left;
@@ -8914,13 +9062,13 @@ export default function App() {
         }
 
         .guide-link-btn.brassering-link {
-          background: #FFF5EE;
-          border-left-color: #D35F2D;
+          background: var(--color-bg-elevated);
+          border-left-color: var(--color-primary-dark);
           color: #8B5A2B;
         }
 
         .guide-link-btn.brassering-link:hover {
-          background: #FACBB0;
+          background: var(--color-primary-pale);
         }
 
         /* Vegetable Detail View */
@@ -8931,10 +9079,10 @@ export default function App() {
         }
 
         .time-card {
-          background: #FFF5EE;
+          background: var(--color-bg-elevated);
           padding: 1.5rem 2rem;
           text-align: center;
-          border-left: 4px solid #E87D48;
+          border-left: 4px solid var(--color-primary);
         }
 
         .time-label {
@@ -8942,7 +9090,7 @@ export default function App() {
           font-size: 0.8rem;
           text-transform: uppercase;
           letter-spacing: 0.1em;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
           margin-bottom: 0.5rem;
         }
 
@@ -8950,11 +9098,11 @@ export default function App() {
           display: block;
           font-size: 1.75rem;
           font-weight: 600;
-          color: #D35F2D;
+          color: var(--color-primary-dark);
         }
 
         .blanchering-method {
-          background: #FEFBF7;
+          background: var(--color-bg-main);
           border: 1px solid #FFEEE5;
         }
 
@@ -8965,14 +9113,14 @@ export default function App() {
 
         .blanchering-method li {
           font-size: 0.9rem;
-          color: #2D2A26;
+          color: var(--color-text-primary);
           margin-bottom: 0.5rem;
           line-height: 1.4;
         }
 
         /* Category Guide Card */
         .category-guide {
-          margin-top: 1rem;
+          margin-top: var(--space-md);
           border-radius: 4px;
         }
 
@@ -8995,7 +9143,7 @@ export default function App() {
 
         .philosophy-name {
           font-weight: 600;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
           font-size: 0.95rem;
         }
 
@@ -9008,20 +9156,20 @@ export default function App() {
         }
 
         .philosophy-detail .quote-box {
-          margin-bottom: 1.5rem;
+          margin-bottom: var(--space-lg);
         }
 
         .philosophy-principles {
-          background: white;
+          background: var(--color-bg-card);
           padding: 1rem;
-          border: 1px solid #E8E0D8;
+          border: 1px solid var(--color-border);
         }
 
         .philosophy-principles h3 {
           font-size: 0.85rem;
           text-transform: uppercase;
           letter-spacing: 0.1em;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
           margin: 0 0 0.75rem 0;
         }
 
@@ -9032,16 +9180,16 @@ export default function App() {
 
         .philosophy-principles li {
           font-size: 0.9rem;
-          color: #2D2A26;
+          color: var(--color-text-primary);
           margin-bottom: 0.5rem;
           line-height: 1.5;
         }
 
         /* Recipe Scaler Styles */
         .recipe-scaler {
-          background: #FFF5EE;
+          background: var(--color-bg-elevated);
           padding: 1rem;
-          margin-bottom: 1.5rem;
+          margin-bottom: var(--space-lg);
           border: 1px solid #FACBB0;
         }
 
@@ -9049,7 +9197,7 @@ export default function App() {
           font-size: 0.75rem;
           letter-spacing: 0.1em;
           text-transform: uppercase;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
           margin-bottom: 0.75rem;
           font-weight: 600;
         }
@@ -9058,16 +9206,16 @@ export default function App() {
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 1rem;
-          margin-bottom: 1rem;
+          gap: var(--space-md);
+          margin-bottom: var(--space-md);
         }
 
         .scaler-btn {
           width: 40px;
           height: 40px;
           border: 2px solid #D35F2D;
-          background: white;
-          color: #D35F2D;
+          background: var(--color-bg-card);
+          color: var(--color-primary-dark);
           font-size: 1.5rem;
           font-weight: 600;
           cursor: pointer;
@@ -9078,7 +9226,7 @@ export default function App() {
         }
 
         .scaler-btn:hover {
-          background: #D35F2D;
+          background: var(--color-primary-dark);
           color: white;
         }
 
@@ -9090,22 +9238,22 @@ export default function App() {
         .scaler-value {
           font-size: 1.5rem;
           font-weight: 700;
-          color: #D35F2D;
+          color: var(--color-primary-dark);
           min-width: 80px;
           text-align: center;
         }
 
         .scaler-presets {
           display: flex;
-          gap: 0.5rem;
+          gap: var(--space-sm);
           justify-content: center;
           flex-wrap: wrap;
         }
 
         .preset-btn {
           padding: 0.4rem 0.75rem;
-          border: 1px solid #E8E0D8;
-          background: white;
+          border: 1px solid var(--color-border);
+          background: var(--color-bg-card);
           font-size: 0.85rem;
           cursor: pointer;
           transition: all 0.15s;
@@ -9113,12 +9261,12 @@ export default function App() {
         }
 
         .preset-btn:hover {
-          border-color: #D35F2D;
+          border-color: var(--color-primary-dark);
         }
 
         .preset-btn.active {
-          background: #D35F2D;
-          border-color: #D35F2D;
+          background: var(--color-primary-dark);
+          border-color: var(--color-primary-dark);
           color: white;
         }
 
@@ -9134,11 +9282,11 @@ export default function App() {
           flex-wrap: wrap;
           align-items: baseline;
           padding: 0.6rem 0;
-          border-bottom: 1px solid #F5EFE8;
+          border-bottom: 1px solid var(--color-border-light);
           cursor: pointer;
           transition: background 0.15s;
           -webkit-tap-highlight-color: transparent;
-          color: #2D2A26;
+          color: var(--color-text-primary);
         }
 
         .structured-ingredient * {
@@ -9150,7 +9298,7 @@ export default function App() {
         }
 
         .structured-ingredient:hover {
-          background: #FFF5EE;
+          background: var(--color-bg-elevated);
           margin: 0 -0.5rem;
           padding-left: 0.5rem;
           padding-right: 0.5rem;
@@ -9159,20 +9307,20 @@ export default function App() {
         .ingredient-main {
           display: flex;
           align-items: baseline;
-          gap: 0.5rem;
+          gap: var(--space-sm);
           flex: 1;
           min-width: 200px;
         }
 
         .ingredient-amount {
           font-weight: 600;
-          color: #D35F2D;
+          color: var(--color-primary-dark);
           min-width: 70px;
         }
 
         .structured-ingredient .ingredient-name {
           font-weight: 500;
-          color: #2D2A26;
+          color: var(--color-text-primary);
         }
 
         .ingredient-note {
@@ -9184,7 +9332,7 @@ export default function App() {
         .ingredient-extras {
           display: flex;
           align-items: center;
-          gap: 0.5rem;
+          gap: var(--space-sm);
           flex-wrap: wrap;
           margin-top: 0.25rem;
           width: 100%;
@@ -9192,7 +9340,7 @@ export default function App() {
 
         .ingredient-conversion {
           font-size: 0.8rem;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
           background: #F5EFE8;
           padding: 0.2rem 0.5rem;
         }
@@ -9210,7 +9358,7 @@ export default function App() {
           top: 50%;
           left: 50%;
           transform: translate(-50%, -50%);
-          background: white;
+          background: var(--color-bg-card);
           padding: 1.5rem;
           border: 2px solid #D35F2D;
           box-shadow: 0 8px 32px rgba(0,0,0,0.15);
@@ -9233,12 +9381,12 @@ export default function App() {
           display: flex;
           justify-content: space-between;
           align-items: flex-start;
-          margin-bottom: 1rem;
+          margin-bottom: var(--space-md);
         }
 
         .popup-header h4 {
           font-size: 1rem;
-          color: #2D2A26;
+          color: var(--color-text-primary);
           margin: 0;
           letter-spacing: 0.05em;
           text-transform: uppercase;
@@ -9256,8 +9404,8 @@ export default function App() {
 
         .popup-amount {
           font-size: 0.9rem;
-          color: #D35F2D;
-          margin-bottom: 1rem;
+          color: var(--color-primary-dark);
+          margin-bottom: var(--space-md);
         }
 
         .popup-nutrition {
@@ -9267,7 +9415,7 @@ export default function App() {
         }
 
         .popup-nutrition-item {
-          background: #FFF5EE;
+          background: var(--color-bg-elevated);
           padding: 0.6rem;
           text-align: center;
         }
@@ -9276,13 +9424,13 @@ export default function App() {
           display: block;
           font-size: 1.1rem;
           font-weight: 600;
-          color: #D35F2D;
+          color: var(--color-primary-dark);
         }
 
         .popup-nutrition-label {
           display: block;
           font-size: 0.7rem;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
           text-transform: uppercase;
           letter-spacing: 0.05em;
         }
@@ -9298,26 +9446,26 @@ export default function App() {
         .nutrition-toggle {
           width: 100%;
           padding: 0.75rem;
-          margin-top: 1rem;
-          background: #FEFBF7;
+          margin-top: var(--space-md);
+          background: var(--color-bg-main);
           border: 1px solid #F5A576;
           font-size: 0.85rem;
           cursor: pointer;
           transition: all 0.2s;
           font-family: inherit;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 0.5rem;
+          gap: var(--space-sm);
         }
 
         .nutrition-toggle:hover {
-          background: #FFF5EE;
+          background: var(--color-bg-elevated);
         }
 
         .recipe-nutrition {
-          background: #FEFBF7;
+          background: var(--color-bg-main);
           border: 1px solid #F5A576;
           border-top: none;
           padding: 1rem;
@@ -9335,16 +9483,16 @@ export default function App() {
         }
 
         .nutrition-row .label {
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
         }
 
         .nutrition-row .value {
           font-weight: 600;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
         }
 
         .per-portion {
-          margin-top: 1rem;
+          margin-top: var(--space-md);
           padding-top: 1rem;
           border-top: 2px solid #F5A576;
         }
@@ -9353,7 +9501,7 @@ export default function App() {
           font-size: 0.75rem;
           letter-spacing: 0.1em;
           text-transform: uppercase;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
           margin-bottom: 0.75rem;
         }
 
@@ -9363,21 +9511,21 @@ export default function App() {
         }
 
         .recipe-category-header {
-          background: #FFF5EE;
+          background: var(--color-bg-elevated);
           padding: 0.75rem 1rem;
           font-size: 0.75rem;
           letter-spacing: 0.15em;
           text-transform: uppercase;
-          color: #2D2A26;
+          color: var(--color-text-primary);
           font-weight: 600;
-          border-left: 4px solid #E87D48;
+          border-left: 4px solid var(--color-primary);
           margin-bottom: 0.5rem;
         }
 
         .recipe-list {
           display: flex;
           flex-direction: column;
-          gap: 0.5rem;
+          gap: var(--space-sm);
         }
 
         .recipe-item-card {
@@ -9385,41 +9533,41 @@ export default function App() {
           justify-content: space-between;
           align-items: center;
           padding: 1rem;
-          background: white;
-          border: 1px solid #E8E0D8;
+          background: var(--color-bg-card);
+          border: 1px solid var(--color-border);
           cursor: pointer;
           transition: all 0.15s;
         }
 
         .recipe-item-card:hover {
-          border-color: #D35F2D;
-          background: #FEFBF7;
+          border-color: var(--color-primary-dark);
+          background: var(--color-bg-main);
         }
 
         .recipe-item-info h3 {
           font-size: 1rem;
           font-weight: 600;
-          color: #2D2A26;
+          color: var(--color-text-primary);
           margin: 0 0 0.25rem 0;
         }
 
         .recipe-item-info p {
           font-size: 0.85rem;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
           margin: 0;
         }
 
         .recipe-item-meta {
           display: flex;
-          gap: 0.5rem;
+          gap: var(--space-sm);
           align-items: center;
         }
 
         .recipe-time-tag {
-          background: #FFF5EE;
+          background: var(--color-bg-elevated);
           padding: 0.25rem 0.5rem;
           font-size: 0.8rem;
-          color: #D35F2D;
+          color: var(--color-primary-dark);
         }
 
         /* ========================================
@@ -9427,8 +9575,8 @@ export default function App() {
            ======================================== */
         .temp-mode-tabs {
           display: flex;
-          gap: 0.5rem;
-          margin-bottom: 1rem;
+          gap: var(--space-sm);
+          margin-bottom: var(--space-md);
           background: #F5F5F5;
           padding: 0.25rem;
           border-radius: 8px;
@@ -9448,8 +9596,8 @@ export default function App() {
         }
 
         .mode-tab.active {
-          background: white;
-          color: #2D2A26;
+          background: var(--color-bg-card);
+          color: var(--color-text-primary);
           box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
@@ -9458,7 +9606,7 @@ export default function App() {
         }
 
         .sousvide-badge {
-          background: #E87D48;
+          background: var(--color-primary);
           color: white;
           padding: 0.25rem 0.75rem;
           border-radius: 4px;
@@ -9470,7 +9618,7 @@ export default function App() {
 
         .doneness-selector {
           display: flex;
-          gap: 0.5rem;
+          gap: var(--space-sm);
           margin: 1rem 0;
         }
 
@@ -9478,7 +9626,7 @@ export default function App() {
           flex: 1;
           padding: 0.75rem;
           border: 2px solid #E0E0E0;
-          background: white;
+          background: var(--color-bg-card);
           border-radius: 8px;
           font-weight: 500;
           cursor: pointer;
@@ -9495,9 +9643,9 @@ export default function App() {
         }
 
         .doneness-btn.active.rare {
-          background: #FFF5EE;
-          color: #2D2A26;
-          border-color: #E87D48;
+          background: var(--color-bg-elevated);
+          color: var(--color-text-primary);
+          border-color: var(--color-primary);
         }
 
         .doneness-btn.active.medium {
@@ -9507,22 +9655,22 @@ export default function App() {
         }
 
         .doneness-btn.active.welldone {
-          background: #5C4A3D;
+          background: var(--color-bg-header);
           color: white;
-          border-color: #5C4A3D;
+          border-color: var(--color-text-secondary);
         }
 
         .thickness-selector {
-          background: #FFF5EE;
+          background: var(--color-bg-elevated);
           padding: 1rem;
           border-radius: 8px;
-          margin-bottom: 1rem;
+          margin-bottom: var(--space-md);
         }
 
         .thickness-label {
           display: block;
           font-size: 0.9rem;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
           margin-bottom: 0.5rem;
         }
 
@@ -9530,7 +9678,7 @@ export default function App() {
           width: 100%;
           height: 8px;
           border-radius: 4px;
-          background: #E8E0D8;
+          background: var(--color-border);
           outline: none;
           -webkit-appearance: none;
           appearance: none;
@@ -9542,7 +9690,7 @@ export default function App() {
           width: 24px;
           height: 24px;
           border-radius: 50%;
-          background: #E87D48;
+          background: var(--color-primary);
           cursor: pointer;
           border: 3px solid white;
           box-shadow: 0 2px 4px rgba(0,0,0,0.2);
@@ -9552,7 +9700,7 @@ export default function App() {
           width: 24px;
           height: 24px;
           border-radius: 50%;
-          background: #E87D48;
+          background: var(--color-primary);
           cursor: pointer;
           border: 3px solid white;
           box-shadow: 0 2px 4px rgba(0,0,0,0.2);
@@ -9568,18 +9716,18 @@ export default function App() {
 
         .thickness-note {
           font-size: 0.8rem;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
           text-align: center;
           margin: 0.5rem 0 1rem;
           font-style: italic;
         }
 
         .sousvide-quick-info {
-          background: #FFF5EE;
+          background: var(--color-bg-elevated);
           padding: 0.25rem 0.5rem;
           border-radius: 4px;
           font-size: 0.8rem;
-          color: #D35F2D;
+          color: var(--color-primary-dark);
           font-weight: 600;
         }
 
@@ -9587,7 +9735,7 @@ export default function App() {
           background: #FFF8E7;
           border: 1px solid #FFE0B2;
           border-radius: 8px;
-          margin-bottom: 1rem;
+          margin-bottom: var(--space-md);
         }
 
         .safety-summary {
@@ -9604,14 +9752,14 @@ export default function App() {
         .safety-zones {
           display: flex;
           flex-direction: column;
-          gap: 0.5rem;
-          margin-bottom: 1rem;
+          gap: var(--space-sm);
+          margin-bottom: var(--space-md);
         }
 
         .safety-zone {
           display: grid;
           grid-template-columns: 80px 120px 1fr;
-          gap: 0.5rem;
+          gap: var(--space-sm);
           padding: 0.5rem;
           border-radius: 6px;
           font-size: 0.85rem;
@@ -9639,15 +9787,15 @@ export default function App() {
            HEALTH GOALS STYLES
            ======================================== */
         .health-goals-section {
-          margin-bottom: 1rem;
+          margin-bottom: var(--space-md);
         }
 
         .health-goals-toggle {
           display: flex;
           align-items: center;
-          gap: 0.5rem;
+          gap: var(--space-sm);
           padding: 0.75rem 1rem;
-          background: #FFF5EE;
+          background: var(--color-bg-elevated);
           border: 1px solid #F5A576;
           border-radius: 8px;
           cursor: pointer;
@@ -9657,15 +9805,15 @@ export default function App() {
         .health-goals-grid {
           display: grid;
           grid-template-columns: repeat(2, 1fr);
-          gap: 0.5rem;
+          gap: var(--space-sm);
         }
 
         .health-goal-chip {
           display: flex;
           align-items: center;
-          gap: 0.5rem;
+          gap: var(--space-sm);
           padding: 0.5rem 0.75rem;
-          background: white;
+          background: var(--color-bg-card);
           border: 1px solid #E0E0E0;
           border-radius: 20px;
           cursor: pointer;
@@ -9674,13 +9822,13 @@ export default function App() {
         }
 
         .health-goal-chip:hover {
-          border-color: #E87D48;
+          border-color: var(--color-primary);
         }
 
         .health-goal-chip.selected {
-          background: #E87D48;
+          background: var(--color-primary);
           color: white;
-          border-color: #E87D48;
+          border-color: var(--color-primary);
         }
 
         .health-goal-icon {
@@ -9688,17 +9836,17 @@ export default function App() {
         }
 
         .health-goal-detail {
-          background: #FFF5EE;
+          background: var(--color-bg-elevated);
           border: 1px solid #F5A576;
           border-radius: 8px;
           padding: 1rem;
-          margin-bottom: 1rem;
+          margin-bottom: var(--space-md);
         }
 
         .health-goal-header {
           display: flex;
           align-items: center;
-          gap: 0.5rem;
+          gap: var(--space-sm);
           margin-bottom: 0.75rem;
         }
 
@@ -9718,13 +9866,13 @@ export default function App() {
         }
 
         .health-good-ingredients h4 {
-          color: #D35F2D;
+          color: var(--color-primary-dark);
           font-size: 0.85rem;
           margin-bottom: 0.25rem;
         }
 
         .health-avoid-ingredients h4 {
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
           font-size: 0.85rem;
           margin-bottom: 0.25rem;
         }
@@ -9742,17 +9890,17 @@ export default function App() {
         }
 
         .ingredient-tag.good {
-          background: #FFF5EE;
-          color: #D35F2D;
+          background: var(--color-bg-elevated);
+          color: var(--color-primary-dark);
         }
 
         .ingredient-tag.avoid {
           background: #F5F0EB;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
         }
 
         .health-science {
-          background: white;
+          background: var(--color-bg-card);
           padding: 0.75rem;
           border-radius: 6px;
           font-size: 0.85rem;
@@ -9763,13 +9911,13 @@ export default function App() {
         .food-health-match {
           display: flex;
           align-items: center;
-          gap: 0.5rem;
+          gap: var(--space-sm);
           margin-top: 0.5rem;
           padding: 0.5rem;
-          background: #FFF5EE;
+          background: var(--color-bg-elevated);
           border-radius: 6px;
           font-size: 0.85rem;
-          color: #D35F2D;
+          color: var(--color-primary-dark);
         }
 
         /* ========================================
@@ -9782,13 +9930,13 @@ export default function App() {
           padding: 0.75rem;
           background: #F5F5F5;
           border-radius: 8px;
-          margin-bottom: 1rem;
+          margin-bottom: var(--space-md);
         }
 
         .scaling-toggle label {
           display: flex;
           align-items: center;
-          gap: 0.5rem;
+          gap: var(--space-sm);
           cursor: pointer;
           font-size: 0.9rem;
         }
@@ -9800,7 +9948,7 @@ export default function App() {
         }
 
         .main-ingredient-badge {
-          background: #E87D48;
+          background: var(--color-primary);
           color: white;
           padding: 0.15rem 0.4rem;
           border-radius: 4px;
@@ -9818,7 +9966,7 @@ export default function App() {
 
         .set-main-btn {
           padding: 0.25rem 0.5rem;
-          background: #E87D48;
+          background: var(--color-primary);
           border: none;
           border-radius: 4px;
           font-size: 0.75rem;
@@ -9853,17 +10001,17 @@ export default function App() {
         }
 
         .health-match-section.good h4 {
-          color: #D35F2D;
+          color: var(--color-primary-dark);
         }
 
         .health-match-section.avoid h4 {
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
         }
 
         .health-match-tags {
           display: flex;
           flex-wrap: wrap;
-          gap: 0.5rem;
+          gap: var(--space-sm);
         }
 
         .health-match-tag {
@@ -9877,13 +10025,13 @@ export default function App() {
         }
 
         .health-match-tag.good {
-          background: #FFF5EE;
-          color: #D35F2D;
+          background: var(--color-bg-elevated);
+          color: var(--color-primary-dark);
         }
 
         .health-match-tag.avoid {
           background: #F5F0EB;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
         }
 
         /* Ingredients header with scaling toggle */
@@ -9919,31 +10067,31 @@ export default function App() {
 
         .recipe-share-section h3 {
           font-size: 0.9rem;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
           margin-bottom: 0.75rem;
         }
 
         .share-buttons {
           display: flex;
-          gap: 0.5rem;
+          gap: var(--space-sm);
           flex-wrap: wrap;
         }
 
         .share-btn {
           padding: 0.6rem 1rem;
-          background: #FFF5EE;
+          background: var(--color-bg-elevated);
           border: 1px solid #F5A576;
           border-radius: 6px;
-          color: #5C4A3D;
+          color: var(--color-text-secondary);
           font-size: 0.85rem;
           cursor: pointer;
           transition: all 0.15s;
         }
 
         .share-btn:hover {
-          background: #E87D48;
+          background: var(--color-primary);
           color: white;
-          border-color: #E87D48;
+          border-color: var(--color-primary);
         }
 
         /* QR-kod sektion - dold normalt, visas vid utskrift */
@@ -9972,7 +10120,7 @@ export default function App() {
           .print-qr-section {
             display: flex !important;
             align-items: center;
-            gap: 1rem;
+            gap: var(--space-md);
             margin-top: 2rem;
             padding-top: 1rem;
             border-top: 1px solid #ccc;
