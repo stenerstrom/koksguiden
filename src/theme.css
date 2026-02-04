@@ -27,9 +27,13 @@
 
   /* Semantic Colors */
   --color-success: #4CAF50;
+  --color-success-bg: #E8F5E9;
   --color-warning: #FFC107;
+  --color-warning-bg: #FFF3CD;
   --color-error: #E53935;
+  --color-error-bg: #FFF5F5;
   --color-info: #2196F3;
+  --color-info-bg: #FFF8E1;
 
   /* Spacing (consistent) */
   --space-xs: 0.25rem;
@@ -80,6 +84,12 @@
   --color-primary-dark: #E87D48;
   --color-primary-light: #FACBB0;
   --color-primary-pale: #4A3A30;
+
+  /* Semantic backgrounds for dark mode */
+  --color-success-bg: #1B3D1B;
+  --color-warning-bg: #3D3520;
+  --color-error-bg: #3D2020;
+  --color-info-bg: #2D3520;
 
   /* Shadows (subtle on dark) */
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);

@@ -1,5 +1,73 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import './theme.css';
+
+// Theme CSS injected directly for artifact preview compatibility
+const themeCSS = `
+:root {
+  --color-primary: #E87D48;
+  --color-primary-dark: #D35F2D;
+  --color-primary-light: #F5A576;
+  --color-primary-pale: #FACBB0;
+  --color-bg-main: #FEFBF7;
+  --color-bg-card: #FFFFFF;
+  --color-bg-elevated: #FFF5EE;
+  --color-bg-header: #5C4A3D;
+  --color-text-primary: #2D2A26;
+  --color-text-secondary: #5C4A3D;
+  --color-text-muted: #8B7E74;
+  --color-text-inverse: #FFFFFF;
+  --color-border: #E8E0D8;
+  --color-border-light: #F5EFE8;
+  --color-success: #4CAF50;
+  --color-success-bg: #E8F5E9;
+  --color-warning: #FFC107;
+  --color-warning-bg: #FFF3CD;
+  --color-error: #E53935;
+  --color-error-bg: #FFF5F5;
+  --color-info: #2196F3;
+  --color-info-bg: #FFF8E1;
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.2s ease;
+  --transition-slow: 0.3s ease;
+}
+[data-theme="dark"] {
+  --color-bg-main: #1A1A1A;
+  --color-bg-card: #252525;
+  --color-bg-elevated: #2D2D2D;
+  --color-bg-header: #1A1A1A;
+  --color-text-primary: #F5F5F5;
+  --color-text-secondary: #CCCCCC;
+  --color-text-muted: #999999;
+  --color-text-inverse: #1A1A1A;
+  --color-border: #3D3D3D;
+  --color-border-light: #333333;
+  --color-primary: #F5A576;
+  --color-primary-dark: #E87D48;
+  --color-primary-light: #FACBB0;
+  --color-primary-pale: #4A3A30;
+  --color-success-bg: #1B3D1B;
+  --color-warning-bg: #3D3520;
+  --color-error-bg: #3D2020;
+  --color-info-bg: #2D3520;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.5);
+}
+.theme-toggle-footer .icon-sun { display: none; }
+[data-theme="dark"] .theme-toggle-footer .icon-sun { display: block; }
+[data-theme="dark"] .theme-toggle-footer .icon-moon { display: none; }
+`;
 
 // ========================================
 // SOUS VIDE DATA (baserat på Modernist Cuisine)
@@ -397,7 +465,7 @@ const eggGuideData = {
     description: 'Perfekta pocherade ägg kräver rätt temperatur och teknik.',
     steps: [
       'Använd färska ägg (vita håller ihop bättre)',
-      'Vatten 80-85°C (sjudande, INTE kokande)',
+      'Vatten 80-85°C (sjudande, inte kokande)',
       'Tillsätt 1 msk vit vinäger per liter vatten',
       'Virvla vattnet, släpp ägget mitt i virveln',
       'Koka 3-4 minuter för rinnande gula'
@@ -493,7 +561,7 @@ const riceGuideData = {
       'Vila täckt, fluffa sedan försiktigt'
     ],
     tips: [
-      'Arborio och Carnaroli: skölj INTE för risotto - du vill ha stärkelsen',
+      'Arborio och Carnaroli: skölj inte för risotto - du vill ha stärkelsen',
       'Sushi-ris: vänd med sushivinäger medan varmt, fläkta för glans',
       'Calrose är perfekt för poke bowls och vardagsris'
     ]
@@ -545,7 +613,7 @@ const riceGuideData = {
   },
   sticky: {
     title: 'Klibbigt ris',
-    description: 'Thai/Lao sticky rice, sweet rice. Ska ångas, INTE kokas med absorptionsmetoden.',
+    description: 'Thai/Lao sticky rice, sweet rice. Ska ångas, inte kokas med absorptionsmetoden.',
     methods: [
       { name: 'Blötlägg först', rice: 'Valfri mängd', liquid: 'Täck rikligt', time: '4+ timmar', yield: '-' },
       { name: 'Ångkoka', rice: 'Blötlagt ris', liquid: 'Vatten i botten', time: '30-40 min', yield: '2x volym' },
@@ -1375,11 +1443,11 @@ const basicRecipesData = {
       ],
       steps: [
         'Hacka kycklingvingarna i små bitar (2-3 cm) för maximal yta.',
-        'Lägg vingarna i en kastrull med KALLT vatten.',
+        'Lägg vingarna i en kastrull med kallt vatten.',
         'Värm långsamt upp till nästan kokpunkt.',
         'Skumma bort allt som flyter upp - detta är avgörande för klarhet.',
         'Tillsätt grönsaker (söta ingredienser - undvik selleri som kan ge bitterhet).',
-        'Låt SJUDA i 45 minuter - ALDRIG koka!',
+        'Låt sjuda i 45 minuter - aldrig koka!',
         'Sila genom finmaskigt såll. Tryck inte på resterna.',
         'Använd direkt eller kyl snabbt.'
       ],
@@ -1403,18 +1471,18 @@ const basicRecipesData = {
         { name: 'Vatten', amount: 2000, unit: 'ml', foodDbName: null },
       ],
       steps: [
-        'MIXA eller finhacka grönsakerna - större yta = snabbare extraktion.',
-        'Lägg alla ingredienser i en stor gryta med KALLT vatten.',
-        'Värm långsamt och låt SJUDA (aldrig koka) i MAX 45 min.',
-        'VIKTIGT: Efter 45 min börjar grönsakerna absorbera vätska istället för att ge ifrån sig smak.',
-        'Sila snabbt - tryck INTE på resterna.',
+        'Mixa eller finhacka grönsakerna - större yta ger snabbare extraktion.',
+        'Lägg alla ingredienser i en stor gryta med kallt vatten.',
+        'Värm långsamt och låt sjuda (aldrig koka) i max 45 min.',
+        'Efter 45 min börjar grönsakerna absorbera vätska istället för att ge ifrån sig smak.',
+        'Sila snabbt - tryck inte på resterna.',
         'Kyl snabbt för bästa färg och fräschör.'
       ],
-      description: 'French Laundry-metoden: Mixa grönsakerna för snabb extraktion. Koka MAX 45 min - efter det börjar de suga upp buljong och minska utbytet. Undvik selleri (bitterhet), kål, broccoli och betor (dominerar).'
+      description: 'Mixa grönsakerna för snabb extraktion. Koka max 45 min - efter det börjar de suga upp buljong och minska utbytet. Undvik selleri (bitterhet), kål, broccoli och betor (dominerar).'
     },
     {
       id: 'beefstock',
-      name: 'Mörk kalvfond (French Laundry)',
+      name: 'Mörk kalvfond',
       basePortions: 2,
       portionUnit: 'liter',
       time: '8-10 timmar',
@@ -1429,16 +1497,16 @@ const basicRecipesData = {
         { name: 'Bukett garni', amount: null, unit: null, foodDbName: null, note: 'timjan, lagerblad, persilja' },
       ],
       steps: [
-        'TVÄTTA benen under rinnande vatten.',
-        'BLANCHERA: Lägg benen i kallt vatten, koka upp. Häll av och skölj benen - detta tar bort blod och föroreningar.',
-        'Lägg de rena benen i en stor gryta med KALLT vatten.',
-        'Värm LÅNGSAMT - det ska ta 1-2 timmar att nå nästan kokpunkt.',
-        'SKUMMA kontinuerligt - ta bort allt som flyter upp.',
-        'Tillsätt grönsaker (söta: morot, lök, tomat, vitlök - INGEN selleri).',
-        'Låt SJUDA i 6-8 timmar. Placera grytan halvvägs av lågorna för naturlig konvektion.',
-        'Sila genom finmaskigt såll. PRESSA INTE - det gör fonden grumlig.',
-        'REDUCERA långsamt med grytan halvt av lågorna. Skumma under reduceringen.',
-        'REMOUILLAGE (valfritt): Gör en andra, svagare fond på samma ben med nytt vatten.'
+        'Tvätta benen under rinnande vatten.',
+        'Blanchera: Lägg benen i kallt vatten, koka upp. Häll av och skölj benen - detta tar bort blod och föroreningar.',
+        'Lägg de rena benen i en stor gryta med kallt vatten.',
+        'Värm långsamt - det ska ta 1-2 timmar att nå nästan kokpunkt.',
+        'Skumma kontinuerligt - ta bort allt som flyter upp.',
+        'Tillsätt grönsaker (morot, lök, tomat, vitlök - undvik selleri).',
+        'Låt sjuda i 6-8 timmar. Placera grytan halvvägs av lågorna för naturlig konvektion.',
+        'Sila genom finmaskigt såll. Pressa inte - det gör fonden grumlig.',
+        'Reducera långsamt med grytan halvt av lågorna. Skumma under reduceringen.',
+        'Remouillage (valfritt): Gör en andra, svagare fond på samma ben med nytt vatten.'
       ],
       description: 'Thomas Kellers metod från The French Laundry. Tre nyckelprinciper: 1) Blanchera benen först, 2) Aldrig koka - bara sjuda, 3) Skumma kontinuerligt. Kalvfötter ger extra gelatin. Undvik selleri - det ger bitterhet. Resultatet är en kristallklar, gelatinös fond.'
     },
@@ -1493,7 +1561,7 @@ const basicRecipesData = {
     },
     {
       id: 'yogurtmarinade',
-      name: 'Yoghurtmarinad (Tandoori-stil)',
+      name: 'Tandoori-marinad',
       basePortions: 1000,
       portionUnit: 'g kyckling',
       time: '10 min + 4-24 tim',
@@ -1536,7 +1604,7 @@ const basicRecipesData = {
         'Sänk värmen till låg.',
         'Vispa i smöret, bit för bit, under ständig omrörning.',
         'Fortsätt tills allt smör är emulgerat.',
-        'Håll varmt (80-88°C) men koka ALDRIG - då bryts emulsionen.',
+        'Håll varmt (80-88°C) men koka aldrig - då bryts emulsionen.',
         'Använd direkt eller förvara varmt i upp till 2 timmar.'
       ],
       description: 'The French Laundrys "arbetssmör". Emulgerat smör som håller sig flytande utan att separera. Pochera fisk och skaldjur i det (80-88°C), basta kött i ugnen, eller vila kött i det för att förhindra att safterna rinner ut. Rester kan klaras och användas som vanligt smör.',
@@ -1626,7 +1694,7 @@ const basicRecipesData = {
     },
     {
       id: 'chimichurri',
-      name: 'Chimichurri',
+      name: 'Chimichurrismör',
       basePortions: 200,
       portionUnit: 'ml',
       time: '15 min',
@@ -3074,6 +3142,19 @@ export default function App() {
     }
     return 'light';
   });
+
+  // Injicera theme CSS
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const existingStyle = document.getElementById('theme-css');
+      if (!existingStyle) {
+        const style = document.createElement('style');
+        style.id = 'theme-css';
+        style.textContent = themeCSS;
+        document.head.appendChild(style);
+      }
+    }
+  }, []);
 
   // Applicera tema på document
   useEffect(() => {
@@ -4804,7 +4885,7 @@ export default function App() {
                 )}
 
                 {/* Förvaring alltid synlig */}
-                <div className="egg-section" style={{marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid #E8E0D8'}}>
+                <div className="egg-section egg-storage-section">
                   <h3>Förvaring</h3>
                   <div className="science-facts">
                     {riceGuideData.storage.facts.map((fact, idx) => (
@@ -6275,22 +6356,20 @@ export default function App() {
       </main>
 
       <footer className="app-footer">
+        <button
+          className="theme-toggle-footer"
+          onClick={toggleTheme}
+          aria-label={theme === 'light' ? 'Aktivera mörkt läge' : 'Aktivera ljust läge'}
+        >
+          <svg className="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/>
+          </svg>
+          <svg className="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/>
+          </svg>
+        </button>
         <span className="footer-credit">Köksguiden © 2025</span>
       </footer>
-
-      {/* Dark Mode Toggle */}
-      <button
-        className="theme-toggle"
-        onClick={toggleTheme}
-        aria-label={theme === 'light' ? 'Aktivera mörkt läge' : 'Aktivera ljust läge'}
-      >
-        <svg className="icon-moon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/>
-        </svg>
-        <svg className="icon-sun" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/>
-        </svg>
-      </button>
 
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
@@ -6313,7 +6392,7 @@ export default function App() {
 
         .app-header {
           background: var(--color-bg-header);
-          color: var(--color-text-inverse);
+          color: #FFFFFF;
           padding: 1.5rem 1rem;
           text-align: center;
           transition: background 0.3s ease;
@@ -6325,6 +6404,7 @@ export default function App() {
           letter-spacing: 0.15em;
           text-transform: uppercase;
           cursor: pointer;
+          color: #FFFFFF;
         }
 
         .app-main {
@@ -6344,7 +6424,37 @@ export default function App() {
           text-transform: uppercase;
           color: rgba(255,255,255,0.7);
           transition: background 0.3s ease;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 0.75rem;
         }
+
+        .theme-toggle-footer {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+          padding: 0.5rem 1rem;
+          border-radius: 20px;
+          border: 1px solid rgba(255,255,255,0.3);
+          background: transparent;
+          color: rgba(255,255,255,0.9);
+          cursor: pointer;
+          font-size: 0.75rem;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+          transition: all 0.2s ease;
+        }
+
+        .theme-toggle-footer:hover {
+          background: rgba(255,255,255,0.1);
+          border-color: rgba(255,255,255,0.5);
+        }
+
+        .theme-toggle-footer .icon-sun { display: none; }
+        [data-theme="dark"] .theme-toggle-footer .icon-sun { display: block; }
+        [data-theme="dark"] .theme-toggle-footer .icon-moon { display: none; }
 
         /* Home Grid */
         .home-grid {
@@ -6615,7 +6725,7 @@ export default function App() {
         }
 
         .temp-card.medium {
-          background: #F5A576;
+          background: var(--color-primary-light);
         }
 
         .temp-card.welldone {
@@ -6674,12 +6784,12 @@ export default function App() {
 
         .info-box.warning {
           background: var(--color-bg-elevated);
-          border: 1px solid #FACBB0;
+          border: 1px solid var(--color-primary-pale);
         }
 
         .info-box.nutrition-info {
           background: var(--color-bg-main);
-          border: 1px solid #F5A576;
+          border: 1px solid var(--color-primary-light);
         }
 
         .info-box.nutrition-info .nutrition-grid {
@@ -6707,7 +6817,7 @@ export default function App() {
         .info-box.nutrition-info .nutrition-label {
           display: block;
           font-size: 0.65rem;
-          color: #666;
+          color: var(--color-text-muted);
           margin-top: 0.25rem;
           text-transform: uppercase;
           letter-spacing: 0.05em;
@@ -6839,7 +6949,7 @@ export default function App() {
 
         .converter-arrow {
           text-align: center;
-          color: #8B7B6B;
+          color: var(--color-text-secondary);
           margin: 1rem 0;
           font-weight: 500;
           letter-spacing: 0.1em;
@@ -6891,7 +7001,7 @@ export default function App() {
           display: flex;
           justify-content: space-between;
           padding: 0.875rem 1rem;
-          border-bottom: 1px solid #f5f0f3;
+          border-bottom: 1px solid var(--color-border-light);
         }
 
         .conversion-item:last-child {
@@ -7116,7 +7226,7 @@ export default function App() {
 
         .egg-info-box {
           background: var(--color-bg-elevated);
-          border: 1px solid #FACBB0;
+          border: 1px solid var(--color-primary-pale);
           padding: 1rem;
         }
 
@@ -7340,7 +7450,7 @@ export default function App() {
           width: 100%;
           padding: 0.75rem 1rem;
           background: var(--color-bg-elevated);
-          border: 1px solid #F5A576;
+          border: 1px solid var(--color-primary-light);
           border-radius: 8px;
           cursor: pointer;
           font-size: 0.9rem;
@@ -7348,7 +7458,7 @@ export default function App() {
         }
 
         .category-filter-toggle:hover {
-          background: #FEF0E5;
+          background: var(--color-primary-pale);
         }
 
         .category-filter {
@@ -7356,10 +7466,10 @@ export default function App() {
           flex-wrap: wrap;
           gap: var(--space-sm);
           padding: 0.75rem;
-          background: #F5EFE8;
+          background: var(--color-bg-elevated);
           border-radius: 0 0 8px 8px;
           margin-top: -1px;
-          border: 1px solid #F5A576;
+          border: 1px solid var(--color-primary-light);
           border-top: none;
         }
 
@@ -7386,7 +7496,7 @@ export default function App() {
         .category-chip.clear {
           background: transparent;
           border-style: dashed;
-          color: #999;
+          color: var(--color-text-muted);
         }
 
         .category-chip.clear:hover {
@@ -7613,7 +7723,7 @@ export default function App() {
           left: 0;
           right: 0;
           background: var(--color-bg-card);
-          border: 2px solid #D35F2D;
+          border: 2px solid var(--color-primary-dark);
           border-top: none;
           border-radius: 0 0 8px 8px;
           max-height: 250px;
@@ -7627,7 +7737,7 @@ export default function App() {
           cursor: pointer;
           display: flex;
           justify-content: space-between;
-          border-bottom: 1px solid #E8E0D8;
+          border-bottom: 1px solid var(--color-border);
         }
 
         .ingredient-result-item:hover {
@@ -7664,7 +7774,7 @@ export default function App() {
         }
 
         .recipe-ingredients-list {
-          background: #F5EFE8;
+          background: var(--color-bg-elevated);
           padding: 1rem;
           margin-bottom: var(--space-md);
           border-radius: 4px;
@@ -7674,7 +7784,7 @@ export default function App() {
           display: flex;
           align-items: center;
           padding: 0.5rem 0;
-          border-bottom: 1px solid #E8E0D8;
+          border-bottom: 1px solid var(--color-border);
         }
 
         .recipe-ingredient-item:last-child {
@@ -7738,7 +7848,7 @@ export default function App() {
           background: var(--color-bg-elevated);
           padding: 1rem;
           margin: 1rem 0;
-          border-left: 4px solid #D35F2D;
+          border-left: 4px solid var(--color-primary-dark);
         }
 
         .nutrition-mini-grid {
@@ -7839,7 +7949,7 @@ export default function App() {
 
         .recipe-details {
           padding: 0 1rem 1rem;
-          border-top: 1px solid #E8E0D8;
+          border-top: 1px solid var(--color-border);
         }
 
         .recipe-ingredients ul, .recipe-steps ol {
@@ -7872,7 +7982,7 @@ export default function App() {
 
         /* Portionsskalning */
         .portion-scaler {
-          background: #F5EFE8;
+          background: var(--color-bg-elevated);
           padding: 0.75rem 1rem;
           margin-bottom: var(--space-md);
           display: flex;
@@ -7895,7 +8005,7 @@ export default function App() {
         .scaler-controls button {
           width: 32px;
           height: 32px;
-          border: 1px solid #D35F2D;
+          border: 1px solid var(--color-primary-dark);
           background: var(--color-bg-card);
           color: var(--color-primary-dark);
           font-size: 1.25rem;
@@ -7929,7 +8039,7 @@ export default function App() {
 
         .gram-equiv {
           font-size: 0.8rem;
-          color: #8B7355;
+          color: var(--color-text-secondary);
           margin-left: 0.25rem;
         }
 
@@ -7937,7 +8047,7 @@ export default function App() {
           background: var(--color-bg-elevated);
           padding: 0.75rem 1rem;
           margin: 1rem 0;
-          border-left: 3px solid #D35F2D;
+          border-left: 3px solid var(--color-primary-dark);
         }
 
         .recipe-nutrition-scaled strong:first-child {
@@ -7955,7 +8065,7 @@ export default function App() {
           color: var(--color-text-secondary);
           margin-top: 0.5rem;
           padding: 0.5rem;
-          background: #F5EFE8;
+          background: var(--color-bg-elevated);
           border-radius: 4px;
         }
 
@@ -7967,7 +8077,7 @@ export default function App() {
 
         /* === VILA-TID BOX === */
         .rest-time-box {
-          background: linear-gradient(135deg, #FFF5EE, #FFEEE5);
+          background: var(--color-bg-elevated);
           border-left: 4px solid var(--color-primary);
         }
 
@@ -7986,7 +8096,7 @@ export default function App() {
 
         /* === SALTNING BOX === */
         .saltning-box {
-          background: linear-gradient(135deg, #FFF5EE, #FFEEE5);
+          background: var(--color-bg-elevated);
           border-left: 4px solid var(--color-primary);
         }
 
@@ -8006,7 +8116,7 @@ export default function App() {
         /* === CATEGORY SCIENCE === */
         .category-science {
           margin: 0.5rem 0 1rem;
-          background: #F5EFE8;
+          background: var(--color-bg-elevated);
           border-radius: 6px;
           overflow: hidden;
         }
@@ -8067,7 +8177,7 @@ export default function App() {
 
         .egg-guide-view .subtitle {
           font-size: 0.85rem;
-          color: #8B7355;
+          color: var(--color-text-secondary);
           margin-bottom: var(--space-lg);
         }
 
@@ -8130,7 +8240,7 @@ export default function App() {
         }
 
         .rice-tab-row button:hover:not(.active) {
-          background: #DDD5CC;
+          background: var(--color-border);
         }
 
         /* Rice Calculator */
@@ -8167,7 +8277,7 @@ export default function App() {
         .rice-calc-input {
           flex: 1;
           padding: 0.75rem;
-          border: 1px solid #D5CEC5;
+          border: 1px solid var(--color-border);
           border-radius: 8px;
           font-size: 1.1rem;
           text-align: center;
@@ -8181,7 +8291,7 @@ export default function App() {
 
         .rice-calc-select {
           padding: 0.75rem;
-          border: 1px solid #D5CEC5;
+          border: 1px solid var(--color-border);
           border-radius: 8px;
           font-size: 0.95rem;
           background: var(--color-bg-card);
@@ -8191,7 +8301,7 @@ export default function App() {
         .rice-calc-select-full {
           width: 100%;
           padding: 0.75rem;
-          border: 1px solid #D5CEC5;
+          border: 1px solid var(--color-border);
           border-radius: 8px;
           font-size: 0.95rem;
           background: var(--color-bg-card);
@@ -8199,8 +8309,8 @@ export default function App() {
 
         /* Rice Result Card */
         .rice-result-card {
-          background: linear-gradient(135deg, #FFF8F5 0%, #FFF5EE 100%);
-          border: 2px solid #E87D48;
+          background: var(--color-bg-elevated);
+          border: 2px solid var(--color-primary);
           border-radius: 12px;
           padding: 1.25rem;
           margin-bottom: var(--space-lg);
@@ -8223,7 +8333,7 @@ export default function App() {
           justify-content: space-between;
           align-items: center;
           padding: 0.5rem 0;
-          border-bottom: 1px solid #E8E0D8;
+          border-bottom: 1px solid var(--color-border);
         }
 
         .rice-result-item:last-child {
@@ -8244,7 +8354,7 @@ export default function App() {
         }
 
         .rice-result-item.special {
-          background: #FFF3CD;
+          background: var(--color-warning-bg);
           margin: 0 -0.75rem;
           padding: 0.75rem;
           border-radius: 8px;
@@ -8273,6 +8383,12 @@ export default function App() {
           margin-bottom: 0.5rem;
         }
 
+        .egg-storage-section {
+          margin-top: 1.5rem;
+          padding-top: 1rem;
+          border-top: 1px solid var(--color-border);
+        }
+
         .section-description {
           color: var(--color-text-secondary);
           font-size: 0.95rem;
@@ -8296,8 +8412,8 @@ export default function App() {
         }
 
         .egg-time-card.warning {
-          border-left-color: #DC3545;
-          background: #FFF5F5;
+          border-left-color: var(--color-error);
+          background: var(--color-error-bg);
         }
 
         .egg-time-header {
@@ -8319,7 +8435,7 @@ export default function App() {
         }
 
         .egg-time-card.warning .egg-time-value {
-          color: #DC3545;
+          color: var(--color-error);
         }
 
         .egg-time-desc {
@@ -8330,11 +8446,11 @@ export default function App() {
 
         .egg-time-temp {
           font-size: 0.8rem;
-          color: #8B7355;
+          color: var(--color-text-secondary);
         }
 
         .egg-tips-section {
-          background: #F5EFE8;
+          background: var(--color-bg-elevated);
           padding: 1rem;
           border-radius: 6px;
         }
@@ -8448,7 +8564,7 @@ export default function App() {
         }
 
         .science-explanation {
-          background: #F5EFE8;
+          background: var(--color-bg-elevated);
           padding: 1rem;
           border-radius: 6px;
           font-size: 0.95rem;
@@ -8525,7 +8641,7 @@ export default function App() {
         }
 
         .ferment-basics {
-          background: #F5EFE8;
+          background: var(--color-bg-elevated);
           padding: 1rem;
           border-radius: 8px;
           margin-bottom: var(--space-lg);
@@ -8554,7 +8670,7 @@ export default function App() {
         .basic-label {
           display: block;
           font-size: 0.8rem;
-          color: #8B7355;
+          color: var(--color-text-secondary);
           margin-bottom: 0.25rem;
         }
 
@@ -8581,7 +8697,7 @@ export default function App() {
         .ferment-recipe-card {
           background: var(--color-bg-card);
           border: 1px solid var(--color-border);
-          border-left: 4px solid #D35F2D;
+          border-left: 4px solid var(--color-primary-dark);
           padding: 1rem;
           border-radius: 0 8px 8px 0;
           cursor: pointer;
@@ -8589,7 +8705,7 @@ export default function App() {
         }
 
         .ferment-recipe-card:hover {
-          background: #FFF9F5;
+          background: var(--color-bg-elevated);
           border-left-color: var(--color-primary);
         }
 
@@ -8609,7 +8725,7 @@ export default function App() {
           display: flex;
           gap: var(--space-md);
           font-size: 0.8rem;
-          color: #8B7355;
+          color: var(--color-text-secondary);
         }
 
         /* Recipe Detail View */
@@ -8647,7 +8763,7 @@ export default function App() {
         }
 
         .meta-item {
-          background: #F5EFE8;
+          background: var(--color-bg-elevated);
           padding: 0.5rem 0.75rem;
           border-radius: 20px;
           font-size: 0.85rem;
@@ -8711,7 +8827,7 @@ export default function App() {
         .ferment-troubleshooting {
           margin-top: 2rem;
           padding-top: 1.5rem;
-          border-top: 1px solid #E8E0D8;
+          border-top: 1px solid var(--color-border);
         }
 
         .ferment-troubleshooting h3 {
@@ -8744,7 +8860,7 @@ export default function App() {
         .ferment-science {
           margin-top: 1.5rem;
           padding-top: 1.5rem;
-          border-top: 1px solid #E8E0D8;
+          border-top: 1px solid var(--color-border);
         }
 
         .ferment-science h3 {
@@ -8783,7 +8899,7 @@ export default function App() {
         }
 
         .technique-card:hover {
-          background: #FFEEE5;
+          background: var(--color-primary-pale);
         }
 
         .technique-icon {
@@ -8831,7 +8947,7 @@ export default function App() {
           background: var(--color-bg-elevated);
           padding: 1rem;
           margin-bottom: 0.5rem;
-          border-left: 3px solid #E87D48;
+          border-left: 3px solid var(--color-primary);
         }
 
         .blanchering-key-card h4 {
@@ -8861,13 +8977,13 @@ export default function App() {
 
         .times-note {
           font-size: 0.85rem;
-          color: #8B7355;
+          color: var(--color-text-secondary);
           margin-bottom: 0.75rem;
         }
 
         .blanchering-item {
           padding: 0.75rem 1rem;
-          border-bottom: 1px solid #E8E0D8;
+          border-bottom: 1px solid var(--color-border);
         }
 
         .blanchering-item:last-child {
@@ -8919,7 +9035,7 @@ export default function App() {
         }
 
         .brassering-card .technique-content p {
-          color: #8B5A2B;
+          color: var(--color-text-secondary);
         }
 
         .brassering-view .subtitle {
@@ -8931,7 +9047,7 @@ export default function App() {
 
         .quote-box {
           background: var(--color-bg-elevated);
-          border-left: 3px solid #D35F2D;
+          border-left: 3px solid var(--color-primary-dark);
         }
 
         .quote-box .quote {
@@ -8943,7 +9059,7 @@ export default function App() {
 
         .quote-box .quote-author {
           font-size: 0.85rem;
-          color: #8B7355;
+          color: var(--color-text-secondary);
           text-align: right;
           margin: 0;
         }
@@ -8965,7 +9081,7 @@ export default function App() {
           padding: 1rem;
           margin-bottom: 0.5rem;
           border: 1px solid var(--color-border);
-          border-left: 3px solid #D35F2D;
+          border-left: 3px solid var(--color-primary-dark);
         }
 
         .brassering-step-card h4 {
@@ -9035,7 +9151,7 @@ export default function App() {
 
         .cut-tips {
           font-size: 0.8rem;
-          color: #8B7355;
+          color: var(--color-text-secondary);
           margin: 0.25rem 0 0 0;
           font-style: italic;
         }
@@ -9048,7 +9164,7 @@ export default function App() {
           margin-top: var(--space-md);
           background: var(--color-bg-elevated);
           border: none;
-          border-left: 3px solid #E87D48;
+          border-left: 3px solid var(--color-primary);
           color: var(--color-primary-dark);
           font-size: 0.95rem;
           font-weight: 500;
@@ -9058,13 +9174,13 @@ export default function App() {
         }
 
         .guide-link-btn:hover {
-          background: #FFEEE5;
+          background: var(--color-primary-pale);
         }
 
         .guide-link-btn.brassering-link {
           background: var(--color-bg-elevated);
           border-left-color: var(--color-primary-dark);
-          color: #8B5A2B;
+          color: var(--color-text-secondary);
         }
 
         .guide-link-btn.brassering-link:hover {
@@ -9103,7 +9219,7 @@ export default function App() {
 
         .blanchering-method {
           background: var(--color-bg-main);
-          border: 1px solid #FFEEE5;
+          border: 1px solid var(--color-primary-pale);
         }
 
         .blanchering-method ol {
@@ -9126,15 +9242,15 @@ export default function App() {
 
         /* Philosophy Cards */
         .philosophy-card {
-          background: #F5F0E8;
+          background: var(--color-bg-elevated);
           padding: 1rem;
           cursor: pointer;
-          border-left: 3px solid #8B7355;
+          border-left: 3px solid var(--color-text-secondary);
           transition: all 0.2s;
         }
 
         .philosophy-card:hover {
-          background: #EDE5D8;
+          background: var(--color-border);
         }
 
         .philosophy-header {
@@ -9149,7 +9265,7 @@ export default function App() {
 
         .philosophy-desc {
           font-size: 0.85rem;
-          color: #8B7355;
+          color: var(--color-text-secondary);
           font-style: italic;
           margin: 0;
           line-height: 1.4;
@@ -9190,7 +9306,7 @@ export default function App() {
           background: var(--color-bg-elevated);
           padding: 1rem;
           margin-bottom: var(--space-lg);
-          border: 1px solid #FACBB0;
+          border: 1px solid var(--color-primary-pale);
         }
 
         .scaler-label {
@@ -9213,7 +9329,7 @@ export default function App() {
         .scaler-btn {
           width: 40px;
           height: 40px;
-          border: 2px solid #D35F2D;
+          border: 2px solid var(--color-primary-dark);
           background: var(--color-bg-card);
           color: var(--color-primary-dark);
           font-size: 1.5rem;
@@ -9325,7 +9441,7 @@ export default function App() {
 
         .ingredient-note {
           font-size: 0.85rem;
-          color: #8B7355;
+          color: var(--color-text-secondary);
           font-style: italic;
         }
 
@@ -9341,14 +9457,14 @@ export default function App() {
         .ingredient-conversion {
           font-size: 0.8rem;
           color: var(--color-text-secondary);
-          background: #F5EFE8;
+          background: var(--color-bg-elevated);
           padding: 0.2rem 0.5rem;
         }
 
         .optional-tag {
           font-size: 0.75rem;
-          color: #8B7355;
-          background: #F5EFE8;
+          color: var(--color-text-secondary);
+          background: var(--color-bg-elevated);
           padding: 0.15rem 0.4rem;
         }
 
@@ -9360,7 +9476,7 @@ export default function App() {
           transform: translate(-50%, -50%);
           background: var(--color-bg-card);
           padding: 1.5rem;
-          border: 2px solid #D35F2D;
+          border: 2px solid var(--color-primary-dark);
           box-shadow: 0 8px 32px rgba(0,0,0,0.15);
           z-index: 1000;
           max-width: 320px;
@@ -9397,7 +9513,7 @@ export default function App() {
           border: none;
           font-size: 1.5rem;
           cursor: pointer;
-          color: #8B7355;
+          color: var(--color-text-secondary);
           padding: 0;
           line-height: 1;
         }
@@ -9436,7 +9552,7 @@ export default function App() {
         }
 
         .popup-no-data {
-          color: #8B7355;
+          color: var(--color-text-secondary);
           font-size: 0.9rem;
           text-align: center;
           padding: 1rem 0;
@@ -9448,7 +9564,7 @@ export default function App() {
           padding: 0.75rem;
           margin-top: var(--space-md);
           background: var(--color-bg-main);
-          border: 1px solid #F5A576;
+          border: 1px solid var(--color-primary-light);
           font-size: 0.85rem;
           cursor: pointer;
           transition: all 0.2s;
@@ -9466,7 +9582,7 @@ export default function App() {
 
         .recipe-nutrition {
           background: var(--color-bg-main);
-          border: 1px solid #F5A576;
+          border: 1px solid var(--color-primary-light);
           border-top: none;
           padding: 1rem;
         }
@@ -9475,7 +9591,7 @@ export default function App() {
           display: flex;
           justify-content: space-between;
           padding: 0.5rem 0;
-          border-bottom: 1px solid #E8E0D8;
+          border-bottom: 1px solid var(--color-border);
         }
 
         .nutrition-row:last-child {
@@ -9494,7 +9610,7 @@ export default function App() {
         .per-portion {
           margin-top: var(--space-md);
           padding-top: 1rem;
-          border-top: 2px solid #F5A576;
+          border-top: 2px solid var(--color-primary-light);
         }
 
         .per-portion h4 {
@@ -9577,7 +9693,7 @@ export default function App() {
           display: flex;
           gap: var(--space-sm);
           margin-bottom: var(--space-md);
-          background: #F5F5F5;
+          background: var(--color-bg-elevated);
           padding: 0.25rem;
           border-radius: 8px;
         }
@@ -9592,7 +9708,7 @@ export default function App() {
           cursor: pointer;
           border-radius: 6px;
           transition: all 0.2s;
-          color: #666;
+          color: var(--color-text-muted);
         }
 
         .mode-tab.active {
@@ -9625,7 +9741,7 @@ export default function App() {
         .doneness-btn {
           flex: 1;
           padding: 0.75rem;
-          border: 2px solid #E0E0E0;
+          border: 2px solid var(--color-border);
           background: var(--color-bg-card);
           border-radius: 8px;
           font-weight: 500;
@@ -9634,7 +9750,7 @@ export default function App() {
         }
 
         .doneness-btn:hover {
-          border-color: #999;
+          border-color: var(--color-text-muted);
         }
 
         .doneness-btn.active {
@@ -9649,9 +9765,9 @@ export default function App() {
         }
 
         .doneness-btn.active.medium {
-          background: #F5A576;
+          background: var(--color-primary-light);
           color: white;
-          border-color: #F5A576;
+          border-color: var(--color-primary-light);
         }
 
         .doneness-btn.active.welldone {
@@ -9710,7 +9826,7 @@ export default function App() {
           display: flex;
           justify-content: space-between;
           font-size: 0.75rem;
-          color: #8B7355;
+          color: var(--color-text-secondary);
           margin-top: 0.25rem;
         }
 
@@ -9732,8 +9848,8 @@ export default function App() {
         }
 
         .sousvide-safety {
-          background: #FFF8E7;
-          border: 1px solid #FFE0B2;
+          background: var(--color-bg-elevated);
+          border: 1px solid var(--color-border);
           border-radius: 8px;
           margin-bottom: var(--space-md);
         }
@@ -9742,7 +9858,7 @@ export default function App() {
           padding: 0.75rem 1rem;
           cursor: pointer;
           font-weight: 500;
-          color: #E65100;
+          color: var(--color-primary);
         }
 
         .safety-content {
@@ -9769,9 +9885,13 @@ export default function App() {
         .zone-1 { background: #FFF3E0; }
         .zone-2 { background: #E8F5E9; }
 
-        .zone-range { font-weight: 600; }
-        .zone-name { font-weight: 500; }
-        .zone-desc { color: #666; }
+        .zone-range { font-weight: 600; color: var(--color-text-primary); }
+        .zone-name { font-weight: 500; color: var(--color-text-primary); }
+        .zone-desc { color: var(--color-text-secondary); }
+
+        .safety-rules h4 {
+          color: var(--color-text-primary);
+        }
 
         .safety-rules ul {
           margin: 0;
@@ -9781,7 +9901,13 @@ export default function App() {
         .safety-rules li {
           margin-bottom: 0.5rem;
           font-size: 0.85rem;
+          color: var(--color-text-primary);
         }
+
+        /* Dark mode för safety zones */
+        [data-theme="dark"] .zone-0 { background: #3D2626; }
+        [data-theme="dark"] .zone-1 { background: #3D3526; }
+        [data-theme="dark"] .zone-2 { background: #263D26; }
 
         /* ========================================
            HEALTH GOALS STYLES
@@ -9796,7 +9922,7 @@ export default function App() {
           gap: var(--space-sm);
           padding: 0.75rem 1rem;
           background: var(--color-bg-elevated);
-          border: 1px solid #F5A576;
+          border: 1px solid var(--color-primary-light);
           border-radius: 8px;
           cursor: pointer;
           margin-bottom: 0.5rem;
@@ -9814,7 +9940,7 @@ export default function App() {
           gap: var(--space-sm);
           padding: 0.5rem 0.75rem;
           background: var(--color-bg-card);
-          border: 1px solid #E0E0E0;
+          border: 1px solid var(--color-border);
           border-radius: 20px;
           cursor: pointer;
           font-size: 0.85rem;
@@ -9837,7 +9963,7 @@ export default function App() {
 
         .health-goal-detail {
           background: var(--color-bg-elevated);
-          border: 1px solid #F5A576;
+          border: 1px solid var(--color-primary-light);
           border-radius: 8px;
           padding: 1rem;
           margin-bottom: var(--space-md);
@@ -9856,7 +9982,7 @@ export default function App() {
         }
 
         .health-goal-description {
-          color: #666;
+          color: var(--color-text-muted);
           font-size: 0.9rem;
           margin-bottom: 0.75rem;
         }
@@ -9895,7 +10021,7 @@ export default function App() {
         }
 
         .ingredient-tag.avoid {
-          background: #F5F0EB;
+          background: var(--color-bg-elevated);
           color: var(--color-text-secondary);
         }
 
@@ -9904,8 +10030,8 @@ export default function App() {
           padding: 0.75rem;
           border-radius: 6px;
           font-size: 0.85rem;
-          color: #555;
-          border-left: 3px solid #E87D48;
+          color: var(--color-text-secondary);
+          border-left: 3px solid var(--color-primary);
         }
 
         .food-health-match {
@@ -9928,7 +10054,7 @@ export default function App() {
           align-items: center;
           gap: 0.75rem;
           padding: 0.75rem;
-          background: #F5F5F5;
+          background: var(--color-bg-elevated);
           border-radius: 8px;
           margin-bottom: var(--space-md);
         }
@@ -9958,7 +10084,7 @@ export default function App() {
         }
 
         .percent-display {
-          color: #666;
+          color: var(--color-text-muted);
           font-size: 0.8rem;
           margin-left: auto;
           padding-right: 0.5rem;
@@ -9983,7 +10109,7 @@ export default function App() {
         .food-health-goals {
           margin: 1rem 0;
           padding: 1rem;
-          background: #F9F9F9;
+          background: var(--color-bg-elevated);
           border-radius: 8px;
         }
 
@@ -10030,7 +10156,7 @@ export default function App() {
         }
 
         .health-match-tag.avoid {
-          background: #F5F0EB;
+          background: var(--color-bg-elevated);
           color: var(--color-text-secondary);
         }
 
@@ -10044,16 +10170,16 @@ export default function App() {
 
         .scaling-hint {
           font-size: 0.8rem;
-          color: #666;
-          background: #FFF8E1;
+          color: var(--color-text-muted);
+          background: var(--color-info-bg);
           padding: 0.5rem;
           border-radius: 6px;
           margin-bottom: 0.5rem;
         }
 
         .recipe-ingredient-item.is-main {
-          background: #FFFDE7;
-          border-left: 3px solid #E87D48;
+          background: var(--color-info-bg);
+          border-left: 3px solid var(--color-primary);
         }
 
         /* ========================================
@@ -10062,7 +10188,7 @@ export default function App() {
         .recipe-share-section {
           margin-top: 1.5rem;
           padding-top: 1rem;
-          border-top: 1px solid #E8E0D8;
+          border-top: 1px solid var(--color-border);
         }
 
         .recipe-share-section h3 {
@@ -10080,7 +10206,7 @@ export default function App() {
         .share-btn {
           padding: 0.6rem 1rem;
           background: var(--color-bg-elevated);
-          border: 1px solid #F5A576;
+          border: 1px solid var(--color-primary-light);
           border-radius: 6px;
           color: var(--color-text-secondary);
           font-size: 0.85rem;
@@ -10123,7 +10249,7 @@ export default function App() {
             gap: var(--space-md);
             margin-top: 2rem;
             padding-top: 1rem;
-            border-top: 1px solid #ccc;
+            border-top: 1px solid var(--color-border);
           }
 
           .print-qr-section img {
@@ -10133,7 +10259,7 @@ export default function App() {
 
           .print-qr-section span {
             font-size: 0.8rem;
-            color: #666;
+            color: var(--color-text-muted);
           }
 
           /* Generella utskriftsanpassningar */
