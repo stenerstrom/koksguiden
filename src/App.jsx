@@ -450,6 +450,186 @@ const eggGuideData = {
   }
 };
 
+// Risguide-data (baserat på The Simple Art of Rice av JJ Johnson)
+const riceGuideData = {
+  longGrain: {
+    title: 'Långkornigt vitt ris',
+    description: 'Inkluderar Basmati, Jasmine, Carolina Gold. Kornen förblir separata, fasta och fluffiga.',
+    methods: [
+      { name: 'Spis', rice: '1 del', liquid: '1,5 delar', time: '15 min', yield: '3 delar' },
+      { name: 'Riskokare', rice: '1 del', liquid: '1,25 delar', time: 'Enl. manual', yield: '3 delar' },
+      { name: 'Ugn (220°C)', rice: '1 del', liquid: '1,5 delar kokande', time: '20-30 min', yield: '3 delar' },
+      { name: 'Kombiugn (100°C ånga)', rice: '1 del', liquid: '1,5 delar', time: '20-25 min', yield: '3 delar' }
+    ],
+    steps: [
+      'Skölj riset i finmaskigt durkslag tills vattnet rinner klart',
+      'Kombinera ris och vätska i kastrull',
+      'Koka upp på hög värme, sänk sedan till låg',
+      'Täck och sjud tills vätskan absorberats',
+      'Låt vila täckt några minuter, fluffa med gaffel'
+    ],
+    tips: [
+      'Basmati blir ännu fluffigare om du blötlägger 30 min före kokning',
+      'Jasmine har naturlig söt doft - skölj inte för mycket',
+      'Carolina Gold är en heirloom-sort med nötig smak',
+      'Kombiugn: Använd GN-form, 100% ånga, täck med lock eller folie'
+    ]
+  },
+  shortGrain: {
+    title: 'Kort-/mellankornigt ris',
+    description: 'Inkluderar Arborio, Carnaroli, Calrose, Sushi-ris. Mjukare och kletigare konsistens.',
+    methods: [
+      { name: 'Spis', rice: '1 del', liquid: '1,75 delar', time: '30-35 min', yield: '3 delar' },
+      { name: 'Riskokare', rice: '1 del', liquid: '1,5 delar', time: 'Enl. manual', yield: '3 delar' },
+      { name: 'Ugn (220°C)', rice: '1 del', liquid: '1,75 delar kokande', time: '35-40 min', yield: '3 delar' },
+      { name: 'Kombiugn (100°C ånga)', rice: '1 del', liquid: '1,75 delar', time: '25-30 min', yield: '3 delar' }
+    ],
+    steps: [
+      'Skölj riset tills vattnet är klart (undantag: risotto)',
+      'Kombinera ris och vätska i kastrull',
+      'Koka upp, sänk värmen till låg',
+      'Täck och sjud försiktigt i 30-35 minuter',
+      'Vila täckt, fluffa sedan försiktigt'
+    ],
+    tips: [
+      'Arborio och Carnaroli: skölj INTE för risotto - du vill ha stärkelsen',
+      'Sushi-ris: vänd med sushivinäger medan varmt, fläkta för glans',
+      'Calrose är perfekt för poke bowls och vardagsris'
+    ]
+  },
+  brown: {
+    title: 'Brunt ris',
+    description: 'Behåller kli och grodd. Nötigare smak, segare konsistens, mer näringsrikt.',
+    methods: [
+      { name: 'Spis', rice: '1 del', liquid: '1,75 delar', time: '30-35 min', yield: '3 delar' },
+      { name: 'Riskokare', rice: '1 del', liquid: '1,5 delar', time: 'Enl. manual', yield: '3 delar' },
+      { name: 'Ugn (220°C)', rice: '1 del', liquid: '1,75 delar kokande', time: '45 min', yield: '3 delar' },
+      { name: 'Kombiugn (100°C ånga)', rice: '1 del', liquid: '1,75 delar', time: '35-40 min', yield: '3 delar' }
+    ],
+    steps: [
+      'Skölj riset ordentligt',
+      'Kombinera ris och vätska',
+      'Koka upp, sänk till låg värme',
+      'Täck och sjud i 30-35 minuter',
+      'Vila 5-10 minuter före servering'
+    ],
+    tips: [
+      'Tar längre tid än vitt ris pga kli',
+      'Håller 6-8 månader (kortare än vitt ris pga oljor)',
+      'Finns i alla varianter: basmati brun, jasmine brun, etc.',
+      'Kombiugn: Kan behöva 5-10 min extra jämfört med vitt ris'
+    ]
+  },
+  black: {
+    title: 'Svart ris',
+    description: 'Kallas även Forbidden Rice eller Black Pearl. Nötig smak, högt antioxidantinnehåll.',
+    methods: [
+      { name: 'Spis', rice: '1 del', liquid: '1,75 delar', time: '25-30 min', yield: '3 delar' },
+      { name: 'Riskokare', rice: '1 del', liquid: '1,5 delar', time: 'Enl. manual', yield: '3 delar' },
+      { name: 'Ugn (220°C)', rice: '1 del', liquid: '1,5 delar kokande', time: '30-35 min', yield: '3 delar' },
+      { name: 'Kombiugn (100°C ånga)', rice: '1 del', liquid: '1,75 delar', time: '30-35 min', yield: '3 delar' }
+    ],
+    steps: [
+      'Skölj tills vattnet är något mindre mörkt',
+      'Kombinera ris och vätska i kastrull',
+      'Koka upp, sänk värmen',
+      'Täck och sjud i 25-30 minuter',
+      'Vila och fluffa'
+    ],
+    tips: [
+      'Färgar av sig - använd separat kastrull/GN-form',
+      'Perfekt till sallader och Buddha bowls',
+      'Var historiskt reserverat för kinesiska kejsare'
+    ]
+  },
+  sticky: {
+    title: 'Klibbigt ris',
+    description: 'Thai/Lao sticky rice, sweet rice. Ska ångas, INTE kokas med absorptionsmetoden.',
+    methods: [
+      { name: 'Blötlägg först', rice: 'Valfri mängd', liquid: 'Täck rikligt', time: '4+ timmar', yield: '-' },
+      { name: 'Ångkoka', rice: 'Blötlagt ris', liquid: 'Vatten i botten', time: '30-40 min', yield: '2x volym' },
+      { name: 'Kombiugn (100°C ånga)', rice: 'Blötlagt ris', liquid: 'Inget extra', time: '20-25 min', yield: '2x volym' }
+    ],
+    steps: [
+      'Lägg riset i stor skål, täck med vatten (några cm över)',
+      'Blötlägg minst 4 timmar eller över natten',
+      'Dränera ordentligt',
+      'Linda riset i ostkläde/muslin',
+      'Lägg i ångkokare över kokande vatten',
+      'Ånga 15-20 min, vänd bunten, ånga 15-20 min till',
+      'Vila 5 min täckt'
+    ],
+    tips: [
+      'Längre blötläggning = kortare ångtid',
+      'Servera direkt - torkar ut snabbt',
+      'Perfekt med mango och kokosmjölk som dessert',
+      'Laos äter mer klibbigt ris per capita än något annat land'
+    ]
+  },
+  troubleshooting: {
+    title: 'Felsökning',
+    problems: [
+      {
+        name: 'Bränt ris',
+        cause: 'För hög värme eller för lite vätska',
+        fix: 'Ta bort från värmen. Skopa försiktigt upp obränt ris till ny kastrull utan att röra. Fortsätt koka.',
+        prevent: 'Använd tjockbottnad kastrull, lägre värme, tätslutande lock'
+      },
+      {
+        name: 'Halvkokt ris',
+        cause: 'Vätskan förångades för snabbt',
+        fix: 'Tillsätt ¾ kopp vätska, täck, fortsätt koka på lägre värme',
+        prevent: 'Se till att locket är tätt, använd rätt temperatur'
+      },
+      {
+        name: 'Blött/mosigt ris',
+        cause: 'För mycket vätska',
+        fix: 'Koka utan lock några minuter för att ångbort fukt. Om för mosigt: använd till gröt eller pudding.',
+        prevent: 'Mät vätska noggrant, justera nästa gång'
+      },
+      {
+        name: 'Kladdigt/pasteaktigt',
+        cause: 'Riset sköljdes inte',
+        fix: 'Skölj kokt ris under kallt vatten, dränera, bred ut på plåt, torka i ugn 200°C i 8 min',
+        prevent: 'Skölj alltid riset före kokning (utom risotto)'
+      },
+      {
+        name: 'Klumpigt ris',
+        cause: 'Riset sköljdes inte eller rördes för mycket',
+        fix: 'Låt vila täckt, fluffa sedan försiktigt för att bryta klumpar',
+        prevent: 'Skölj före kokning, rör aldrig om under kokning'
+      }
+    ]
+  },
+  storage: {
+    title: 'Förvaring',
+    facts: [
+      { label: 'Vitt ris (okokt)', value: '4-5 år', note: 'Svalt, mörkt, lufttätt' },
+      { label: 'Brunt/svart ris', value: '6-8 månader', note: 'Kortare pga oljor i kli' },
+      { label: 'Kokt ris (kylskåp)', value: '5 dagar', note: 'Kyl inom 1 timme efter kokning' },
+      { label: 'Kokt ris (frys)', value: 'Flera månader', note: 'Frys i portioner' }
+    ],
+    reheating: [
+      'Stänk 2 msk vatten per kopp ris',
+      'Värm täckt på låg värme i 5 min ELLER',
+      'Mikro ca 1 min per kopp ris',
+      'Från frys: dubbla tiden'
+    ],
+    warning: 'Låt aldrig kokt ris stå i rumstemperatur mer än 1 timme (bakterierisk)'
+  },
+  fingerTrick: {
+    title: 'Fingertricket',
+    description: 'Klassiskt asiatiskt sätt att mäta rätt vattenmängd utan mått.',
+    steps: [
+      'Häll sköljt ris i kastrull, platta till ytan',
+      'Lägg fingret (långfinger/pekfinger) på risytan',
+      'Fyll på vatten tills det når första fingerleden',
+      'Det spelar ingen roll hur stor din hand är - det fungerar!'
+    ],
+    alternative: 'Lägg handen plant på risytan, fyll vatten tills det når handryggen.'
+  }
+};
+
 // Blancheringsguide (baserat på The French Laundry)
 const blancheringData = {
   intro: {
@@ -2767,6 +2947,11 @@ export default function App() {
   // Temperaturvy-läge: 'traditional', 'sousvide', eller 'egg'
   const [tempViewMode, setTempViewMode] = useState('traditional');
   const [eggGuideTab, setEggGuideTab] = useState('boiling');
+  const [riceGuideTab, setRiceGuideTab] = useState('calculator');
+  const [riceAmount, setRiceAmount] = useState(2);
+  const [riceUnit, setRiceUnit] = useState('dl');
+  const [riceType, setRiceType] = useState('longGrain');
+  const [cookingMethod, setCookingMethod] = useState('stovetop');
 
   // Fermentering
   const [fermentationCategory, setFermentationCategory] = useState('lacto');
@@ -4164,6 +4349,7 @@ export default function App() {
                       className="item-row sousvide-item"
                       onClick={() => {
                         setSelectedSousVideItem(item);
+                        setSousVideCategory(category);
                         setSousVideDoneness(item.medium ? 'medium' : item.wellDone ? 'wellDone' : 'rare');
                       }}
                     >
@@ -4212,6 +4398,12 @@ export default function App() {
               onClick={() => setTempViewMode('egg')}
             >
               Ägg
+            </button>
+            <button
+              className={`mode-tab ${tempViewMode === 'rice' ? 'active' : ''}`}
+              onClick={() => setTempViewMode('rice')}
+            >
+              Ris
             </button>
           </div>
         )}
@@ -4340,8 +4532,324 @@ export default function App() {
           </div>
         )}
 
-        {/* Dölj sök och kategorier om äggvyn är aktiv */}
-        {!(title === 'Temperaturer' && tempViewMode === 'egg') && (
+        {/* Visa risguiden om vald */}
+        {title === 'Temperaturer' && tempViewMode === 'rice' && (
+          <div className="egg-guide-content">
+            <div className="rice-tab-row">
+              <button className={riceGuideTab === 'calculator' ? 'active' : ''} onClick={() => setRiceGuideTab('calculator')}>Kalkylator</button>
+              <button className={riceGuideTab === 'info' ? 'active' : ''} onClick={() => setRiceGuideTab('info')}>Ristyper</button>
+              <button className={riceGuideTab === 'troubleshooting' ? 'active' : ''} onClick={() => setRiceGuideTab('troubleshooting')}>Felsökning</button>
+            </div>
+
+            {/* KALKYLATOR */}
+            {riceGuideTab === 'calculator' && (
+              <div className="egg-section">
+                <h2>Riskalkylator</h2>
+                <p className="section-description">Ange mängd ris och få exakt vattenmängd och koktid</p>
+
+                <div className="rice-calculator">
+                  <div className="rice-calc-row">
+                    <label>Mängd ris:</label>
+                    <div className="rice-calc-input-group">
+                      <input
+                        type="number"
+                        min="0.5"
+                        step="0.5"
+                        value={riceAmount}
+                        onChange={(e) => setRiceAmount(parseFloat(e.target.value) || 0)}
+                        className="rice-calc-input"
+                      />
+                      <select value={riceUnit} onChange={(e) => setRiceUnit(e.target.value)} className="rice-calc-select">
+                        <option value="dl">dl</option>
+                        <option value="cups">koppar</option>
+                        <option value="g">gram</option>
+                        <option value="kg">kg</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="rice-calc-row">
+                    <label>Ristyp:</label>
+                    <select value={riceType} onChange={(e) => setRiceType(e.target.value)} className="rice-calc-select-full">
+                      <option value="longGrain">Långkornigt (Basmati, Jasmine)</option>
+                      <option value="shortGrain">Kort-/mellankornigt (Arborio, Sushi)</option>
+                      <option value="brown">Brunt ris</option>
+                      <option value="black">Svart ris (Forbidden)</option>
+                      <option value="sticky">Klibbigt ris</option>
+                    </select>
+                  </div>
+
+                  <div className="rice-calc-row">
+                    <label>Metod:</label>
+                    <select value={cookingMethod} onChange={(e) => setCookingMethod(e.target.value)} className="rice-calc-select-full">
+                      <option value="stovetop">Spis</option>
+                      <option value="riceCooker">Riskokare</option>
+                      <option value="oven">Ugn (220°C)</option>
+                      <option value="combi">Kombiugn/Rational (100°C ånga)</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Resultat */}
+                <div className="rice-result-card">
+                  <h3>Resultat</h3>
+                  {(() => {
+                    // Konvertera till koppar för beräkning
+                    let cupsOfRice = riceAmount;
+                    if (riceUnit === 'dl') cupsOfRice = riceAmount / 2.36; // 1 cup ≈ 2.36 dl
+                    if (riceUnit === 'g') cupsOfRice = riceAmount / 185; // 1 cup ris ≈ 185g
+                    if (riceUnit === 'kg') cupsOfRice = (riceAmount * 1000) / 185;
+
+                    // Ratios per ristyp och metod
+                    const ratios = {
+                      longGrain: { stovetop: 1.5, riceCooker: 1.25, oven: 1.5, combi: 1.5 },
+                      shortGrain: { stovetop: 1.75, riceCooker: 1.5, oven: 1.75, combi: 1.75 },
+                      brown: { stovetop: 1.75, riceCooker: 1.5, oven: 1.75, combi: 1.75 },
+                      black: { stovetop: 1.75, riceCooker: 1.5, oven: 1.5, combi: 1.75 },
+                      sticky: { stovetop: 0, riceCooker: 0, oven: 0, combi: 0 } // Ångas
+                    };
+
+                    const times = {
+                      longGrain: { stovetop: '15 min', riceCooker: 'Enl. manual', oven: '20-30 min', combi: '20-25 min' },
+                      shortGrain: { stovetop: '30-35 min', riceCooker: 'Enl. manual', oven: '35-40 min', combi: '25-30 min' },
+                      brown: { stovetop: '30-35 min', riceCooker: 'Enl. manual', oven: '45 min', combi: '35-40 min' },
+                      black: { stovetop: '25-30 min', riceCooker: 'Enl. manual', oven: '30-35 min', combi: '30-35 min' },
+                      sticky: { stovetop: 'Ångas 30-40 min', riceCooker: 'Ångas 25 min', oven: '-', combi: '20-25 min (100% ånga)' }
+                    };
+
+                    const ratio = ratios[riceType]?.[cookingMethod] || 1.5;
+                    const time = times[riceType]?.[cookingMethod] || '15 min';
+                    const waterCups = cupsOfRice * ratio;
+
+                    // Konvertera tillbaka till vald enhet
+                    let waterDisplay, riceDisplay, yieldDisplay;
+                    if (riceUnit === 'dl') {
+                      waterDisplay = `${(waterCups * 2.36).toFixed(1)} dl`;
+                      riceDisplay = `${riceAmount} dl`;
+                      yieldDisplay = `${(cupsOfRice * 3 * 2.36).toFixed(1)} dl`;
+                    } else if (riceUnit === 'cups') {
+                      waterDisplay = `${waterCups.toFixed(1)} koppar`;
+                      riceDisplay = `${riceAmount} koppar`;
+                      yieldDisplay = `${(cupsOfRice * 3).toFixed(1)} koppar`;
+                    } else if (riceUnit === 'g') {
+                      waterDisplay = `${Math.round(waterCups * 237)} ml`; // 1 cup vatten = 237ml
+                      riceDisplay = `${riceAmount} g`;
+                      yieldDisplay = `ca ${Math.round(riceAmount * 2.7)} g`;
+                    } else if (riceUnit === 'kg') {
+                      waterDisplay = `${(waterCups * 0.237).toFixed(2)} liter`;
+                      riceDisplay = `${riceAmount} kg`;
+                      yieldDisplay = `ca ${(riceAmount * 2.7).toFixed(1)} kg`;
+                    }
+
+                    if (riceType === 'sticky') {
+                      return (
+                        <div className="rice-result-content">
+                          <div className="rice-result-item special">
+                            <span className="rice-result-label">OBS: Klibbigt ris</span>
+                            <span className="rice-result-value">Ska blötläggas och ångas!</span>
+                          </div>
+                          <div className="rice-result-item">
+                            <span className="rice-result-label">1. Blötlägg</span>
+                            <span className="rice-result-value">Minst 4 timmar i rikligt vatten</span>
+                          </div>
+                          <div className="rice-result-item">
+                            <span className="rice-result-label">2. Dränera</span>
+                            <span className="rice-result-value">Häll av allt vatten</span>
+                          </div>
+                          <div className="rice-result-item">
+                            <span className="rice-result-label">3. Ångkoka</span>
+                            <span className="rice-result-value">30-40 min i ostkläde</span>
+                          </div>
+                        </div>
+                      );
+                    }
+
+                    return (
+                      <div className="rice-result-content">
+                        <div className="rice-result-item">
+                          <span className="rice-result-label">Ris</span>
+                          <span className="rice-result-value">{riceDisplay}</span>
+                        </div>
+                        <div className="rice-result-item highlight">
+                          <span className="rice-result-label">Vatten/vätska</span>
+                          <span className="rice-result-value">{waterDisplay}</span>
+                        </div>
+                        <div className="rice-result-item">
+                          <span className="rice-result-label">Koktid</span>
+                          <span className="rice-result-value">{time}</span>
+                        </div>
+                        <div className="rice-result-item">
+                          <span className="rice-result-label">Ger ca</span>
+                          <span className="rice-result-value">{yieldDisplay} kokt ris</span>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </div>
+
+                <div className="egg-tips-section">
+                  <h3>Snabbtips</h3>
+                  <ul>
+                    <li>Skölj alltid riset tills vattnet rinner klart (utom risotto)</li>
+                    <li>Använd tätslutande lock och rör aldrig om under kokning</li>
+                    <li>Låt riset vila 5 min efter kokning innan du fluffar</li>
+                    <li>1 kopp okokt ris = ca 3 koppar kokt ris</li>
+                    <li><strong>Kombiugn:</strong> 100°C, 100% ånga, GN-form med lock/folie. Lägg till lite olja för att undvika klump.</li>
+                  </ul>
+                </div>
+              </div>
+            )}
+
+            {/* RISTYPER INFO */}
+            {riceGuideTab === 'info' && (
+              <div className="egg-section">
+                <h2>Ristyper - Guide</h2>
+                <p className="section-description">Välj ristyp för detaljer</p>
+
+                <select
+                  value={riceType}
+                  onChange={(e) => setRiceType(e.target.value)}
+                  className="rice-calc-select-full"
+                  style={{marginBottom: '1rem'}}
+                >
+                  <option value="longGrain">Långkornigt vitt ris</option>
+                  <option value="shortGrain">Kort-/mellankornigt ris</option>
+                  <option value="brown">Brunt ris</option>
+                  <option value="black">Svart ris</option>
+                  <option value="sticky">Klibbigt ris</option>
+                </select>
+
+                {riceType !== 'sticky' && riceGuideData[riceType] && (
+                  <>
+                    <h3>{riceGuideData[riceType].title}</h3>
+                    <p className="section-description">{riceGuideData[riceType].description}</p>
+                    <div className="egg-time-cards">
+                      {riceGuideData[riceType].methods.map((method, idx) => (
+                        <div key={idx} className="egg-time-card">
+                          <div className="egg-time-header">
+                            <span className="egg-time-name">{method.name}</span>
+                            <span className="egg-time-value">{method.time}</span>
+                          </div>
+                          <p className="egg-time-desc">Ris: {method.rice} | Vätska: {method.liquid}</p>
+                          <span className="egg-time-temp">Ger: {method.yield}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="steps-list-guide">
+                      <h3>Steg för steg</h3>
+                      <ol>
+                        {riceGuideData[riceType].steps.map((step, idx) => (
+                          <li key={idx}>{step}</li>
+                        ))}
+                      </ol>
+                    </div>
+                    <div className="egg-tips-section">
+                      <h3>Tips</h3>
+                      <ul>
+                        {riceGuideData[riceType].tips.map((tip, idx) => (
+                          <li key={idx}>{tip}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </>
+                )}
+
+                {riceType === 'sticky' && (
+                  <>
+                    <h3>{riceGuideData.sticky.title}</h3>
+                    <p className="section-description">{riceGuideData.sticky.description}</p>
+                    <div className="steps-list-guide">
+                      <h3>Steg för steg</h3>
+                      <ol>
+                        {riceGuideData.sticky.steps.map((step, idx) => (
+                          <li key={idx}>{step}</li>
+                        ))}
+                      </ol>
+                    </div>
+                    <div className="egg-tips-section">
+                      <h3>Tips</h3>
+                      <ul>
+                        {riceGuideData.sticky.tips.map((tip, idx) => (
+                          <li key={idx}>{tip}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </>
+                )}
+
+                {/* Förvaring alltid synlig */}
+                <div className="egg-section" style={{marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid #E8E0D8'}}>
+                  <h3>Förvaring</h3>
+                  <div className="science-facts">
+                    {riceGuideData.storage.facts.map((fact, idx) => (
+                      <div key={idx} className="science-fact-card">
+                        <span className="fact-label">{fact.label}</span>
+                        <span className="fact-value">{fact.value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* FELSÖKNING - samma som innan */}
+            {riceGuideTab === 'troubleshooting' && (
+              <div className="egg-section">
+                <h2>{riceGuideData.longGrain.title}</h2>
+                <p className="section-description">{riceGuideData.longGrain.description}</p>
+                <div className="egg-time-cards">
+                  {riceGuideData.longGrain.methods.map((method, idx) => (
+                    <div key={idx} className="egg-time-card">
+                      <div className="egg-time-header">
+                        <span className="egg-time-name">{method.name}</span>
+                        <span className="egg-time-value">{method.time}</span>
+                      </div>
+                      <p className="egg-time-desc">Ris: {method.rice} | Vätska: {method.liquid}</p>
+                      <span className="egg-time-temp">Ger: {method.yield}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="steps-list-guide">
+                  <h3>Steg för steg</h3>
+                  <ol>
+                    {riceGuideData.longGrain.steps.map((step, idx) => (
+                      <li key={idx}>{step}</li>
+                    ))}
+                  </ol>
+                </div>
+                <div className="egg-tips-section">
+                  <h3>Tips</h3>
+                  <ul>
+                    {riceGuideData.longGrain.tips.map((tip, idx) => (
+                      <li key={idx}>{tip}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            )}
+
+            {/* Felsökning */}
+            {riceGuideTab === 'troubleshooting' && (
+              <div className="egg-section">
+                <h2>{riceGuideData.troubleshooting.title}</h2>
+                <div className="scrambled-styles">
+                  {riceGuideData.troubleshooting.problems.map((problem, idx) => (
+                    <div key={idx} className="scrambled-style-card">
+                      <h3>{problem.name}</h3>
+                      <p className="style-method"><strong>Orsak:</strong> {problem.cause}</p>
+                      <p><strong>Lösning:</strong> {problem.fix}</p>
+                      <p><strong>Förebygg:</strong> {problem.prevent}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+          </div>
+        )}
+
+        {/* Dölj sök och kategorier om ägg- eller risvyn är aktiv */}
+        {!(title === 'Temperaturer' && (tempViewMode === 'egg' || tempViewMode === 'rice')) && (
           <>
             <div className="search-box">
               <input
@@ -4364,7 +4872,7 @@ export default function App() {
           </>
         )}
 
-        {!(title === 'Temperaturer' && tempViewMode === 'egg') && categories.map(category => {
+        {!(title === 'Temperaturer' && (tempViewMode === 'egg' || tempViewMode === 'rice')) && categories.map(category => {
           const filteredItems = filterItems(data[category]);
           if (filteredItems.length === 0) return null;
           const science = categoryScience[category];
@@ -7446,6 +7954,169 @@ export default function App() {
         .egg-guide-tabs button.active {
           background: #D35F2D;
           color: white;
+        }
+
+        /* Rice guide specific tabs - 3 even buttons */
+        .rice-tab-row {
+          display: flex;
+          gap: 0.5rem;
+          margin-bottom: 1.5rem;
+        }
+
+        .rice-tab-row button {
+          flex: 1;
+          padding: 0.875rem 1rem;
+          background: #E8E0D8;
+          border: none;
+          cursor: pointer;
+          font-size: 0.95rem;
+          font-weight: 500;
+          color: #5C4A3D;
+          transition: all 0.2s;
+          border-radius: 8px;
+        }
+
+        .rice-tab-row button.active {
+          background: #D35F2D;
+          color: white;
+        }
+
+        .rice-tab-row button:hover:not(.active) {
+          background: #DDD5CC;
+        }
+
+        /* Rice Calculator */
+        .rice-calculator {
+          background: white;
+          border: 1px solid #E8E0D8;
+          border-radius: 12px;
+          padding: 1.25rem;
+          margin-bottom: 1.5rem;
+        }
+
+        .rice-calc-row {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+          margin-bottom: 1rem;
+        }
+
+        .rice-calc-row:last-child {
+          margin-bottom: 0;
+        }
+
+        .rice-calc-row label {
+          font-weight: 600;
+          color: #2D2A26;
+          font-size: 0.9rem;
+        }
+
+        .rice-calc-input-group {
+          display: flex;
+          gap: 0.5rem;
+        }
+
+        .rice-calc-input {
+          flex: 1;
+          padding: 0.75rem;
+          border: 1px solid #D5CEC5;
+          border-radius: 8px;
+          font-size: 1.1rem;
+          text-align: center;
+          font-weight: 600;
+        }
+
+        .rice-calc-input:focus {
+          outline: none;
+          border-color: #E87D48;
+        }
+
+        .rice-calc-select {
+          padding: 0.75rem;
+          border: 1px solid #D5CEC5;
+          border-radius: 8px;
+          font-size: 0.95rem;
+          background: white;
+          min-width: 90px;
+        }
+
+        .rice-calc-select-full {
+          width: 100%;
+          padding: 0.75rem;
+          border: 1px solid #D5CEC5;
+          border-radius: 8px;
+          font-size: 0.95rem;
+          background: white;
+        }
+
+        /* Rice Result Card */
+        .rice-result-card {
+          background: linear-gradient(135deg, #FFF8F5 0%, #FFF5EE 100%);
+          border: 2px solid #E87D48;
+          border-radius: 12px;
+          padding: 1.25rem;
+          margin-bottom: 1.5rem;
+        }
+
+        .rice-result-card h3 {
+          color: #D35F2D;
+          margin-bottom: 1rem;
+          font-size: 1.1rem;
+        }
+
+        .rice-result-content {
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+        }
+
+        .rice-result-item {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 0.5rem 0;
+          border-bottom: 1px solid #E8E0D8;
+        }
+
+        .rice-result-item:last-child {
+          border-bottom: none;
+        }
+
+        .rice-result-item.highlight {
+          background: #E87D48;
+          margin: 0 -0.75rem;
+          padding: 0.875rem 0.75rem;
+          border-radius: 8px;
+          border-bottom: none;
+        }
+
+        .rice-result-item.highlight .rice-result-label,
+        .rice-result-item.highlight .rice-result-value {
+          color: white;
+        }
+
+        .rice-result-item.special {
+          background: #FFF3CD;
+          margin: 0 -0.75rem;
+          padding: 0.75rem;
+          border-radius: 8px;
+          border-bottom: none;
+          margin-bottom: 0.5rem;
+        }
+
+        .rice-result-label {
+          color: #5C4A3D;
+          font-weight: 500;
+        }
+
+        .rice-result-value {
+          color: #2D2A26;
+          font-weight: 700;
+          font-size: 1.1rem;
+        }
+
+        .rice-result-item.highlight .rice-result-value {
+          font-size: 1.25rem;
         }
 
         .egg-section h2 {
