@@ -1,4 +1,4 @@
-# Köksguiden 🍳
+# Köksguiden
 
 En svensk kökshjälp-app med näringsdatabas från Livsmedelsverket.
 
@@ -7,12 +7,20 @@ En svensk kökshjälp-app med näringsdatabas från Livsmedelsverket.
 
 ## Funktioner
 
+### 🌡️ Sous vide-guide
+- Temperatur och tid för 70+ råvaror: kött, fågel, fisk, skaldjur och ägg
+- Tre tillagningsnivåer: Rare, Medium, Genomstekt
+- Tjockleksbaserad tidsberäkning (uppvärmningstid + pastöriseringstid) för möra styckdelar
+- Sega styckdelar (Högrev, Fläskbog, Oxsvans m.fl.) visar tenderiseringstid direkt utan tjockleksslider
+- Tips och efterbehandling för varje råvara
+- All data hämtad från **Modernist Cuisine Vol 3**, Best Bets-tabellerna
+
 ### 📏 Måttomvandling
 - Omvandla mellan vikt (kg, hg, g) och volym (l, dl, msk, tsk, krm)
 - Stöd för utländska enheter (lb, oz, cups)
 - Referenstabell för vikt per dl för vanliga ingredienser
 
-### 🌡️ Temperaturer
+### 🌡️ Innertemperaturer (ugn/stekpanna)
 - Innertemperaturer för kött, fågel och fisk
 - Rare, medium och genomstekt
 - Tillagningstips för varje styckdetalj
@@ -38,16 +46,9 @@ En svensk kökshjälp-app med näringsdatabas från Livsmedelsverket.
 ## Installation
 
 ```bash
-# Klona repot
-git clone https://github.com/ditt-användarnamn/koksguiden.git
-
-# Gå till mappen
+git clone https://github.com/stenerstrom/koksguiden.git
 cd koksguiden
-
-# Installera dependencies
 npm install
-
-# Starta utvecklingsserver
 npm start
 ```
 
@@ -55,62 +56,28 @@ npm start
 
 ## Publicera på GitHub Pages
 
-### 1. Uppdatera homepage i package.json
-
-Ändra `stenerstrom` till ditt GitHub-användarnamn:
-
-```json
-"homepage": "https://stenerstrom.github.io/koksguiden"
-```
-
-### 2. Pusha till GitHub
-
 ```bash
-git init
-git add .
-git commit -m "Initial commit"
-git remote add origin https://github.com/stenerstrom/koksguiden.git
-git branch -M main
-git push -u origin main
-```
-
-### 3. Deploya till GitHub Pages
-
-```bash
+# Bygg och deploya
 npm run deploy
 ```
 
-Detta bygger appen och publicerar den till `gh-pages` branchen.
+Aktivera GitHub Pages i repo-inställningarna (Settings → Pages → `gh-pages` branch).
 
-### 4. Aktivera GitHub Pages
-
-1. Gå till ditt repo på GitHub
-2. Settings → Pages
-3. Under "Source", välj `gh-pages` branch
-4. Spara
-
-Din app finns nu på: `https://stenerstrom.github.io/koksguiden`
+Din app finns på: `https://stenerstrom.github.io/koksguiden`
 
 ## Teknologi
 
 - **React 18** — UI-bibliotek
 - **Livsmedelsverkets databas** — Näringsvärden för 2500+ livsmedel
+- **Modernist Cuisine Vol 3** — Sous vide-data (Best Bets-tabellerna)
 - **localStorage** — Spara recept lokalt
-- **CSS-in-JS** — Stilar inbäddade i komponenten
 - **GitHub Pages** — Hosting
 
 ## Datakällor
 
-Näringsvärden kommer från [Livsmedelsverkets livsmedelsdatabas](https://www.livsmedelsverket.se/livsmedel-och-innehall/naringsamne/livsmedelsdatabasen) (2025).
+- Näringsvärden: [Livsmedelsverkets livsmedelsdatabas](https://www.livsmedelsverket.se/livsmedel-och-innehall/naringsamne/livsmedelsdatabasen) (2025)
+- Sous vide: Modernist Cuisine, Vol 3 — Best Bets-tabellerna
 
 ## Licens
 
 MIT License — se [LICENSE](LICENSE) för detaljer.
-
-## Bidra
-
-Pull requests är välkomna! För större ändringar, öppna gärna ett issue först.
-
----
-
-Skapat med ❤️ för svenska kök

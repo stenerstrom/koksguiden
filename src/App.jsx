@@ -110,6 +110,7 @@ const sousVideThickness = {
   // Texturförbättringstid för tuffa styckningsdelar (timmar) – MC Vol 3
   tenderizing: {
     'Flankstek': 12,
+    'Flat iron': 12,
     'Högrev': 72,
     'Nötbringa': 72,
     'Oxkind': 72,
