@@ -76,116 +76,734 @@ const themeCSS = `
 // Tid för att nå kärntemperatur från kylskåpstemperatur (~5°C)
 const sousVideThickness = {
   // Tjocklek i cm → minuter för att nå kärntemperatur
+  // Källa: Modernist Cuisine Vol 2, Tabell 4 – Skivor/slab (bredd/längd ≥ 5× tjocklek)
+  // Förutsättningar: mat startar vid ~5°C (kylskåp), badtemperatur satt 1°C ÖVER önskad kärntemperatur (ΔT≈50)
+  // Formel baserad på termisk diffusivitet 0,13 mm²/s och värmeöverföringskoefficient 100 W/m²·K
   heating: {
-    1.0: 25,
-    1.5: 35,
-    2.0: 50,
-    2.5: 60,
-    3.0: 90,
-    3.5: 120,
-    4.0: 150,
-    4.5: 180,
-    5.0: 210,
-    5.5: 250,
-    6.0: 280,
-    7.0: 360,
-    8.0: 450,
+    0.5: 1,
+    1.0: 5,
+    1.5: 12,
+    2.0: 22,
+    2.5: 35,
+    3.0: 50,
+    4.0: 88,
+    5.0: 138,
+    6.0: 205,
+    7.5: 296,
+    10.0: 527,
+    12.5: 824,
+    15.0: 1186,
   },
   // Extra tid för pastörisering vid olika temperaturer (minuter)
-  // Baserat på FDA/USDA riktlinjer och Modernist Cuisine
+  // Källa: Modernist Cuisine Vol 1, kap 3 – Juneja-data för Salmonella 7D-reduktion
   pasteurization: {
-    54: 120,  // 2 timmar extra vid 54°C
-    55: 90,
-    56: 60,
-    57: 45,
-    58: 30,
-    60: 15,
-    63: 5,
+    54: 112, // 112 min vid 54,4°C (FDA-data för nöt/lamm/fläsk)
+    55: 73,
+    56: 47,
+    57: 30,
+    58: 19,
+    60: 8,
+    63: 1,
     65: 1,
-    68: 0,    // Omedelbar pastörisering vid 68°C+
+    68: 0,   // Omedelbar pastörisering vid 68°C+
   },
-  // Texturförbättringstid för tuffa styckningsdelar (timmar)
+  // Texturförbättringstid för tuffa styckningsdelar (timmar) – MC Vol 3
   tenderizing: {
-    'Flankstek': 8,
-    'Högrev': 24,
-    'Nötbringa': 48,
-    'Revbensspjäll': 12,
-    'Fläskbog (Pulled)': 18,
-    'Fläsklägg': 8,
-    'Lammlägg': 12,
-    'Lammbog': 18,
-    'Anklår (Confit)': 8,
-    'Bläckfisk': 4,
+    'Flankstek': 12,
+    'Högrev': 72,
+    'Nötbringa': 72,
+    'Oxkind': 72,
+    'Oxsvans': 72,
+    'Revbensspjäll': 48,
+    'Fläskmage': 36,
+    'Fläskbog (Pulled)': 72,
+    'Fläskkind': 48,
+    'Fläsklägg': 12,
+    'Spädgrisbog & -lägg': 48,
+    'Kalvbröst': 36,
+    'Kaninbog': 3,
+    'Lammlägg': 48,
+    'Lammbog': 48,
+    'Lammstek': 6,
+    'Anklår (Confit)': 10,
+    'Bläckfisk': 5,
+    'Åttafoting': 4,
   }
 };
 
+// ============================================================
+// SOUS VIDE-DATA – Källa: Modernist Cuisine Vol 3, "Best Bets"
+// Temperaturer är kärntemperaturer (inte badtemperatur).
+// rare      = MC "Rare" / fisk "Barely cooked"
+// medium    = MC "Medium-rare" / fisk "Tender" (rekommenderat av MC)
+// wellDone  = MC "Pink–Medium" / fisk "Firm"
+// ============================================================
 const sousVideData = {
   'Nötkött': [
-    { name: 'Oxfilé', rare: { temp: 54, time: '1-2h' }, medium: { temp: 58, time: '1-2h' }, wellDone: { temp: 65, time: '1-2h' }, maxTime: '4h', tips: 'Perfekt för sous vide. Bryn snabbt efteråt för Maillard-reaktion.', afterCare: 'Bryn snabbt (30-60 sek per sida) på mycket hög värme för Maillard-reaktion och krispig yta.' },
-    { name: 'Entrecôte', rare: { temp: 54, time: '1-2h' }, medium: { temp: 58, time: '1-2h' }, wellDone: { temp: 65, time: '2-3h' }, maxTime: '4h', tips: 'Fettet behöver lite längre tid för att mjukna.', afterCare: 'Bryn snabbt (30-60 sek per sida) på mycket hög värme. Fettet blir extra gott vid hög värme.' },
-    { name: 'Flankstek', rare: { temp: 54, time: '8-12h' }, medium: { temp: 58, time: '8-12h' }, wellDone: null, maxTime: '24h', tips: 'Lång tid bryter ner bindväv. Skär tunt mot fibrerna.', afterCare: 'Bryn snabbt på hög värme. Skär tunt mot fibrerna före servering.' },
-    { name: 'Högrev', rare: null, medium: { temp: 62, time: '24-48h' }, wellDone: { temp: 68, time: '24-36h' }, maxTime: '72h', tips: 'Tough cut - kräver lång tid. Perfekt för pulled beef.', afterCare: 'Shreddas för pulled beef eller bryn snabbt för servering som stek.' },
-    { name: 'Rostbiff', rare: { temp: 54, time: '3-6h' }, medium: { temp: 58, time: '3-6h' }, wellDone: { temp: 65, time: '4-8h' }, maxTime: '12h', tips: 'Jämn temperatur genom hela steken.', afterCare: 'Bryn snabbt på alla sidor för fin yta. Vila 5 min innan skivning.' },
-    { name: 'Nötbringa', rare: null, medium: null, wellDone: { temp: 68, time: '48-72h' }, maxTime: '72h', tips: 'Blir silkeslen efter 48+ timmar. Toppas med BBQ-glaze.', afterCare: 'Pensla med BBQ-glaze och gratinierera i ugn eller på grill.' },
+    {
+      name: 'Oxfilé',
+      rare:     { temp: 50, time: '1-2h' },
+      medium:   { temp: 53, time: '1-2h' },
+      wellDone: { temp: 56, time: '1-2h' },
+      mcNote: 'MC rekommenderar 53°C (medium-rare). 50°C ger en mjukare, saftigare textur.',
+      tips: 'Den ädlaste stycken för sous vide. Minimal tid ger mjukast resultat.',
+      afterCare: 'Bryn snabbt (30-60 sek per sida) på maxvärme – gjutjärnspanna eller gasbrännare.'
+    },
+    {
+      name: 'Entrecôte',
+      rare:     { temp: 54, time: '1-2h' },
+      medium:   { temp: 56, time: '1-2h' },
+      wellDone: { temp: 58, time: '2-3h' },
+      mcNote: 'MC rekommenderar 54°C (rare). Fettet i entrecôten smälter bäst vid något längre tid.',
+      tips: 'Fettmarmoringen kräver lite längre tid än oxfilé för att mjukna optimalt.',
+      afterCare: 'Bryn snabbt på maxvärme. Fettkanten får gärna extra tid mot hettan.'
+    },
+    {
+      name: 'Rostbiff',
+      rare:     { temp: 52, time: '1-3h' },
+      medium:   { temp: 54, time: '1-3h' },
+      wellDone: { temp: 58, time: '2-4h' },
+      mcNote: 'MC rekommenderar 52°C (rare). Torrlagrad är idealisk.',
+      tips: 'Jämn rosa färg rakt igenom. Torrlagrat nötkött ger djupare smak.',
+      afterCare: 'Bryn snabbt på alla sidor. Vila 5 min innan skivning mot fibrerna.'
+    },
+    {
+      name: 'Hanger steak',
+      rare:     { temp: 51, time: '1-2h' },
+      medium:   { temp: 54, time: '1-2h' },
+      wellDone: { temp: 58, time: '2-3h' },
+      mcNote: 'MC rekommenderar 54°C (medium-rare).',
+      tips: 'Intensiv köttsmak. Skär alltid tunt mot fibrerna.',
+      afterCare: 'Bryn snabbt. Skär i tunna skivor mot fibrerna för maximal mörhet.'
+    },
+    {
+      name: 'Flankstek',
+      rare:     { temp: 50, time: '3h' },
+      medium:   { temp: 55, time: '12h' },
+      wellDone: { temp: 62, time: '24-36h' },
+      mcNote: 'Tuff styckningsdel – tid är viktigare än temperatur. MC: 55°C/12h för bästa resultat.',
+      tips: 'Lång tillagning bryter ner bindväv. Skär alltid tunt mot fibrerna.',
+      afterCare: 'Bryn snabbt på hög värme. Skär tunt mot fibrerna direkt före servering.'
+    },
+    {
+      name: 'Oxkind',
+      rare:     null,
+      medium:   { temp: 62, time: '48-72h' },
+      wellDone: { temp: 68, time: '24-36h' },
+      mcNote: 'MC: 62°C/72h för steklikt resultat. Ta bort bindväv innan.',
+      tips: 'Silkeslen textur efter lång tillagning. Ta bort hinnor och bindväv.',
+      afterCare: 'Bryn försiktigt eller servera med sky. Kan pressas och kylas för portionskivor.'
+    },
+    {
+      name: 'Högrev',
+      rare:     null,
+      medium:   { temp: 56, time: '72h' },
+      wellDone: { temp: 60, time: '72h' },
+      mcNote: 'MC: 56°C/72h för steklikt, 60°C/72h för möra revben. Bäst med ben.',
+      tips: '72 timmar ger silkigare textur – ta dig tid.',
+      afterCare: 'Bryn på alla sidor eller gratinera. Perfekt med reducerad sky.'
+    },
+    {
+      name: 'Nötbringa',
+      rare:     null,
+      medium:   null,
+      wellDone: { temp: 60, time: '60-72h' },
+      mcNote: 'MC: 60°C/72h för tender textur. Fetänden ("nose") ger bäst resultat.',
+      tips: 'Brisket kräver tålamod – 72h är inte för länge. Använd den feta delen.',
+      afterCare: 'Pensla med BBQ-glaze och rök/grilla för bark, eller skiva och servera med sky.'
+    },
+    {
+      name: 'Flat iron',
+      rare:     { temp: 52, time: '12-24h' },
+      medium:   { temp: 55, time: '12h' },
+      wellDone: { temp: 62, time: '36-48h' },
+      mcNote: 'MC: 52°C/24h (firm), 55°C/12h (tender, MC-rekommenderat), 62°C/48h (flaky). Ta bort den centrala hinnsträngen.',
+      tips: 'Ta bort den sega hinnsträngen i mitten innan tillagning. Komplex smak och bra pris.',
+      afterCare: 'Bryn snabbt och skär mot fibrerna. Kan också pressas platt och kylas för portionskivor.'
+    },
+    {
+      name: 'Oxsvans',
+      rare:     null,
+      medium:   { temp: 60, time: '72-100h' },
+      wellDone: { temp: 65, time: '48h' },
+      mcNote: 'MC: 60°C/100h (tender), 65°C/48h (flaky). Extremt lång tillagning ger gelatin-rik sky.',
+      tips: 'Tålamodets råvara – 72-100h ger en djupt smakrik, gelatinös rätt med silkeslen sky.',
+      afterCare: 'Ta ut benen, reducera skyn för sås. Kan också rivas för ravioli-fyllning.'
+    },
+    {
+      name: 'Kalvfilé',
+      rare:     { temp: 52, time: '45min-1h' },
+      medium:   { temp: 54, time: '1h' },
+      wellDone: { temp: 56, time: '1-2h' },
+      mcNote: 'MC: 52°C (rare) ger utmärkt resultat. Kalv översteks lätt.',
+      tips: 'Känsligt kött – håll kort tid och lägre temperatur än nötkött.',
+      afterCare: 'Bryn snabbt och varsamt. Servera med lätt sås som inte dominerar.'
+    },
+    {
+      name: 'Kalvbröst',
+      rare:     { temp: 54, time: 'till kärntemp' },
+      medium:   { temp: 62, time: '5h' },
+      wellDone: { temp: 68, time: '24h' },
+      mcNote: 'MC Vol 3: 54°C/till kärntemp (fast/firm), 62°C/5h (tender), 68°C/24h (flaky). Tough cut med riklig bindväv.',
+      tips: 'Kalvbröst liknar nötbringa – behöver tid för att kollagen ska gelatiniseras. 62°C i 5h ger saftig, sliceable textur.',
+      afterCare: 'Vila i påsen 15–20 min. Skiv mot fibrerna. Reducera vätskan från påsen till sås.'
+    },
+    {
+      name: 'Hjortfilé',
+      rare:     { temp: 50, time: '45min-1h' },
+      medium:   { temp: 53, time: '1h' },
+      wellDone: { temp: 58, time: '1-2h' },
+      mcNote: 'MC: 50°C (rare). Hög enzymatisk aktivitet – badtemperatur bör vara högre än kärntemp för att undvika mosig textur.',
+      tips: 'Använd badtemp på 55-58°C och ta upp vid kärntemp 50-53°C. Undvik för lång tid.',
+      afterCare: 'Bryn snabbt och vila kort. Servera rosa – vällagat hjort blir torrt och grått.'
+    },
   ],
   'Fläsk': [
-    { name: 'Fläskfilé', rare: null, medium: { temp: 60, time: '1-2h' }, wellDone: { temp: 65, time: '1-2h' }, maxTime: '4h', tips: 'Säker vid 60°C. Saftigare än traditionellt.', afterCare: 'Bryn snabbt på hög värme för fin yta och färg.' },
-    { name: 'Fläskkotlett', rare: null, medium: { temp: 60, time: '1-2h' }, wellDone: { temp: 65, time: '1-2h' }, maxTime: '4h', tips: 'Med ben tar lite längre tid.', afterCare: 'Bryn snabbt på hög värme, särskilt fettkanten.' },
-    { name: 'Fläskkarré', rare: null, medium: { temp: 60, time: '2-4h' }, wellDone: { temp: 65, time: '2-4h' }, maxTime: '6h', tips: 'Perfekt jämnhet genom hela stycket.', afterCare: 'Bryn snabbt eller gratinierera i ugn för fin yta.' },
-    { name: 'Revbensspjäll', rare: null, medium: null, wellDone: { temp: 68, time: '12-24h' }, maxTime: '36h', tips: 'Fall-off-the-bone mörhet. Grilla/rök efteråt för bark.', afterCare: 'Pensla med glaze och grilla/bränna på hög värme för karamelliserad bark.' },
-    { name: 'Fläskbog (Pulled)', rare: null, medium: null, wellDone: { temp: 68, time: '18-24h' }, maxTime: '36h', tips: 'Shreddas enkelt efter sous vide. Krydda väl innan.', afterCare: 'Shreddas med två gafflar. Blanda med BBQ-sås och värm eventuellt i ugn.' },
-    { name: 'Fläsklägg', rare: null, medium: null, wellDone: { temp: 77, time: '8-12h' }, maxTime: '24h', tips: 'Kollagen bryts ner perfekt.', afterCare: 'Servera direkt med sky eller gratinierera för krispigt skinn.' },
+    {
+      name: 'Fläskfilé',
+      rare:     null,
+      medium:   { temp: 56, time: '1-2h' },
+      wellDone: { temp: 59, time: '1-2h' },
+      mcNote: 'MC: 56°C (medium-rare). Modern forskning visar att fläsk är säkert vid 63°C i 3 min eller 60°C i 12 min.',
+      tips: 'Saftigare än traditionellt tillagat fläsk. 56°C ger bästa saftighet.',
+      afterCare: 'Bryn snabbt på hög värme för fin yta och färg.'
+    },
+    {
+      name: 'Fläskkotlett',
+      rare:     null,
+      medium:   { temp: 58, time: '1-2h' },
+      wellDone: { temp: 62, time: '1-2h' },
+      mcNote: 'MC: 58°C (pink). Med ben tar det något längre att nå kärntemperatur.',
+      tips: 'Ben isolerar värmen – ge lite extra tid vid benkotlett.',
+      afterCare: 'Bryn snabbt på hög värme, extra fokus på fettkanten.'
+    },
+    {
+      name: 'Fläskkarré',
+      rare:     null,
+      medium:   { temp: 58, time: '2-4h' },
+      wellDone: { temp: 60, time: '2-4h' },
+      mcNote: 'MC: 58°C (medium-rare) ger optimal saftighet. Max 62°C för medium.',
+      tips: 'Perfekt jämnhet rakt igenom. Undvik 65°C+ som torkar ut köttet.',
+      afterCare: 'Bryn snabbt eller gratinera i ugn för fin yta.'
+    },
+    {
+      name: 'Fläskmage',
+      rare:     null,
+      medium:   { temp: 65, time: '24-36h' },
+      wellDone: { temp: 70, time: '18h' },
+      mcNote: 'MC: 65°C/36h för mjuk men skärbar textur. 70°C/18h om du vill krispera skinnet efteråt.',
+      tips: 'Långkok är nyckeln – fettet och kollagenet behöver tid att brytas ner.',
+      afterCare: 'Pressa platt under kylning för jämn form. Bryn/krispera skinnsidan i het panna.'
+    },
+    {
+      name: 'Revbensspjäll',
+      rare:     null,
+      medium:   { temp: 60, time: '36-48h' },
+      wellDone: { temp: 65, time: '48h' },
+      mcNote: 'MC: 60°C/48h för tender, 65°C/48h för fall-off-the-bone.',
+      tips: 'Lång tid är hemligheten. Minst 36 timmar ger bästa textur.',
+      afterCare: 'Pensla med glaze och grilla/bränna för karamelliserad bark.'
+    },
+    {
+      name: 'Fläskbog (Pulled)',
+      rare:     { temp: 54, time: '48h' },
+      medium:   { temp: 60, time: '72h' },
+      wellDone: { temp: 65, time: '36h' },
+      mcNote: 'MC Vol 3: 54°C/48h (firm, skärbar), 60°C/72h (tender), 65°C/36h (flaky/pulled). Pork shoulder or fresh ham.',
+      tips: '54°C ger skivbar textur med god saftighet. 65°C/36h ger klassisk "fall-apart". Krydda rikligt.',
+      afterCare: 'Shredda med två gafflar vid 65°C. Vid 54-60°C – skiva eller riv löst. Blanda med BBQ-sås.'
+    },
+    {
+      name: 'Fläskkind',
+      rare:     null,
+      medium:   { temp: 65, time: '38h' },
+      wellDone: { temp: 68, time: '48h' },
+      mcNote: 'MC Vol 3: 65°C/38h (tender), 68°C/48h (flaky). Pork cheek, fat cap on.',
+      tips: 'Fettkappan ska sitta kvar under tillagning – den skyddar mot uttorkning och ger smak. Skär bort efter.',
+      afterCare: 'Bryn hårt på skinnsidan för karamellisering. Reducera vätskan ur påsen till glaze.'
+    },
+    {
+      name: 'Fläsklägg',
+      rare:     null,
+      medium:   null,
+      wellDone: { temp: 74, time: '12-24h' },
+      mcNote: 'MC har inga exakta värden för fläsklägg – 74°C/12h baserat på kollagennedbrytning.',
+      tips: 'Kollagen och gelatin bryts ner till silkeslen konsistens vid lång tillagning.',
+      afterCare: 'Servera direkt med sky eller gratinierera för krispigt skinn.'
+    },
+    {
+      name: 'Spädgrisbog & -lägg',
+      rare:     null,
+      medium:   { temp: 60, time: '36h' },
+      wellDone: { temp: 65, time: '24h' },
+      mcNote: 'MC Vol 3: 60°C/36h (tender, sliceable), 65°C/24h (flaky). Suckling pig shoulder and leg.',
+      tips: 'Spädgris har mjukare bindväv än fullvuxet gris – behöver kortare tid. 60°C ger saftig, skivbar textur.',
+      afterCare: 'Bryn skinnsidan i 230°C ugn eller med brännare för krispigt skinn. Servera med äpple eller citrus.'
+    },
+    {
+      name: 'Spädgrisländ',
+      rare:     null,
+      medium:   { temp: 56, time: '1-2h' },
+      wellDone: { temp: 58, time: '1-2h' },
+      mcNote: 'MC Vol 3: 56°C (medium), 58°C, 60°C. Suckling pig loin – behandlas som tender cut.',
+      tips: 'Spädgrisländ är mörare och fetare än vanlig fläskfilé. Kortare tid räcker. 56°C ger perfekt rosa resultat.',
+      afterCare: 'Bryn snabbt, extra fokus på skinnsidan. Servera med lätta citrus- eller örtsmaker.'
+    },
   ],
   'Kyckling & Fågel': [
-    { name: 'Kycklingbröst', rare: null, medium: { temp: 63, time: '1-2h' }, wellDone: { temp: 68, time: '1-2h' }, maxTime: '4h', tips: 'Saftigaste kycklingbröstet du smakat. 63°C är säkert efter 1h.', afterCare: 'Bryn snabbt skinnsidan ner för krispigt skinn. Eller servera direkt om skinlös.' },
-    { name: 'Kycklinglår', rare: null, medium: null, wellDone: { temp: 74, time: '2-4h' }, maxTime: '8h', tips: 'Högre temp pga bindväv. Ger otrolig mörhet.', afterCare: 'Bryn skinnsidan för krispighet eller gratinierera i ugn.' },
-    { name: 'Ankbröst', rare: { temp: 54, time: '2-3h' }, medium: { temp: 58, time: '2-3h' }, wellDone: { temp: 65, time: '2-3h' }, maxTime: '6h', tips: 'Rosa anka är säkert. Bryn skinnet efteråt.', afterCare: 'Bryn skinnsidan i kall panna som värms långsamt för maximalt krispigt skinn.' },
-    { name: 'Anklår (Confit)', rare: null, medium: null, wellDone: { temp: 68, time: '8-12h' }, maxTime: '24h', tips: 'Ersätter traditionell confit. Lägg till ankfett i påsen.', afterCare: 'Bryn i ankfett eller gratinierera i ugn tills skinnet är krispigt.' },
-    { name: 'Kalkonbröst', rare: null, medium: { temp: 63, time: '2-4h' }, wellDone: { temp: 68, time: '2-4h' }, maxTime: '6h', tips: 'Aldrig torr kalkon igen!', afterCare: 'Bryn snabbt för färg eller servera direkt skivat.' },
+    {
+      name: 'Kycklingbröst',
+      rare:     null,
+      medium:   { temp: 58, time: '1-2h' },
+      wellDone: { temp: 61, time: '1-2h' },
+      mcNote: 'MC: 58°C (medium-rare, lätt rosa). Pastöriserat efter 30 min vid 58°C. Max 65°C för vällagat.',
+      tips: 'Saftigaste kycklingbröstet du smakat. 58°C är säkert och ger perfekt textur.',
+      afterCare: 'Bryn snabbt skinnsidan ner för krispigt skinn. Servera direkt om skinlöst.'
+    },
+    {
+      name: 'Kycklinglår',
+      rare:     null,
+      medium:   null,
+      wellDone: { temp: 65, time: '2-4h' },
+      mcNote: 'Lår och klubbor innehåller mer bindväv och kräver högre temperatur än bröst.',
+      tips: 'Bindväven behöver mer värme. 65°C ger saftig, mör textur utan att torka ut.',
+      afterCare: 'Bryn skinnsidan för krispighet eller gratinierera i ugn 5-10 min.'
+    },
+    {
+      name: 'Ankbröst',
+      rare:     { temp: 52, time: '2-3h' },
+      medium:   { temp: 54, time: '2-3h' },
+      wellDone: { temp: 58, time: '2-3h' },
+      mcNote: 'MC: 52°C (rare, 5h15min extra för pastörisering), 54°C (medium-rare, 2h17min extra). Rosa anka är säkert med rätt tid.',
+      tips: 'Anka tolererar rosa kött. 54°C ger bästa balans av smak och säkerhet.',
+      afterCare: 'Bryn skinnsidan i kall panna som hettas upp långsamt – maximalt krispigt skinn.'
+    },
+    {
+      name: 'Anklår (Confit)',
+      rare:     null,
+      medium:   null,
+      wellDone: { temp: 64, time: '8-12h' },
+      mcNote: 'MC: 62-65°C/8-12h. Lägg till ankfett i påsen för traditionell smak.',
+      tips: 'Ankfett i påsen ger autentisk confitsmak utan att simma i fett.',
+      afterCare: 'Bryn i ankfett eller gratinierera i ugn tills skinnet är gyllene och krispigt.'
+    },
+    {
+      name: 'Kalkonbröst',
+      rare:     null,
+      medium:   { temp: 54, time: '2-4h' },
+      wellDone: { temp: 56, time: '2-4h' },
+      mcNote: 'MC: 54°C (medium-rare, 2h17min extra för pastörisering), 56°C (medium, 35min extra). Brina rekommenderas.',
+      tips: 'Aldrig torr kalkon igen – brina 4–12 timmar innan för bäst resultat.',
+      afterCare: 'Bryn snabbt för färg eller servera direkt skivat. Vila 5 min.'
+    },
+    {
+      name: 'Duva',
+      rare:     { temp: 52, time: '1-2h' },
+      medium:   { temp: 54, time: '1-2h' },
+      wellDone: { temp: 58, time: '1-2h' },
+      mcNote: 'MC: 52°C (rare, 5h15min för pastörisering), 54°C (medium-rare, 2h17min för pastörisering), 58°C (pink, 30min för pastörisering).',
+      tips: 'Behandlas som anka – rödrött kött som tolererar rosa tillagning. 54°C ger bästa resultat.',
+      afterCare: 'Bryn skinnsidan i smör. Servera rosa med kraftig sky och rotfrukter.'
+    },
+    {
+      name: 'Vaktel',
+      rare:     { temp: 50, time: '45min-1h' },
+      medium:   { temp: 52, time: '45min-1h' },
+      wellDone: { temp: 54, time: '45min-1h' },
+      mcNote: 'MC: 50°C (rare, 12h för pastörisering), 52°C (medium-rare, 5h15min), 54°C (pink, 2h17min).',
+      tips: 'Liten fågel – kort tid räcker. Lång pastöriseringstid vid låg temperatur.',
+      afterCare: 'Bryn snabbt runt om. Servera hel eller halverad med kraftig sås.'
+    },
+    {
+      name: 'Fasan',
+      rare:     null,
+      medium:   { temp: 54, time: '1-2h' },
+      wellDone: { temp: 58, time: '1-2h' },
+      mcNote: 'MC: 56°C (medium-rare) eller 54°C med yoghurt-/enzymbaserad marinad. 58°C (pink). Brina rekommenderas.',
+      tips: 'Magert viltkött som torkar lätt – marinering med yoghurt eller enzymer hjälper.',
+      afterCare: 'Bryn försiktigt och servera med höstiga tillbehör – kantareller, lingon, äpple.'
+    },
+    {
+      name: 'Gåsbröst',
+      rare:     { temp: 50, time: '2-3h' },
+      medium:   { temp: 52, time: '2-3h' },
+      wellDone: { temp: 55, time: '2-3h' },
+      mcNote: 'MC: 50°C (rare, ingen pastöriseringstid angiven), 52°C (medium-rare, 5h15min), 55°C (pink, 40min).',
+      tips: 'Behandlas som anka. Högt fetinnehåll – skinnet kräver extra uppmärksamhet vid bryning.',
+      afterCare: 'Bryn skinnsidan i torr het panna. Det egna fettet räcker.'
+    },
+  ],
+  'Kanin & Vilt': [
+    {
+      name: 'Kaninfilé',
+      rare:     null,
+      medium:   { temp: 56, time: '1-2h' },
+      wellDone: { temp: 59, time: '1-2h' },
+      mcNote: 'MC: 56°C (medium-rare), 59°C (pink), 62°C (medium). Koka i bad på 72°C för att undvika mosig textur.',
+      tips: 'Sätt badtemperaturen på 72°C men ta upp vid kärntemp 56–62°C. Undviker mosig textur.',
+      afterCare: 'Bryn snabbt. Servera med senap, örter och rotfrukter.'
+    },
+    {
+      name: 'Kaninbog',
+      rare:     null,
+      medium:   { temp: 60, time: '3-4h' },
+      wellDone: { temp: 66, time: '1h' },
+      mcNote: 'MC: 60°C/4h (tender), 66°C/1h (flaky). Yngre djur kan kräva hett bad för att undvika mosighet.',
+      tips: 'Tuffare del än filén – kräver mer tid och högre temperatur.',
+      afterCare: 'Servera med senapsbaserad sås. Kan rivas om vällagat.'
+    },
   ],
   'Lamm': [
-    { name: 'Lammrack', rare: { temp: 54, time: '1-2h' }, medium: { temp: 58, time: '1-2h' }, wellDone: { temp: 65, time: '2h' }, maxTime: '4h', tips: 'Bryn med timjan och vitlök efteråt.', afterCare: 'Bryn snabbt i smör med timjan, vitlök och rosmarin.' },
-    { name: 'Lammfilé', rare: { temp: 54, time: '45min-1h' }, medium: { temp: 58, time: '1h' }, wellDone: { temp: 65, time: '1-2h' }, maxTime: '3h', tips: 'Kort tid pga liten diameter.', afterCare: 'Bryn snabbt runt om för jämn, fin yta.' },
-    { name: 'Lammstek', rare: { temp: 54, time: '4-8h' }, medium: { temp: 58, time: '4-8h' }, wellDone: { temp: 65, time: '6-10h' }, maxTime: '12h', tips: 'Perfekt för stora stycken.', afterCare: 'Bryn på alla sidor. Vila 10-15 min före skivning.' },
-    { name: 'Lammlägg', rare: null, medium: null, wellDone: { temp: 68, time: '12-24h' }, maxTime: '36h', tips: 'Faller från benet. Traditionell brässering på modern tid.', afterCare: 'Servera direkt med sky eller bryn försiktigt för lite yta.' },
-    { name: 'Lammbog', rare: null, medium: null, wellDone: { temp: 68, time: '18-24h' }, maxTime: '36h', tips: 'Pull-apart mörhet.', afterCare: 'Shreddas eller servera hel med reducerad sky.' },
+    {
+      name: 'Lammrack',
+      rare:     { temp: 54, time: '1-2h' },
+      medium:   { temp: 57, time: '1-2h' },
+      wellDone: { temp: 59, time: '1-2h' },
+      mcNote: 'MC: 54°C (rare). 57°C är MC:s rekommenderade medium-rare för rack.',
+      tips: 'Bryn med timjan och vitlök i smör efteråt för klassisk smak.',
+      afterCare: 'Bryn snabbt i smör med timjan, vitlök och rosmarin. Ösa köttet medan det bryns.'
+    },
+    {
+      name: 'Lammfilé',
+      rare:     { temp: 54, time: '45min-1h' },
+      medium:   { temp: 57, time: '1h' },
+      wellDone: { temp: 60, time: '1-2h' },
+      mcNote: 'MC: Samma temperaturer som rack. Kort tid pga liten diameter.',
+      tips: 'Liten diameter = snabb tillagning. Övervaka noggrant.',
+      afterCare: 'Bryn snabbt runt om för jämn, fin yta.'
+    },
+    {
+      name: 'Lammstek',
+      rare:     { temp: 54, time: '5-8h' },
+      medium:   { temp: 57, time: '5-8h' },
+      wellDone: { temp: 60, time: '6-10h' },
+      mcNote: 'MC: 54°C (rare), 57°C (medium-rare), 60°C (pink), 65°C (medium). Stor styckning kräver mer tid.',
+      tips: 'Stor styckning kräver lång tid för att värmen ska nå kärnan jämnt.',
+      afterCare: 'Bryn på alla sidor. Vila 10-15 min före skivning mot fibrerna.'
+    },
+    {
+      name: 'Lammlägg',
+      rare:     null,
+      medium:   { temp: 62, time: '36-48h' },
+      wellDone: { temp: 85, time: '4-5h' },
+      mcNote: 'MC: 62°C/48h för tender, 85°C/5h för mycket möra lammläggar (alternativt tryckkokare 60 min).',
+      tips: '62°C/48h ger saftig, steklikt resultat. 85°C/5h ger fall-off-the-bone.',
+      afterCare: 'Servera direkt med reducerad sky eller bryn försiktigt för lite yta.'
+    },
+    {
+      name: 'Lammbog',
+      rare:     { temp: 56, time: '48h' },
+      medium:   { temp: 62, time: '48h' },
+      wellDone: { temp: 65, time: '24h' },
+      mcNote: 'MC: 56°C/48h för steklikt, 62°C/48h för tender, 65°C/24h för pull-apart. Gnid in med olivolja och timjan.',
+      tips: '5% olivolja och 0,1% timjan i påsen dämpar kraftig lammsmak – klassiskt grepp.',
+      afterCare: 'Shredda eller servera hel med reducerad sky och gremolata.'
+    },
   ],
   'Fisk': [
-    { name: 'Lax', rare: { temp: 45, time: '30-45min' }, medium: { temp: 52, time: '30-45min' }, wellDone: { temp: 60, time: '30-45min' }, maxTime: '1h', tips: '45°C = glasig, 52°C = medium. Otroligt resultat!', afterCare: 'Servera direkt. Om önskat: bryn skinnsidan snabbt eller flambera med gasbrännare.' },
-    { name: 'Torsk', rare: null, medium: { temp: 50, time: '20-30min' }, wellDone: { temp: 55, time: '20-30min' }, maxTime: '45min', tips: 'Flakig och saftig. Servera direkt.', afterCare: 'Servera direkt – torsk behöver ingen efterbehandling. Toppa med brynt smör.' },
-    { name: 'Hälleflundra', rare: null, medium: { temp: 50, time: '30-45min' }, wellDone: { temp: 55, time: '30-45min' }, maxTime: '1h', tips: 'Fast vitt kött. Premium resultat.', afterCare: 'Servera direkt med sås. Behöver ingen bryning.' },
-    { name: 'Tonfisk', rare: { temp: 40, time: '20-30min' }, medium: { temp: 50, time: '20-30min' }, wellDone: { temp: 60, time: '30min' }, maxTime: '45min', tips: 'Sashimi-kvalitet vid 40°C.', afterCare: 'Servera direkt eller bryn blixtnabbt (5 sek) på ytan för tataki-stil.' },
-    { name: 'Sej/Kolja', rare: null, medium: { temp: 50, time: '20-30min' }, wellDone: { temp: 55, time: '20-30min' }, maxTime: '45min', tips: 'Vardagsfisk blir restaurangklass.', afterCare: 'Servera direkt med sås eller brynt smör. Ingen extra tillagning behövs.' },
+    {
+      name: 'Lax',
+      rare:     { temp: 38, time: '25-35min' },
+      medium:   { temp: 41, time: '25-35min' },
+      wellDone: { temp: 43, time: '25-35min' },
+      mcNote: 'MC: 38°C (barely cooked, glasig), 41°C (tender, MC-rekommenderat), 43°C (firm), 46°C (flaky). Obs: under 46°C pastöriseras ej.',
+      tips: '41°C ger translucent, smält-i-munnen textur som är omöjlig att uppnå i stekpanna.',
+      afterCare: 'Servera direkt. Skinnsidan kan brännas med gasbrännare för krispig finish.'
+    },
+    {
+      name: 'Torsk',
+      rare:     { temp: 38, time: '20-30min' },
+      medium:   { temp: 41, time: '20-30min' },
+      wellDone: { temp: 45, time: '20-30min' },
+      mcNote: 'MC: 38°C (barely cooked), 41°C (tender), 45°C (firm), 49°C (flaky). Samma temperaturer gäller för sej.',
+      tips: 'Torsk är extremt känslig för övervärme. Låga temperaturer ger resultat som är omöjliga att uppnå i panna.',
+      afterCare: 'Servera omedelbart. Toppa med brynt smör och kapris.'
+    },
+    {
+      name: 'Hälleflundra',
+      rare:     { temp: 40, time: '25-35min' },
+      medium:   { temp: 42, time: '25-35min' },
+      wellDone: { temp: 45, time: '25-35min' },
+      mcNote: 'MC: 40°C (barely cooked), 42°C (tender, MC-rekommenderat), 45°C (firm), 50°C (flaky).',
+      tips: 'Fast vitt kött som är lätt att överlaga. 42°C ger perfekt pärlemor-vit textur.',
+      afterCare: 'Servera direkt med lätt sås. Behöver ingen bryning.'
+    },
+    {
+      name: 'Tonfisk',
+      rare:     { temp: 38, time: '20-25min' },
+      medium:   { temp: 42, time: '20-25min' },
+      wellDone: { temp: 45, time: '25-30min' },
+      mcNote: 'MC: 38°C (barely cooked), 42°C (tender, MC-rekommenderat), 45°C (firm), 48°C (flaky). Vid 54°C: brina i 4% saltlake 3h innan.',
+      tips: 'Tonfisk och svärdsfisk översteks redan vid 55°C. Håll temperaturen låg.',
+      afterCare: 'Servera direkt eller bryn blixtnabbt (5 sek per sida) för tataki-stil.'
+    },
+    {
+      name: 'Makrill',
+      rare:     { temp: 40, time: '20-25min' },
+      medium:   { temp: 42, time: '20-25min' },
+      wellDone: { temp: 46, time: '20-25min' },
+      mcNote: 'MC: 40°C (barely cooked), 42°C (tender), 46°C (firm, MC-rekommenderat), 48°C (flaky). Brina om tillagning under 46°C.',
+      tips: 'Brinning rekommenderas vid tillagning under 46°C. Intensiv smak – sous vide framhäver den.',
+      afterCare: 'Bryn skinnsidan snabbt eller servera direkt med syra (citron, pickles).'
+    },
+    {
+      name: 'Havsabborre',
+      rare:     null,
+      medium:   { temp: 45, time: '20-30min' },
+      wellDone: { temp: 48, time: '20-30min' },
+      mcNote: 'MC: 45°C (tender), 48°C (firm), 50°C (flaky).',
+      tips: 'Fin fisk som belönar precision. Exakta temperaturer ger restaurangkvalitet hemma.',
+      afterCare: 'Servera direkt med sås. Skinnsidan kan brännas med gasbrännare.'
+    },
+    {
+      name: 'Forell',
+      rare:     { temp: 37, time: '20-25min' },
+      medium:   { temp: 40, time: '20-25min' },
+      wellDone: { temp: 46, time: '20-25min' },
+      mcNote: 'MC: 37°C (barely cooked), 40°C (tender, MC-rekommenderat), 46°C (firm), 48°C (flaky).',
+      tips: 'Lika känslig som lax. 40°C ger en enastående, silkeslen textur.',
+      afterCare: 'Servera direkt. Toppa med brynt smör och mandel.'
+    },
+    {
+      name: 'Sej/Kolja',
+      rare:     null,
+      medium:   { temp: 41, time: '20-30min' },
+      wellDone: { temp: 45, time: '20-30min' },
+      mcNote: 'MC: Samma temperaturer som torsk rekommenderas för sej.',
+      tips: 'Vardagsfisk lyfts till restaurangklass. Håll korta tider – fisk översteks snabbt.',
+      afterCare: 'Servera direkt med brynt smör. Ingen extra tillagning behövs.'
+    },
+    {
+      name: 'Piggvar',
+      rare:     null,
+      medium:   { temp: 44, time: '20-30min' },
+      wellDone: { temp: 49, time: '20-30min' },
+      mcNote: 'MC: 44°C (tender), 49°C (firm), 52°C (flaky).',
+      tips: 'En av de finaste plattfiskarna. Sous vide framhäver den delikata texturen.',
+      afterCare: 'Servera direkt med beurre blanc eller brynt smör.'
+    },
+    {
+      name: 'Sjötunga',
+      rare:     null,
+      medium:   { temp: 42, time: '15-20min' },
+      wellDone: { temp: 45, time: '15-20min' },
+      mcNote: 'MC: 42°C (tender), 45°C (firm), 50°C (flaky). Mycket kort tillagning.',
+      tips: 'Tunnaste av plattfiskarna – kräver minimal tid. Översteks på sekunder.',
+      afterCare: 'Servera omedelbart med smörsås. Ingen bryning behövs.'
+    },
+    {
+      name: 'Marulk',
+      rare:     null,
+      medium:   { temp: 45, time: '20-30min' },
+      wellDone: { temp: 48, time: '20-30min' },
+      mcNote: 'MC: 42°C (barely cooked), 45°C (tender), 48°C (firm), 50°C (flaky). Samma som torskkind och kodjkind.',
+      tips: 'Fast, köttigt vitt kött som tål lite mer temperatur än de flesta fiskar.',
+      afterCare: 'Servera med robust sås. Kan brännas med gasbrännare för fin yta.'
+    },
+    {
+      name: 'Hamachi',
+      rare:     { temp: 34, time: '15-20min' },
+      medium:   { temp: 38, time: '15-20min' },
+      wellDone: { temp: 40, time: '15-20min' },
+      mcNote: 'MC: 34°C (barely cooked), 38°C (tender), 40°C (firm), 46°C (flaky). Extremt låga temperaturer.',
+      tips: 'Kräver de lägsta temperaturerna av alla fiskar. Sashimi-kvalitet råvara rekommenderas.',
+      afterCare: 'Servera direkt med ponzu eller soja-vinägrett. Kan brännas lätt med gasbrännare.'
+    },
+    {
+      name: 'Sardin',
+      rare:     { temp: 34, time: '15-20min' },
+      medium:   { temp: 38, time: '15-20min' },
+      wellDone: { temp: 42, time: '15-20min' },
+      mcNote: 'MC: 34°C (barely cooked), 38°C (tender), 42°C (firm), 46°C (flaky).',
+      tips: 'Fet, smakrik fisk. Sous vide ger jämn tillagning utan att torka ut.',
+      afterCare: 'Servera med syra (citron, tomat) för att balansera fetman. Kan grillas snabbt efteråt.'
+    },
+    {
+      name: 'Stör',
+      rare:     null,
+      medium:   { temp: 46, time: '20-30min' },
+      wellDone: { temp: 50, time: '20-30min' },
+      mcNote: 'MC: 46°C (tender), 50°C (firm), 54°C (flaky).',
+      tips: 'Unikt kött – nästan köttlikt i konsistensen. Kan tillagas vid högre temp än de flesta fiskar.',
+      afterCare: 'Servera med klassiska tillbehör som kaviar och crème fraîche.'
+    },
+    {
+      name: 'Snapper',
+      rare:     null,
+      medium:   { temp: 48, time: '20-30min' },
+      wellDone: { temp: 50, time: '20-30min' },
+      mcNote: 'MC: 48°C (tender), 50°C (firm), 52°C (flaky).',
+      tips: 'Vitt, fast kött med mild smak. Populär i medelhavsrätter.',
+      afterCare: 'Servera med olivolja, citron och örter.'
+    },
+    {
+      name: 'Ål',
+      rare:     null,
+      medium:   null,
+      wellDone: { temp: 54, time: '20-30min' },
+      mcNote: 'MC: 54°C (firm), 59°C (flaky). Inget "barely cooked" eller "tender" – ål kräver mer värme.',
+      tips: 'Fet fisk som tål högre temperatur. Vanligtvis tillagas med teriyaki-glasyr.',
+      afterCare: 'Glasera med teriyaki och bränn med gasbrännare eller grilla kort.'
+    },
+    {
+      name: 'Rocka',
+      rare:     null,
+      medium:   { temp: 48, time: '20-30min' },
+      wellDone: { temp: 52, time: '20-30min' },
+      mcNote: 'MC: 48°C (tender), 52°C (firm), 54°C (flaky).',
+      tips: 'Ovanlig men utsökt fisk med gelatinös textur. Sous vide ger perfekt jämn tillagning.',
+      afterCare: 'Servera med kapris och brynt smör (beurre noisette).'
+    },
+    {
+      name: 'Black cod',
+      rare:     { temp: 40, time: '15-20min' },
+      medium:   { temp: 45, time: '15-20min' },
+      wellDone: { temp: 48, time: '15-20min' },
+      mcNote: 'MC Vol 3: 40°C (barely cooked), 45°C (tender), 48°C (firm), 52°C (flaky). Black cod / sablefish.',
+      tips: 'Extremt fet fisk med silkeslen textur – klassisk i japansk och nordamerikansk finmatlagning. Misoglasyr är en klassiker.',
+      afterCare: 'Glasera med miso-sake-mirin och bränn med gasbrännare. Skinnsidan kan brännas för krispig finish.'
+    },
+    {
+      name: 'Kummel',
+      rare:     null,
+      medium:   { temp: 44, time: '15-20min' },
+      wellDone: { temp: 50, time: '15-20min' },
+      mcNote: 'MC Vol 3: 44°C (tender), 50°C (firm), 54°C (flaky). Hake.',
+      tips: 'Vanlig i spansk och portugisisk matlagning. Delikat, vitt kött som lätt faller isär – sous vide ger kontroll.',
+      afterCare: 'Servera med salsa verde eller brynt smör. Undvik stark bryning – köttet är ömtåligt.'
+    },
+    {
+      name: 'Sankt Pers fisk',
+      rare:     null,
+      medium:   { temp: 45, time: '15-20min' },
+      wellDone: { temp: 48, time: '15-20min' },
+      mcNote: 'MC Vol 3: 45°C (tender), 48°C (firm), 50°C (flaky). John Dory.',
+      tips: 'Mycket mager, vit fisk med fin struktur. Sous vide ger perfekt kontroll över den känsliga texturen.',
+      afterCare: 'Servera med lätt smörsås. Minimal bryning – köttet är ömtåligt och delikat.'
+    },
   ],
   'Skaldjur': [
-    { name: 'Räkor (stora)', rare: null, medium: null, wellDone: { temp: 60, time: '15-20min' }, maxTime: '30min', tips: 'Rosa och snärtiga. Översteks lätt!', afterCare: 'Servera direkt – räkor är klara som de är. Kan kylas för räkcocktail.' },
-    { name: 'Hummer', rare: null, medium: { temp: 60, time: '30-45min' }, wellDone: { temp: 63, time: '30-45min' }, maxTime: '1h', tips: 'Smörmjukt hummerkött. Fantastiskt!', afterCare: 'Servera direkt med smält smör. Kan gratineras kort om önskat.' },
-    { name: 'Pilgrimsmusslor', rare: null, medium: { temp: 52, time: '20-30min' }, wellDone: { temp: 58, time: '25-35min' }, maxTime: '45min', tips: 'Bryn snabbt efteråt för yta.', afterCare: 'Bryn snabbt (15-20 sek per sida) på hög värme för karamelliserad yta.' },
-    { name: 'Bläckfisk', rare: null, medium: null, wellDone: { temp: 77, time: '4-6h' }, maxTime: '8h', tips: 'Mjuk som smör efter lång tid. Revolutionerande!', afterCare: 'Kan serveras direkt eller grillas snabbt för smoky smak. Skär i skivor.' },
+    {
+      name: 'Hummer',
+      rare:     { temp: 46, time: 'till kärna' },
+      medium:   { temp: 54, time: 'till kärna' },
+      wellDone: { temp: 59, time: 'till kärna' },
+      mcNote: 'MC: 46°C (barely cooked), 54°C (tender), 59°C (firm). Gäller skalade hummersvansarna.',
+      tips: '54°C ger smörmjukt hummerkött – dramatiskt annorlunda mot kokt hummer. Vakuumförsegla med smör.',
+      afterCare: 'Servera direkt med smält smör och citron. Kan flamberas kort med gasbrännare.'
+    },
+    {
+      name: 'Räkor (stora)',
+      rare:     { temp: 48, time: 'till kärna' },
+      medium:   { temp: 54, time: 'till kärna' },
+      wellDone: { temp: 60, time: '7min' },
+      mcNote: 'MC Vol 3: 48°C/till kärna (barely cooked), 54°C/till kärna (tender), 60°C/7min (fast). Prawns/shrimp, peeled.',
+      tips: '48°C ger nästan rå, söt textur – kräver sashimikvalitet. 54°C ger perfekt snärtig räka. 60°C ger klassisk fasthet.',
+      afterCare: 'Servera direkt. Kan brännas 10 sek per sida med gasbrännare. Toppa med färska örter och citron.'
+    },
+    {
+      name: 'Bläckfisk',
+      rare:     { temp: 50, time: '10min' },
+      medium:   null,
+      wellDone: { temp: 65, time: '4-5h' },
+      mcNote: 'MC: 50°C/10 min (barely cooked strimlor), 65°C/4-5h för hel bläckfisk (mör). Gäller även sepiaräka.',
+      tips: 'Strimlad bläckfisk: kort och snabb. Hel bläckfisk: lång och långsam. Ingen mellanväg.',
+      afterCare: 'Servera direkt eller grilla kort för smoky smak. Ringla olivolja och citron.'
+    },
+    {
+      name: 'Åttafoting',
+      rare:     null,
+      medium:   null,
+      wellDone: { temp: 85, time: '4-5h' },
+      mcNote: 'MC: 80°C/3h (firm), 85°C/4h (tender). Frys och tina innan för ökad mörhet.',
+      tips: 'Frys och tina åttafotingen innan sous vide – det mjukar upp muskelfibrerna.',
+      afterCare: 'Grilla eller bränn med gasbrännare för fin karamellisering. Servera med olivolja och citron.'
+    },
+    {
+      name: 'Pilgrimsmusslor',
+      rare:     { temp: 42, time: 'till kärna' },
+      medium:   { temp: 50, time: 'till kärna' },
+      wellDone: { temp: 54, time: 'till kärna' },
+      mcNote: 'MC: 42°C (barely cooked), 50°C (tender, MC-rekommenderat), 54°C (firm). Tillagning till kärntemperatur.',
+      tips: '50°C ger halvtransparent, smörig textur. Torka ytan noga inför bryning.',
+      afterCare: 'Torka noga och bryn snabbt (15-20 sek per sida) på maxvärme för gyllene karamellisering.'
+    },
+    {
+      name: 'Musslor',
+      rare:     { temp: 62, time: '10min' },
+      medium:   { temp: 65, time: '10min' },
+      wellDone: null,
+      mcNote: 'MC: Blanchera i skalet i kokande vatten 2 min, skala, vakuumförsegla i musslans egen saft. 62°C/10min (barely cooked), 65°C/10min (tender).',
+      tips: 'Blanchera skalen i kokande vatten 2 min, skala och koka färdigt i musslans saft.',
+      afterCare: 'Servera direkt med vitt vin, persilja och bröd.'
+    },
+    {
+      name: 'Ostron',
+      rare:     { temp: 45, time: '10min' },
+      medium:   { temp: 48, time: '10min' },
+      wellDone: { temp: 52, time: '7min' },
+      mcNote: 'MC: 45°C (barely cooked), 48°C (tender), 52°C (firm). Tillagas skurna i sin egen saft.',
+      tips: 'Sous vide-ostron är ett alternativ till rå – perfekt tempererad, inte tillagad.',
+      afterCare: 'Servera direkt i skalet med mignonette-sås eller citron.'
+    },
+    {
+      name: 'Langustin',
+      rare:     { temp: 48, time: '15min' },
+      medium:   { temp: 56, time: '12min' },
+      wellDone: { temp: 70, time: '6min' },
+      mcNote: 'MC: 48°C (barely cooked), 56°C (tender), 70°C (firm). Bränn snabbt efteråt.',
+      tips: 'Delikat skaldjur – kort tid och precision är nyckeln.',
+      afterCare: 'Bränn snabbt med gasbrännare eller grilla 30 sek per sida. Servera med smör.'
+    },
   ],
   'Ägg': [
-    { name: 'Onsen-ägg (63°C ägg)', rare: null, medium: { temp: 63, time: '45-60min' }, wellDone: null, maxTime: '2h', tips: 'Krämig gula, just-set vita. Ikoniskt!', afterCare: 'Knäck försiktigt i skål. Servera på toast, ramen, sallad eller rice bowl.' },
-    { name: 'Pocherat ägg-textur', rare: null, medium: { temp: 65, time: '45min' }, wellDone: null, maxTime: '1.5h', tips: 'Fastare vita, fortfarande flytande gula.', afterCare: 'Knäck försiktigt ur skalet. Perfekt för Eggs Benedict eller sallader.' },
-    { name: 'Hårdkokt textur', rare: null, medium: null, wellDone: { temp: 75, time: '1h' }, maxTime: '2h', tips: 'Perfekt hårdkokt utan grön ring.', afterCare: 'Kyl i isbad för enklare skalning. Perfekt för ägghalvor eller äggröra.' },
+    {
+      name: 'Onsen-ägg (63°C)',
+      rare:     null,
+      medium:   { temp: 63, time: '45-75min' },
+      wellDone: null,
+      mcNote: 'MC: 63°C/45-60 min ger krämig gula och just-set vita – den japanska onsen-äggets textur.',
+      tips: 'Ikonisk textur. Vitan är precis satt, gulan flytande och krämig.',
+      afterCare: 'Knäck försiktigt i skål. Servera på toast, ramen, sallad eller rice bowl.'
+    },
+    {
+      name: 'Pocherat ägg-textur',
+      rare:     null,
+      medium:   { temp: 65, time: '45min' },
+      wellDone: null,
+      mcNote: 'MC: 65°C ger fastare vita men fortfarande rinnande gula – perfekt för Eggs Benedict.',
+      tips: 'Fastare vita, fortfarande flytande gula. Lätt att servera från skalet.',
+      afterCare: 'Knäck försiktigt ur skalet. Perfekt för Eggs Benedict eller varma sallader.'
+    },
+    {
+      name: 'Hårdkokt textur',
+      rare:     null,
+      medium:   null,
+      wellDone: { temp: 75, time: '1h' },
+      mcNote: 'MC: 75°C/1h ger perfekt hårdkokt utan grön ring och utan gummitextur.',
+      tips: 'Perfekt hårdkokt utan den gröna ringen och med slätare textur än kokt ägg.',
+      afterCare: 'Kyl omedelbart i isbad för enklare skalning. Perfekt för ägghalvor, sallad och äggröra.'
+    },
   ],
 };
 
-// Sous vide säkerhetsinformation (baserat på Modernist Cuisine)
+// Sous vide säkerhetsinformation – källa: Modernist Cuisine Vol 1, kap 2-3
 const sousVideSafety = {
   title: 'Livsmedelssäkerhet vid Sous Vide',
   zones: [
-    { range: '4-54°C', name: 'Farozonen', description: 'Bakterier växer snabbt. Max 2 timmar totalt.' },
-    { range: '54-60°C', name: 'Pastöriseringszon', description: 'Bakterier dör över tid. Säkert efter 1-4h beroende på tjocklek.' },
-    { range: '60°C+', name: 'Säker zon', description: 'Bakterier dör snabbt. Traditionellt "säker" temperatur.' },
+    { range: '4–52°C', name: 'Farozonen', description: 'Bakterier förökar sig aktivt. Max 4 timmar totalt i detta intervall (inkl. uppvärmningstid).' },
+    { range: '52–60°C', name: 'Pastöriseringszon', description: 'Bakterier dör över tid. Säkert vid rätt kombination av temperatur och tid – se pastöriseringstabellen.' },
+    { range: '60°C+', name: 'Snabb pastörisering', description: 'Bakterier dör på minuter. Traditionellt "säker" temperatur, men torkar ut mager fisk och fjäderfä.' },
   ],
   rules: [
-    'Mat ska från kylskåp till vattenbad på under 1 timme',
-    'Kyl snabbt i isbad om du inte serverar direkt',
-    'Sous vide-mat innehåller sovande sporer - ät inom 2h eller kyl till <4°C',
-    'Frys inte sous vide-mat som redan legat i kylskåp',
-    'Återvärm till samma temperatur, inte högre',
+    'Mat ska från kylskåp till vattenbad på under 30 minuter',
+    'Kyl snabbt i isbad (halvt is, halvt vatten) om du inte serverar direkt',
+    'Clostridium-sporer överlever sous vide – ät inom 2h eller kyl till under 3°C inom 90 min',
+    'Frys inte sous vide-mat som legat i kylskåp mer än 3 dagar',
+    'Återvärm alltid till ursprunglig tillagningstemperatur, inte högre',
+    'Fisk under 55°C är ej pastöriserad – använd sushi-kvalitet eller fryst fisk',
   ],
-  sporeWarning: 'Clostridium-sporer överlever sous vide. Kyl alltid snabbt efter tillagning om maten inte äts direkt.'
+  sporeWarning: 'Clostridium botulinum-sporer överlever sous vide. Kyl alltid snabbt i isbad efter tillagning om maten inte äts direkt. Cook-chill sous vide: max 30 dagar vid 1°C eller 3 dagar vid 5°C (MC Vol 2).'
 };
 
 // ========================================
@@ -4274,8 +4892,8 @@ export default function App() {
             )}
           </div>
 
-          {/* Thickness selector - dölj för ägg och skaldjur */}
-          {sousVideCategory !== 'Ägg' && sousVideCategory !== 'Skaldjur' && (() => {
+          {/* Thickness selector - dölj för ägg, skaldjur och tenderizing-styckdelar */}
+          {sousVideCategory !== 'Ägg' && sousVideCategory !== 'Skaldjur' && !sousVideThickness.tenderizing[item.name] && (() => {
             const max = sousVideMaxThickness[sousVideCategory] || 6;
             const mid = Math.round(max / 2);
 
@@ -4284,7 +4902,7 @@ export default function App() {
               <label className="thickness-label">Tjocklek: <strong>{sousVideThicknessValue} cm</strong></label>
               <input
                 type="range"
-                min="1"
+                min="0.5"
                 max={max}
                 step="0.5"
                 value={sousVideThicknessValue}
@@ -4292,7 +4910,7 @@ export default function App() {
                 className="thickness-slider"
               />
               <div className="thickness-marks">
-                <span>1 cm</span>
+                <span>0.5 cm</span>
                 <span>{mid} cm</span>
                 <span>{max} cm</span>
               </div>
@@ -4309,9 +4927,9 @@ export default function App() {
                   <span className="temp-value">{setting.temp}°C</span>
                 </div>
                 <div className={`temp-card ${doneness === 'rare' ? 'rare' : doneness === 'medium' ? 'medium' : 'welldone'}`}>
-                  <span className="temp-label">{(sousVideCategory === 'Ägg' || sousVideCategory === 'Skaldjur') ? 'Tid' : 'Beräknad tid'}</span>
+                  <span className="temp-label">{(sousVideCategory === 'Ägg' || sousVideCategory === 'Skaldjur' || sousVideThickness.tenderizing[item.name]) ? 'Tid' : 'Beräknad tid'}</span>
                   <span className="temp-value">
-                    {(sousVideCategory === 'Ägg' || sousVideCategory === 'Skaldjur')
+                    {(sousVideCategory === 'Ägg' || sousVideCategory === 'Skaldjur' || sousVideThickness.tenderizing[item.name])
                       ? setting.time
                       : calculateSousVideTime(item, doneness, sousVideThicknessValue)}
                   </span>
@@ -4319,38 +4937,23 @@ export default function App() {
               </div>
 
               {sousVideCategory !== 'Ägg' && sousVideCategory !== 'Skaldjur' && (
-                <p className="thickness-note">
-                  Tid beräknad för {sousVideThicknessValue} cm tjocklek från kylskåpstemperatur.
-                  Inkluderar uppvärmningstid + pastöriseringsmarginal.
-                </p>
+                <div className="mc-thickness-note">
+                  {sousVideThickness.tenderizing[item.name] ? (
+                    <p className="thickness-note">
+                      Tenderiseringstid – koktiden styrs av kollagen, inte tjocklek.
+                    </p>
+                  ) : (
+                    <p className="thickness-note">
+                      Tid för {sousVideThicknessValue} cm tjock skiva från kylskåp (~5°C).
+                      Inkluderar uppvärmningstid + pastöriseringstid.
+                    </p>
+                  )}
+                  <p className="thickness-note mc-tip">
+                    Sätt vattenbadet på <strong>{setting.temp + 1}°C</strong> – ger {setting.temp}°C i kärnan.
+                  </p>
+                </div>
               )}
 
-              {/* Visa maxTime endast om den är längre än beräknad tid */}
-              {(() => {
-                const parseTimeToMinutes = (timeStr) => {
-                  if (!timeStr) return 0;
-                  const hours = timeStr.match(/(\d+)h/);
-                  const mins = timeStr.match(/(\d+)\s*min/);
-                  return (hours ? parseInt(hours[1]) * 60 : 0) + (mins ? parseInt(mins[1]) : 0);
-                };
-                const calculatedTime = (sousVideCategory === 'Ägg' || sousVideCategory === 'Skaldjur')
-                  ? setting.time
-                  : calculateSousVideTime(item, doneness, sousVideThicknessValue);
-                const calcMinutes = parseTimeToMinutes(calculatedTime);
-                const maxMinutes = parseTimeToMinutes(item.maxTime);
-
-                // Visa bara om maxTime är längre än beräknad tid
-                if (maxMinutes > calcMinutes) {
-                  return (
-                    <div className="info-box">
-                      <h3>Max tid i vattenbad</h3>
-                      <p>{item.maxTime}</p>
-                      <p className="rest-time-note">Efter denna tid kan texturen försämras.</p>
-                    </div>
-                  );
-                }
-                return null;
-              })()}
 
               <div className="info-box">
                 <h3>Tips</h3>
@@ -9830,12 +10433,24 @@ export default function App() {
           margin-top: 0.25rem;
         }
 
+        .mc-thickness-note {
+          margin: 0.5rem 0 1rem;
+        }
         .thickness-note {
           font-size: 0.8rem;
           color: var(--color-text-secondary);
           text-align: center;
-          margin: 0.5rem 0 1rem;
+          margin: 0.25rem 0;
           font-style: italic;
+        }
+        .thickness-note.mc-tip {
+          color: var(--color-primary-dark);
+          font-style: normal;
+          font-weight: 500;
+          background: var(--color-bg-elevated);
+          border-radius: 6px;
+          padding: 0.4rem 0.6rem;
+          margin-top: 0.4rem;
         }
 
         .sousvide-quick-info {
