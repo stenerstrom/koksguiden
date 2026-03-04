@@ -249,15 +249,6 @@ const sousVideData = {
       tips: 'Kalvbröst liknar nötbringa – behöver tid för att kollagen ska gelatiniseras. 62°C i 5h ger saftig, sliceable textur.',
       afterCare: 'Vila i påsen 15–20 min. Skiv mot fibrerna. Reducera vätskan från påsen till sås.'
     },
-    {
-      name: 'Hjortfilé',
-      rare:     { temp: 50, time: '45min-1h' },
-      medium:   { temp: 53, time: '1h' },
-      wellDone: { temp: 58, time: '1-2h' },
-      mcNote: 'MC: 50°C (rare). Hög enzymatisk aktivitet – badtemperatur bör vara högre än kärntemp för att undvika mosig textur.',
-      tips: 'Använd badtemp på 55-58°C och ta upp vid kärntemp 50-53°C. Undvik för lång tid.',
-      afterCare: 'Bryn snabbt och vila kort. Servera rosa – vällagat hjort blir torrt och grått.'
-    },
   ],
   'Fläsk': [
     {
@@ -435,6 +426,15 @@ const sousVideData = {
     },
   ],
   'Kanin & Vilt': [
+    {
+      name: 'Hjortfilé',
+      rare:     { temp: 50, time: '45min-1h' },
+      medium:   { temp: 53, time: '1h' },
+      wellDone: { temp: 58, time: '1-2h' },
+      mcNote: 'MC: 50°C (rare). Hög enzymatisk aktivitet – badtemperatur bör vara högre än kärntemp för att undvika mosig textur.',
+      tips: 'Använd badtemp på 55-58°C och ta upp vid kärntemp 50-53°C. Undvik för lång tid.',
+      afterCare: 'Bryn snabbt och vila kort. Servera rosa – vällagat hjort blir torrt och grått.'
+    },
     {
       name: 'Kaninfilé',
       rare:     null,
