@@ -1142,7 +1142,7 @@ const eggGuideData = {
 const riceGuideData = {
   longGrain: {
     title: 'Långkornigt vitt ris',
-    description: 'Inkluderar Basmati, Jasmine, Carolina Gold. Kornen förblir separata, fasta och fluffiga.',
+    description: 'Inkluderar Basmati, Jasmine, Carolina Gold, konverterat ris. Kornen förblir separata, fasta och fluffiga.',
     methods: [
       { name: 'Spis', rice: '1 del', liquid: '1,5 delar', time: '15 min', yield: '3 delar' },
       { name: 'Riskokare', rice: '1 del', liquid: '1,25 delar', time: 'Enl. manual', yield: '3 delar' },
@@ -1160,7 +1160,9 @@ const riceGuideData = {
       'Basmati blir ännu fluffigare om du blötlägger 30 min före kokning',
       'Jasmine har naturlig söt doft - skölj inte för mycket',
       'Carolina Gold är en heirloom-sort med nötig smak',
-      'Kombiugn: Använd GN-form, 100% ånga, täck med lock eller folie'
+      'Kombiugn: Använd GN-form, 100% ånga, täck med lock eller folie',
+      'Ugn: koktiden varierar efter form – rostfritt stål värms snabbare än glas eller keramik',
+      'Salta aldrig under kokning – tillsätt salt när du flufffar riset'
     ]
   },
   shortGrain: {
@@ -1182,7 +1184,9 @@ const riceGuideData = {
     tips: [
       'Arborio och Carnaroli: skölj inte för risotto - du vill ha stärkelsen',
       'Sushi-ris: vänd med sushivinäger medan varmt, fläkta för glans',
-      'Calrose är perfekt för poke bowls och vardagsris'
+      'Calrose är perfekt för poke bowls och vardagsris',
+      'Ugn: koktiden varierar efter form – rostfritt stål värms snabbare än glas eller keramik',
+      'Salta aldrig under kokning – tillsätt salt när du flufffar riset'
     ]
   },
   brown: {
@@ -1205,7 +1209,9 @@ const riceGuideData = {
       'Tar längre tid än vitt ris pga kli',
       'Håller 6-8 månader (kortare än vitt ris pga oljor)',
       'Finns i alla varianter: basmati brun, jasmine brun, etc.',
-      'Kombiugn: Kan behöva 5-10 min extra jämfört med vitt ris'
+      'Kombiugn: Kan behöva 5-10 min extra jämfört med vitt ris',
+      'Ugn: koktiden varierar efter form – rostfritt stål värms snabbare än glas eller keramik',
+      'Salta aldrig under kokning – tillsätt salt när du flufffar riset'
     ]
   },
   black: {
@@ -1227,7 +1233,9 @@ const riceGuideData = {
     tips: [
       'Färgar av sig - använd separat kastrull/GN-form',
       'Perfekt till sallader och Buddha bowls',
-      'Var historiskt reserverat för kinesiska kejsare'
+      'Var historiskt reserverat för kinesiska kejsare',
+      'Ugn: koktiden varierar efter form – rostfritt stål värms snabbare än glas eller keramik',
+      'Salta aldrig under kokning – tillsätt salt när du flufffar riset'
     ]
   },
   sticky: {
@@ -1251,7 +1259,8 @@ const riceGuideData = {
       'Längre blötläggning = kortare ångtid',
       'Servera direkt - torkar ut snabbt',
       'Perfekt med mango och kokosmjölk som dessert',
-      'Laos äter mer klibbigt ris per capita än något annat land'
+      'Laos äter mer klibbigt ris per capita än något annat land',
+      'Salta aldrig under kokning – tillsätt salt när du flufffar riset'
     ]
   },
   troubleshooting: {
