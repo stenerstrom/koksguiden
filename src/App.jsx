@@ -5512,42 +5512,6 @@ export default function App() {
               </div>
             )}
 
-            {/* FELSÖKNING - samma som innan */}
-            {riceGuideTab === 'troubleshooting' && (
-              <div className="egg-section">
-                <h2>{riceGuideData.longGrain.title}</h2>
-                <p className="section-description">{riceGuideData.longGrain.description}</p>
-                <div className="egg-time-cards">
-                  {riceGuideData.longGrain.methods.map((method, idx) => (
-                    <div key={idx} className="egg-time-card">
-                      <div className="egg-time-header">
-                        <span className="egg-time-name">{method.name}</span>
-                        <span className="egg-time-value">{method.time}</span>
-                      </div>
-                      <p className="egg-time-desc">Ris: {method.rice} | Vätska: {method.liquid}</p>
-                      <span className="egg-time-temp">Ger: {method.yield}</span>
-                    </div>
-                  ))}
-                </div>
-                <div className="steps-list-guide">
-                  <h3>Steg för steg</h3>
-                  <ol>
-                    {riceGuideData.longGrain.steps.map((step, idx) => (
-                      <li key={idx}>{step}</li>
-                    ))}
-                  </ol>
-                </div>
-                <div className="egg-tips-section">
-                  <h3>Tips</h3>
-                  <ul>
-                    {riceGuideData.longGrain.tips.map((tip, idx) => (
-                      <li key={idx}>{tip}</li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            )}
-
             {/* Felsökning */}
             {riceGuideTab === 'troubleshooting' && (
               <div className="egg-section">
