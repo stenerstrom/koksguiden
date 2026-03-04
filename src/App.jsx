@@ -1472,11 +1472,11 @@ const fermentationData = {
         {
           name: 'Kimchi',
           time: '1-2 veckor',
-          salt: '2.5%',
+          salt: '3-5%',
           description: 'Koreansk fermenterad kål med chili och vitlök.',
           ingredients: [
             '1 kg salladskål (kinakål)',
-            '50 g salt',
+            '35 g salt (3,5% för försaltning)',
             '3 msk gochugaru (koreansk chiliflingor)',
             '4 vitlöksklyftor, rivna',
             '2 tsk riven ingefära',
@@ -1485,15 +1485,16 @@ const fermentationData = {
             '4 salladslökar, skivade'
           ],
           steps: [
-            'Dela kålen i bitar, strö över salt och låt vila 2 timmar',
+            'Dela kålen i bitar, strö över salt och massera in ordentligt',
+            'Låt kålen försaltas i 3-6 timmar tills den mjuknat och vätska bildats',
+            'Skölj kålen i kallt vatten 2-3 gånger, krama ur vätskan väl',
             'Blanda kimchipasta: gochugaru, vitlök, ingefära, fisksås, socker',
-            'Skölj kålen lätt, krama ur vätskan',
             'Blanda kål, salladslök och pasta',
             'Packa i burk, pressa ner ordentligt',
             'Fermentera 2-5 dagar vid rumstemperatur',
             'Flytta till kylskåp när önskad surhet nåtts'
           ],
-          tips: ['Använd handskar - chili färgar!', 'Traditionellt används räkpasta för extra umami']
+          tips: ['Använd handskar - chili färgar!', 'Traditionellt används räkpasta för extra umami', 'Försaltningen är avgörande – den drar ut vatten och ger kimchin sin krispiga textur']
         },
         {
           name: 'Lacto-tomater',
@@ -1555,7 +1556,7 @@ const fermentationData = {
           description: 'Fermenterat te med sötsyrlig smak och naturlig kolsyra.',
           ingredients: [
             '1 liter vatten',
-            '80 g socker',
+            '100 g socker (ca 10% av vätskan)',
             '2 tsk svart eller grönt te (löst eller påsar)',
             '1 st SCOBY (tesvamp, ca 10 cm diameter)',
             '100 ml starterkombucha (från tidigare batch)'
@@ -1593,7 +1594,7 @@ const fermentationData = {
         },
         {
           name: 'Tepache',
-          time: '3-5 dagar',
+          time: '1-3 dagar',
           temp: '20-25°C',
           description: 'Mexikansk fermenterad ananasdryck.',
           ingredients: [
@@ -1605,11 +1606,12 @@ const fermentationData = {
           steps: [
             'Lägg ananasskalen i en stor burk',
             'Tillsätt socker, kanel och vatten',
-            'Täck med tyg, fermentera vid rumstemperatur (20-25°C) i 3-5 dagar',
+            'Täck med tyg, fermentera vid rumstemperatur (20-25°C) i 1-3 dagar',
+            'Smaka dagligen – efter 1-2 dagar är den söt och lätt jäst, efter 3 dagar mer syrlig',
             'Sila och servera kallt',
             'Smaksätt ev. med chili och lime'
           ],
-          tips: ['Ska smaka sött-syrligt med hint av jäst', 'Perfekt sätt att använda ananasskalet']
+          tips: ['Ska smaka sött-syrligt med hint av jäst', 'Perfekt sätt att använda ananasskalet', 'Drick inom 1-2 dagar efter silning – fortsätter fermentera i flaskan']
         }
       ]
     },
@@ -1625,7 +1627,7 @@ const fermentationData = {
         {
           name: 'Yoghurt',
           time: '6-12 timmar',
-          temp: '42-44°C',
+          temp: '43-46°C',
           description: 'Krämig, mild yoghurt med levande kulturer.',
           ingredients: [
             '1 liter mjölk (hel eller mellan)',
@@ -1633,7 +1635,7 @@ const fermentationData = {
           ],
           steps: [
             'Värm mjölken till 82°C (dödar konkurrerande bakterier)',
-            'Kyl ner till 42-44°C',
+            'Kyl ner till 43-46°C',
             'Rör i yoghurten',
             'Häll i termos eller burk insvept i handduk',
             'Håll varmt i 6-12 timmar',
