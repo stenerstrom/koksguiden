@@ -4104,6 +4104,284 @@ export default function App() {
 
   // === RENDER FUNCTIONS ===
 
+  const renderRice = () => (
+    <div className="egg-guide-wrapper">
+      <button className="back-btn" aria-label="Gå tillbaka" onClick={() => setActiveView('home')}>← Tillbaka</button>
+      <div className="egg-guide-content">
+        <div className="rice-tab-row">
+          <button className={riceGuideTab === 'calculator' ? 'active' : ''} onClick={() => setRiceGuideTab('calculator')}>Kalkylator</button>
+          <button className={riceGuideTab === 'info' ? 'active' : ''} onClick={() => setRiceGuideTab('info')}>Ristyper</button>
+          <button className={riceGuideTab === 'troubleshooting' ? 'active' : ''} onClick={() => setRiceGuideTab('troubleshooting')}>Felsökning</button>
+        </div>
+
+        {/* KALKYLATOR */}
+        {riceGuideTab === 'calculator' && (
+          <div className="egg-section">
+            <h2>Riskalkylator</h2>
+            <p className="section-description">Ange mängd ris och få exakt vattenmängd och koktid</p>
+
+            <div className="rice-calculator">
+              <div className="rice-calc-row">
+                <label>Mängd ris:</label>
+                <div className="rice-calc-input-group">
+                  <input
+                    type="number"
+                    min="0.5"
+                    step="0.5"
+                    value={riceAmount}
+                    onChange={(e) => setRiceAmount(parseFloat(e.target.value) || 0)}
+                    className="rice-calc-input"
+                  />
+                  <select value={riceUnit} onChange={(e) => setRiceUnit(e.target.value)} className="rice-calc-select">
+                    <option value="dl">dl</option>
+                    <option value="cups">koppar</option>
+                    <option value="g">gram</option>
+                    <option value="kg">kg</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="rice-calc-row">
+                <label>Ristyp:</label>
+                <select value={riceType} onChange={(e) => setRiceType(e.target.value)} className="rice-calc-select-full">
+                  <option value="longGrain">Långkornigt (Basmati, Jasmine)</option>
+                  <option value="shortGrain">Kort-/mellankornigt (Arborio, Sushi)</option>
+                  <option value="brown">Brunt ris</option>
+                  <option value="black">Svart ris (Forbidden)</option>
+                  <option value="sticky">Klibbigt ris</option>
+                </select>
+              </div>
+
+              <div className="rice-calc-row">
+                <label>Metod:</label>
+                <select value={cookingMethod} onChange={(e) => setCookingMethod(e.target.value)} className="rice-calc-select-full">
+                  <option value="stovetop">Spis</option>
+                  <option value="riceCooker">Riskokare</option>
+                  <option value="oven">Ugn (220°C)</option>
+                  <option value="combi">Kombiugn/Rational (100°C ånga)</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Resultat */}
+            <div className="rice-result-card">
+              <h3>Resultat</h3>
+              {(() => {
+                let cupsOfRice = riceAmount;
+                if (riceUnit === 'dl') cupsOfRice = riceAmount / 2.36;
+                if (riceUnit === 'g') cupsOfRice = riceAmount / 185;
+                if (riceUnit === 'kg') cupsOfRice = (riceAmount * 1000) / 185;
+
+                const ratios = {
+                  longGrain: { stovetop: 1.5, riceCooker: 1.25, oven: 1.5, combi: 1.5 },
+                  shortGrain: { stovetop: 1.75, riceCooker: 1.5, oven: 1.75, combi: 1.75 },
+                  brown: { stovetop: 1.75, riceCooker: 1.5, oven: 1.75, combi: 1.75 },
+                  black: { stovetop: 1.75, riceCooker: 1.5, oven: 1.5, combi: 1.75 },
+                  sticky: { stovetop: 0, riceCooker: 0, oven: 0, combi: 0 }
+                };
+                const times = {
+                  longGrain: { stovetop: '15 min', riceCooker: 'Enl. manual', oven: '20-30 min', combi: '20-25 min' },
+                  shortGrain: { stovetop: '30-35 min', riceCooker: 'Enl. manual', oven: '35-40 min', combi: '25-30 min' },
+                  brown: { stovetop: '30-35 min', riceCooker: 'Enl. manual', oven: '45 min', combi: '35-40 min' },
+                  black: { stovetop: '25-30 min', riceCooker: 'Enl. manual', oven: '30-35 min', combi: '30-35 min' },
+                  sticky: { stovetop: 'Ångas 30-40 min', riceCooker: 'Ångas 25 min', oven: '-', combi: '20-25 min (100% ånga)' }
+                };
+
+                const ratio = ratios[riceType]?.[cookingMethod] || 1.5;
+                const time = times[riceType]?.[cookingMethod] || '15 min';
+                const waterCups = cupsOfRice * ratio;
+
+                let waterDisplay, riceDisplay, yieldDisplay;
+                if (riceUnit === 'dl') {
+                  waterDisplay = `${(waterCups * 2.36).toFixed(1)} dl`;
+                  riceDisplay = `${riceAmount} dl`;
+                  yieldDisplay = `${(cupsOfRice * 3 * 2.36).toFixed(1)} dl`;
+                } else if (riceUnit === 'cups') {
+                  waterDisplay = `${waterCups.toFixed(1)} koppar`;
+                  riceDisplay = `${riceAmount} koppar`;
+                  yieldDisplay = `${(cupsOfRice * 3).toFixed(1)} koppar`;
+                } else if (riceUnit === 'g') {
+                  waterDisplay = `${Math.round(waterCups * 237)} ml`;
+                  riceDisplay = `${riceAmount} g`;
+                  yieldDisplay = `ca ${Math.round(riceAmount * 2.7)} g`;
+                } else if (riceUnit === 'kg') {
+                  waterDisplay = `${(waterCups * 0.237).toFixed(2)} liter`;
+                  riceDisplay = `${riceAmount} kg`;
+                  yieldDisplay = `ca ${(riceAmount * 2.7).toFixed(1)} kg`;
+                }
+
+                if (riceType === 'sticky') {
+                  return (
+                    <div className="rice-result-content">
+                      <div className="rice-result-item special">
+                        <span className="rice-result-label">OBS: Klibbigt ris</span>
+                        <span className="rice-result-value">Ska blötläggas och ångas!</span>
+                      </div>
+                      <div className="rice-result-item">
+                        <span className="rice-result-label">1. Blötlägg</span>
+                        <span className="rice-result-value">Minst 4 timmar i rikligt vatten</span>
+                      </div>
+                      <div className="rice-result-item">
+                        <span className="rice-result-label">2. Dränera</span>
+                        <span className="rice-result-value">Häll av allt vatten</span>
+                      </div>
+                      <div className="rice-result-item">
+                        <span className="rice-result-label">3. Ångkoka</span>
+                        <span className="rice-result-value">30-40 min i ostkläde</span>
+                      </div>
+                    </div>
+                  );
+                }
+
+                return (
+                  <div className="rice-result-content">
+                    <div className="rice-result-item">
+                      <span className="rice-result-label">Ris</span>
+                      <span className="rice-result-value">{riceDisplay}</span>
+                    </div>
+                    <div className="rice-result-item highlight">
+                      <span className="rice-result-label">Vatten/vätska</span>
+                      <span className="rice-result-value">{waterDisplay}</span>
+                    </div>
+                    <div className="rice-result-item">
+                      <span className="rice-result-label">Koktid</span>
+                      <span className="rice-result-value">{time}</span>
+                    </div>
+                    <div className="rice-result-item">
+                      <span className="rice-result-label">Ger ca</span>
+                      <span className="rice-result-value">{yieldDisplay} kokt ris</span>
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+
+            <div className="egg-tips-section">
+              <h3>Snabbtips</h3>
+              <ul>
+                <li>Skölj alltid riset tills vattnet rinner klart (utom risotto)</li>
+                <li>Använd tätslutande lock och rör aldrig om under kokning</li>
+                <li>Låt riset vila 5 min efter kokning innan du fluffar</li>
+                <li>1 kopp okokt ris = ca 3 koppar kokt ris</li>
+                <li><strong>Kombiugn:</strong> 100°C, 100% ånga, GN-form med lock/folie. Lägg till lite olja för att undvika klump.</li>
+              </ul>
+            </div>
+          </div>
+        )}
+
+        {/* RISTYPER INFO */}
+        {riceGuideTab === 'info' && (
+          <div className="egg-section">
+            <h2>Ristyper - Guide</h2>
+            <p className="section-description">Välj ristyp för detaljer</p>
+
+            <select
+              value={riceType}
+              onChange={(e) => setRiceType(e.target.value)}
+              className="rice-calc-select-full"
+              style={{marginBottom: '1rem'}}
+            >
+              <option value="longGrain">Långkornigt vitt ris</option>
+              <option value="shortGrain">Kort-/mellankornigt ris</option>
+              <option value="brown">Brunt ris</option>
+              <option value="black">Svart ris</option>
+              <option value="sticky">Klibbigt ris</option>
+            </select>
+
+            {riceType !== 'sticky' && riceGuideData[riceType] && (
+              <>
+                <h3>{riceGuideData[riceType].title}</h3>
+                <p className="section-description">{riceGuideData[riceType].description}</p>
+                <div className="egg-time-cards">
+                  {riceGuideData[riceType].methods.map((method, idx) => (
+                    <div key={idx} className="egg-time-card">
+                      <div className="egg-time-header">
+                        <span className="egg-time-name">{method.name}</span>
+                        <span className="egg-time-value">{method.time}</span>
+                      </div>
+                      <p className="egg-time-desc">Ris: {method.rice} | Vätska: {method.liquid}</p>
+                      <span className="egg-time-temp">Ger: {method.yield}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="steps-list-guide">
+                  <h3>Steg för steg</h3>
+                  <ol>
+                    {riceGuideData[riceType].steps.map((step, idx) => (
+                      <li key={idx}>{step}</li>
+                    ))}
+                  </ol>
+                </div>
+                <div className="egg-tips-section">
+                  <h3>Tips</h3>
+                  <ul>
+                    {riceGuideData[riceType].tips.map((tip, idx) => (
+                      <li key={idx}>{tip}</li>
+                    ))}
+                  </ul>
+                </div>
+              </>
+            )}
+
+            {riceType === 'sticky' && (
+              <>
+                <h3>{riceGuideData.sticky.title}</h3>
+                <p className="section-description">{riceGuideData.sticky.description}</p>
+                <div className="steps-list-guide">
+                  <h3>Steg för steg</h3>
+                  <ol>
+                    {riceGuideData.sticky.steps.map((step, idx) => (
+                      <li key={idx}>{step}</li>
+                    ))}
+                  </ol>
+                </div>
+                <div className="egg-tips-section">
+                  <h3>Tips</h3>
+                  <ul>
+                    {riceGuideData.sticky.tips.map((tip, idx) => (
+                      <li key={idx}>{tip}</li>
+                    ))}
+                  </ul>
+                </div>
+              </>
+            )}
+
+            {/* Förvaring alltid synlig */}
+            <div className="egg-section egg-storage-section">
+              <h3>Förvaring</h3>
+              <div className="science-facts">
+                {riceGuideData.storage.facts.map((fact, idx) => (
+                  <div key={idx} className="science-fact-card">
+                    <span className="fact-label">{fact.label}</span>
+                    <span className="fact-value">{fact.value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Felsökning */}
+        {riceGuideTab === 'troubleshooting' && (
+          <div className="egg-section">
+            <h2>{riceGuideData.troubleshooting.title}</h2>
+            <div className="scrambled-styles">
+              {riceGuideData.troubleshooting.problems.map((problem, idx) => (
+                <div key={idx} className="scrambled-style-card">
+                  <h3>{problem.name}</h3>
+                  <p className="style-method"><strong>Orsak:</strong> {problem.cause}</p>
+                  <p><strong>Lösning:</strong> {problem.fix}</p>
+                  <p><strong>Förebygg:</strong> {problem.prevent}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+      </div>
+    </div>
+  );
+
   const renderHome = () => (
     <div className="home-grid">
       <div className="menu-card" role="button" tabIndex="0" onClick={() => setActiveView('conversion')} onKeyDown={(e) => e.key === 'Enter' && setActiveView('conversion')}>
@@ -4127,6 +4405,12 @@ export default function App() {
       <div className="menu-card" role="button" tabIndex="0" onClick={() => setActiveView('basics')} onKeyDown={(e) => e.key === 'Enter' && setActiveView('basics')}>
         <h2>Grundrecept</h2>
         <p>Såser, buljonger, marinader och smör</p>
+        <span className="menu-arrow">→</span>
+      </div>
+
+      <div className="menu-card" role="button" tabIndex="0" onClick={() => setActiveView('rice')} onKeyDown={(e) => e.key === 'Enter' && setActiveView('rice')}>
+        <h2>Risguide</h2>
+        <p>Koktider, proportioner & felsökning</p>
         <span className="menu-arrow">→</span>
       </div>
 
@@ -5119,12 +5403,6 @@ export default function App() {
             >
               Ägg
             </button>
-            <button
-              className={`mode-tab ${tempViewMode === 'rice' ? 'active' : ''}`}
-              onClick={() => setTempViewMode('rice')}
-            >
-              Ris
-            </button>
           </div>
         )}
 
@@ -5252,288 +5530,11 @@ export default function App() {
           </div>
         )}
 
-        {/* Visa risguiden om vald */}
-        {title === 'Temperaturer' && tempViewMode === 'rice' && (
-          <div className="egg-guide-content">
-            <div className="rice-tab-row">
-              <button className={riceGuideTab === 'calculator' ? 'active' : ''} onClick={() => setRiceGuideTab('calculator')}>Kalkylator</button>
-              <button className={riceGuideTab === 'info' ? 'active' : ''} onClick={() => setRiceGuideTab('info')}>Ristyper</button>
-              <button className={riceGuideTab === 'troubleshooting' ? 'active' : ''} onClick={() => setRiceGuideTab('troubleshooting')}>Felsökning</button>
-            </div>
+        {/* Risguiden flyttad till egen vy */}
 
-            {/* KALKYLATOR */}
-            {riceGuideTab === 'calculator' && (
-              <div className="egg-section">
-                <h2>Riskalkylator</h2>
-                <p className="section-description">Ange mängd ris och få exakt vattenmängd och koktid</p>
-
-                <div className="rice-calculator">
-                  <div className="rice-calc-row">
-                    <label>Mängd ris:</label>
-                    <div className="rice-calc-input-group">
-                      <input
-                        type="number"
-                        min="0.5"
-                        step="0.5"
-                        value={riceAmount}
-                        onChange={(e) => setRiceAmount(parseFloat(e.target.value) || 0)}
-                        className="rice-calc-input"
-                      />
-                      <select value={riceUnit} onChange={(e) => setRiceUnit(e.target.value)} className="rice-calc-select">
-                        <option value="dl">dl</option>
-                        <option value="cups">koppar</option>
-                        <option value="g">gram</option>
-                        <option value="kg">kg</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="rice-calc-row">
-                    <label>Ristyp:</label>
-                    <select value={riceType} onChange={(e) => setRiceType(e.target.value)} className="rice-calc-select-full">
-                      <option value="longGrain">Långkornigt (Basmati, Jasmine)</option>
-                      <option value="shortGrain">Kort-/mellankornigt (Arborio, Sushi)</option>
-                      <option value="brown">Brunt ris</option>
-                      <option value="black">Svart ris (Forbidden)</option>
-                      <option value="sticky">Klibbigt ris</option>
-                    </select>
-                  </div>
-
-                  <div className="rice-calc-row">
-                    <label>Metod:</label>
-                    <select value={cookingMethod} onChange={(e) => setCookingMethod(e.target.value)} className="rice-calc-select-full">
-                      <option value="stovetop">Spis</option>
-                      <option value="riceCooker">Riskokare</option>
-                      <option value="oven">Ugn (220°C)</option>
-                      <option value="combi">Kombiugn/Rational (100°C ånga)</option>
-                    </select>
-                  </div>
-                </div>
-
-                {/* Resultat */}
-                <div className="rice-result-card">
-                  <h3>Resultat</h3>
-                  {(() => {
-                    // Konvertera till koppar för beräkning
-                    let cupsOfRice = riceAmount;
-                    if (riceUnit === 'dl') cupsOfRice = riceAmount / 2.36; // 1 cup ≈ 2.36 dl
-                    if (riceUnit === 'g') cupsOfRice = riceAmount / 185; // 1 cup ris ≈ 185g
-                    if (riceUnit === 'kg') cupsOfRice = (riceAmount * 1000) / 185;
-
-                    // Ratios per ristyp och metod
-                    const ratios = {
-                      longGrain: { stovetop: 1.5, riceCooker: 1.25, oven: 1.5, combi: 1.5 },
-                      shortGrain: { stovetop: 1.75, riceCooker: 1.5, oven: 1.75, combi: 1.75 },
-                      brown: { stovetop: 1.75, riceCooker: 1.5, oven: 1.75, combi: 1.75 },
-                      black: { stovetop: 1.75, riceCooker: 1.5, oven: 1.5, combi: 1.75 },
-                      sticky: { stovetop: 0, riceCooker: 0, oven: 0, combi: 0 } // Ångas
-                    };
-
-                    const times = {
-                      longGrain: { stovetop: '15 min', riceCooker: 'Enl. manual', oven: '20-30 min', combi: '20-25 min' },
-                      shortGrain: { stovetop: '30-35 min', riceCooker: 'Enl. manual', oven: '35-40 min', combi: '25-30 min' },
-                      brown: { stovetop: '30-35 min', riceCooker: 'Enl. manual', oven: '45 min', combi: '35-40 min' },
-                      black: { stovetop: '25-30 min', riceCooker: 'Enl. manual', oven: '30-35 min', combi: '30-35 min' },
-                      sticky: { stovetop: 'Ångas 30-40 min', riceCooker: 'Ångas 25 min', oven: '-', combi: '20-25 min (100% ånga)' }
-                    };
-
-                    const ratio = ratios[riceType]?.[cookingMethod] || 1.5;
-                    const time = times[riceType]?.[cookingMethod] || '15 min';
-                    const waterCups = cupsOfRice * ratio;
-
-                    // Konvertera tillbaka till vald enhet
-                    let waterDisplay, riceDisplay, yieldDisplay;
-                    if (riceUnit === 'dl') {
-                      waterDisplay = `${(waterCups * 2.36).toFixed(1)} dl`;
-                      riceDisplay = `${riceAmount} dl`;
-                      yieldDisplay = `${(cupsOfRice * 3 * 2.36).toFixed(1)} dl`;
-                    } else if (riceUnit === 'cups') {
-                      waterDisplay = `${waterCups.toFixed(1)} koppar`;
-                      riceDisplay = `${riceAmount} koppar`;
-                      yieldDisplay = `${(cupsOfRice * 3).toFixed(1)} koppar`;
-                    } else if (riceUnit === 'g') {
-                      waterDisplay = `${Math.round(waterCups * 237)} ml`; // 1 cup vatten = 237ml
-                      riceDisplay = `${riceAmount} g`;
-                      yieldDisplay = `ca ${Math.round(riceAmount * 2.7)} g`;
-                    } else if (riceUnit === 'kg') {
-                      waterDisplay = `${(waterCups * 0.237).toFixed(2)} liter`;
-                      riceDisplay = `${riceAmount} kg`;
-                      yieldDisplay = `ca ${(riceAmount * 2.7).toFixed(1)} kg`;
-                    }
-
-                    if (riceType === 'sticky') {
-                      return (
-                        <div className="rice-result-content">
-                          <div className="rice-result-item special">
-                            <span className="rice-result-label">OBS: Klibbigt ris</span>
-                            <span className="rice-result-value">Ska blötläggas och ångas!</span>
-                          </div>
-                          <div className="rice-result-item">
-                            <span className="rice-result-label">1. Blötlägg</span>
-                            <span className="rice-result-value">Minst 4 timmar i rikligt vatten</span>
-                          </div>
-                          <div className="rice-result-item">
-                            <span className="rice-result-label">2. Dränera</span>
-                            <span className="rice-result-value">Häll av allt vatten</span>
-                          </div>
-                          <div className="rice-result-item">
-                            <span className="rice-result-label">3. Ångkoka</span>
-                            <span className="rice-result-value">30-40 min i ostkläde</span>
-                          </div>
-                        </div>
-                      );
-                    }
-
-                    return (
-                      <div className="rice-result-content">
-                        <div className="rice-result-item">
-                          <span className="rice-result-label">Ris</span>
-                          <span className="rice-result-value">{riceDisplay}</span>
-                        </div>
-                        <div className="rice-result-item highlight">
-                          <span className="rice-result-label">Vatten/vätska</span>
-                          <span className="rice-result-value">{waterDisplay}</span>
-                        </div>
-                        <div className="rice-result-item">
-                          <span className="rice-result-label">Koktid</span>
-                          <span className="rice-result-value">{time}</span>
-                        </div>
-                        <div className="rice-result-item">
-                          <span className="rice-result-label">Ger ca</span>
-                          <span className="rice-result-value">{yieldDisplay} kokt ris</span>
-                        </div>
-                      </div>
-                    );
-                  })()}
-                </div>
-
-                <div className="egg-tips-section">
-                  <h3>Snabbtips</h3>
-                  <ul>
-                    <li>Skölj alltid riset tills vattnet rinner klart (utom risotto)</li>
-                    <li>Använd tätslutande lock och rör aldrig om under kokning</li>
-                    <li>Låt riset vila 5 min efter kokning innan du fluffar</li>
-                    <li>1 kopp okokt ris = ca 3 koppar kokt ris</li>
-                    <li><strong>Kombiugn:</strong> 100°C, 100% ånga, GN-form med lock/folie. Lägg till lite olja för att undvika klump.</li>
-                  </ul>
-                </div>
-              </div>
-            )}
-
-            {/* RISTYPER INFO */}
-            {riceGuideTab === 'info' && (
-              <div className="egg-section">
-                <h2>Ristyper - Guide</h2>
-                <p className="section-description">Välj ristyp för detaljer</p>
-
-                <select
-                  value={riceType}
-                  onChange={(e) => setRiceType(e.target.value)}
-                  className="rice-calc-select-full"
-                  style={{marginBottom: '1rem'}}
-                >
-                  <option value="longGrain">Långkornigt vitt ris</option>
-                  <option value="shortGrain">Kort-/mellankornigt ris</option>
-                  <option value="brown">Brunt ris</option>
-                  <option value="black">Svart ris</option>
-                  <option value="sticky">Klibbigt ris</option>
-                </select>
-
-                {riceType !== 'sticky' && riceGuideData[riceType] && (
-                  <>
-                    <h3>{riceGuideData[riceType].title}</h3>
-                    <p className="section-description">{riceGuideData[riceType].description}</p>
-                    <div className="egg-time-cards">
-                      {riceGuideData[riceType].methods.map((method, idx) => (
-                        <div key={idx} className="egg-time-card">
-                          <div className="egg-time-header">
-                            <span className="egg-time-name">{method.name}</span>
-                            <span className="egg-time-value">{method.time}</span>
-                          </div>
-                          <p className="egg-time-desc">Ris: {method.rice} | Vätska: {method.liquid}</p>
-                          <span className="egg-time-temp">Ger: {method.yield}</span>
-                        </div>
-                      ))}
-                    </div>
-                    <div className="steps-list-guide">
-                      <h3>Steg för steg</h3>
-                      <ol>
-                        {riceGuideData[riceType].steps.map((step, idx) => (
-                          <li key={idx}>{step}</li>
-                        ))}
-                      </ol>
-                    </div>
-                    <div className="egg-tips-section">
-                      <h3>Tips</h3>
-                      <ul>
-                        {riceGuideData[riceType].tips.map((tip, idx) => (
-                          <li key={idx}>{tip}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  </>
-                )}
-
-                {riceType === 'sticky' && (
-                  <>
-                    <h3>{riceGuideData.sticky.title}</h3>
-                    <p className="section-description">{riceGuideData.sticky.description}</p>
-                    <div className="steps-list-guide">
-                      <h3>Steg för steg</h3>
-                      <ol>
-                        {riceGuideData.sticky.steps.map((step, idx) => (
-                          <li key={idx}>{step}</li>
-                        ))}
-                      </ol>
-                    </div>
-                    <div className="egg-tips-section">
-                      <h3>Tips</h3>
-                      <ul>
-                        {riceGuideData.sticky.tips.map((tip, idx) => (
-                          <li key={idx}>{tip}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  </>
-                )}
-
-                {/* Förvaring alltid synlig */}
-                <div className="egg-section egg-storage-section">
-                  <h3>Förvaring</h3>
-                  <div className="science-facts">
-                    {riceGuideData.storage.facts.map((fact, idx) => (
-                      <div key={idx} className="science-fact-card">
-                        <span className="fact-label">{fact.label}</span>
-                        <span className="fact-value">{fact.value}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Felsökning */}
-            {riceGuideTab === 'troubleshooting' && (
-              <div className="egg-section">
-                <h2>{riceGuideData.troubleshooting.title}</h2>
-                <div className="scrambled-styles">
-                  {riceGuideData.troubleshooting.problems.map((problem, idx) => (
-                    <div key={idx} className="scrambled-style-card">
-                      <h3>{problem.name}</h3>
-                      <p className="style-method"><strong>Orsak:</strong> {problem.cause}</p>
-                      <p><strong>Lösning:</strong> {problem.fix}</p>
-                      <p><strong>Förebygg:</strong> {problem.prevent}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-          </div>
-        )}
 
         {/* Dölj sök och kategorier om ägg- eller risvyn är aktiv */}
-        {!(title === 'Temperaturer' && (tempViewMode === 'egg' || tempViewMode === 'rice')) && (
+        {!(title === 'Temperaturer' && tempViewMode === 'egg') && (
           <>
             <div className="search-box">
               <input
@@ -5556,7 +5557,7 @@ export default function App() {
           </>
         )}
 
-        {!(title === 'Temperaturer' && (tempViewMode === 'egg' || tempViewMode === 'rice')) && categories.map(category => {
+        {!(title === 'Temperaturer' && tempViewMode === 'egg') && categories.map(category => {
           const filteredItems = filterItems(data[category]);
           if (filteredItems.length === 0) return null;
           const science = categoryScience[category];
@@ -6929,6 +6930,7 @@ export default function App() {
         {activeView === 'calories' && renderCalories()}
         {activeView === 'basics' && renderBasics()}
         {activeView === 'fermentation' && renderFermentation()}
+        {activeView === 'rice' && renderRice()}
         {activeView === 'create' && renderCreate()}
       </main>
 
